@@ -8,6 +8,25 @@
 
 class minerHelper {
 
+  public static function getRoutes() {
+    $base_route = 'index.php?page=';
+
+    return [
+      'index' => [
+        'id' => 'home',
+        'label' => 'Home',
+        'url' => $base_route . 'index',
+        'template' => 'index.html.twig',
+      ],
+      'miners' => [
+        'id' => 'users',
+        'label' => 'Miners',
+        'url' => $base_route . 'miners',
+        'template' => 'miners.html.twig',
+      ]
+    ];
+  }
+
   /**
    * Conversion for hash rates
    */

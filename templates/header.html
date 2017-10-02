@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Bitcore (BTX)</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" type="text/css" href="css/fontawesome/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="css/bitcore_timeline.css" />
+
+    <script type="text/javascript" src="js/jquery.js"></script>
+</head>
+<body>
+
+<div id="header">
+
+    <a href="index.php">
+        <img class="logo" src="images/btx.png" alt="BTX" height="40" />
+    </a>
+
+    {% for route in routes %}
+    <a href="{{ route.url }}">
+        <div class="button mobile">
+            <i class="fa-icons fa fa-{{ route.id }}" aria-hidden="true"></i>
+            <span>
+                <label>
+                    {{ route.label }}
+                </label>
+            </span>
+        </div>
+    </a>
+    {% endfor %}
+
+    <div class="button download" data-link="#"><span><label>BTX claiming</label></span></div>
+</div>

@@ -71,13 +71,17 @@ body {
     height: 40px;
     line-height: 40px;
     color: #FFFFFF;
-    padding-left: 24px;
-    /*background-image: url('../images/sprite.png');*/
+    padding-left: 35px;
     background-repeat: no-repeat;
 }
 #header div.button:hover span {
     color: #000000;
 }
+
+#header div.button:hover i {
+    color: #000000;
+}
+
 #header div.button.setting span {
     background-position: 3px -555px;
 }
@@ -113,6 +117,15 @@ body {
 }
 #header div.button.download:hover span {
     color: #FFFFFF;
+}
+
+/* Font awesome icon styles */
+#header .fa-icons {
+    font-size: 20px;
+    float: left;
+    padding-top: 10px;
+    padding-left: 10px;
+    color: white;
 }
 
 /* Settings */
@@ -261,11 +274,6 @@ body {
         background-position: -273px -555px;
     }
 }
-
-
-
-
-
 
 /* demo */
 #social_search {

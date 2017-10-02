@@ -1,24 +1,4 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Bitcore (BTX)</title>
-    <meta charset="utf-8" />
-    <link rel="stylesheet" type="text/css" href="css/bitcore_timeline.css" />
-    <link rel="stylesheet" type="text/css" href="css/timeline.css" />
-    <link rel="stylesheet" type="text/css" href="css/timeline_light.css" />
-    <script type="text/javascript" src="js/jquery.js"></script>
-    <script type="text/javascript" src="js/demo.js"></script>
-</head>
-<body>
-<div id="header">
-    <a href="index.php">
-        <img class="logo" src="images/btx.png" alt="BTX" height="40" />
-    </a>
-    <div class="button mobile" data-link="mobile.php"><span><label>Specs</label></span></div>
-    <div class="button twitter" data-link="twitter.php"><span><label>BTX Explorer</label></span></div>
-    <div class="button facebook" data-link="facebook.php"><span><label>Contact</label></span></div>
-    <div class="button download" data-link="#"><span><label>BTX claiming</label></span></div>
-</div>
+{% include 'header.html' %}
 
 <div id="main">
     {% for worker in workers %}
@@ -29,5 +9,4 @@
     {% endfor %}
 </div>
 
-</body>
-</html>
+{% include 'footer.html' %}
