@@ -22,7 +22,9 @@
     <a href="{{ route.url }}">
         <div class="button mobile">
             <i class="fa-icons fa fa-{{ route.id }}" aria-hidden="true"></i>
-            <span> {{ route.label }} </span>
+            <span>
+                <label> {{ route.label }} </label>
+            </span>
         </div>
     </a>
     {% endfor %}
