@@ -1,7 +1,15 @@
 {% include 'header.html' %}
 
 <div id="main">
-    Miners page
+    <div class="intro">
+        <h1 class="header-h1">Miners</h1>
+        {% for worker in workers %}
+            <div>
+                <span>{{ worker.version }}: </span>
+                <span>{{ worker.hashrate }}</span>
+            </div>
+        {% endfor %}
+    </div>
 </div>
 
 {% include 'footer.html' %}

@@ -338,6 +338,10 @@ h1 {
     text-align: center;
 }
 
+h2 {
+    margin-top: 10px;
+}
+
 .header-h1 {
     float: left;
     margin-top: 0px;
@@ -352,4 +356,13 @@ h1 {
 .fork-info {
     text-align: center;
     font-size: 11px;
+}
+
+.get-started {
+    border-left: 1px solid #804d7e;
+    border-left-width: 5px;
+    padding-left: 5px;
+    background-color: #eeeeee;
+    margin: 10px;
+    font-size: 3.2vmin
 }
