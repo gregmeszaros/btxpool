@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Bitcore (BTX)</title>
+    <title>Bitcore (BTX) - Stable and profitable Bitcore mining pool with regular payouts.</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" href="css/fontawesome/css/font-awesome.min.css">
@@ -16,19 +16,16 @@
     <a href="index.php">
         <img class="logo" src="images/btx.png" alt="BTX" height="40" />
     </a>
+    <h1 class="header-h1">BTXpool</h1>
 
     {% for route in routes %}
     <a href="{{ route.url }}">
         <div class="button mobile">
             <i class="fa-icons fa fa-{{ route.id }}" aria-hidden="true"></i>
-            <span>
-                <label>
-                    {{ route.label }}
-                </label>
-            </span>
+            <span> {{ route.label }} </span>
         </div>
     </a>
     {% endfor %}
 
-    <div class="button download" data-link="#"><span><label>BTX claiming</label></span></div>
+    <div class="button download" data-link="#"><span><label>Your hashrate</label></span></div>
 </div>

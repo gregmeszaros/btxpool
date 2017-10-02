@@ -1,6 +1,18 @@
 {% include 'header.html' %}
 
 <div id="main">
+
+    <div class="intro">
+        <h2>BTXpool - Bitcore (BTX) mining pool</h2>
+        <div>
+            <strong>Min. payout threshold: 1 BTX.</strong>
+            <div class="help-text">Payouts are continuous throughout the day.</div>
+        </div>
+        <br />
+        <div><strong>Reward structure:</strong><span class="label label-btx">Proportional</span></div>
+        <div class="help-text">Proportional reward based on the number of submitted "valid" shares and difficulty.</div>
+    </div>
+
     {% for worker in workers %}
         <div>
             <span>{{ worker.version }}: </span>
