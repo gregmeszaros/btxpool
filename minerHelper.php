@@ -23,7 +23,14 @@ class minerHelper {
         'label' => 'Miners',
         'url' => $base_route . 'miners',
         'template' => 'miners.html.twig',
-      ]
+      ],
+      'explorer' => [
+        'id' => 'search',
+        'label' => 'Blockchain',
+        'url' => 'https://chainz.cryptoid.info/btx/',
+        'target' => '_blank',
+        'template' => 'miners.html.twig',
+      ],
     ];
   }
 

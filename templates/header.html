@@ -16,10 +16,9 @@
     <a href="index.php">
         <img class="logo" src="images/btx.png" alt="BTX" height="40" />
     </a>
-    <h1 class="header-h1">BTXpool</h1>
 
     {% for route in routes %}
-    <a href="{{ route.url }}">
+    <a href="{{ route.url }}" target="{{ route.target }}">
         <div class="button mobile">
             <i class="fa-icons fa fa-{{ route.id }}" aria-hidden="true"></i>
             <span>
@@ -29,5 +28,5 @@
     </a>
     {% endfor %}
 
-    <div class="button download" data-link="#"><span><label>Your hashrate</label></span></div>
+    <div class="button download" data-link="#"><span><label>Your hashrate: </label> 15 Mh/s </span></div>
 </div>

@@ -322,13 +322,14 @@ img.facebook_profile {
     display: inline;
     padding: .2em .6em .3em;
     margin-left: 5px;
-    font-size: 75%;
+    font-size: 85%;
     color: #fff;
     border-radius: .25em;
 }
 
 .help-text {
     font-size: 11px;
+    max-height: 20px;
 }
 
 h1 {
@@ -338,5 +339,11 @@ h1 {
 
 .header-h1 {
     float: left;
-    color: white;
+    margin-top: 0px;
+    min-width: 30%;
+}
+
+.intro-info {
+    margin-left: 20px;
+    display: inline-block;
 }
