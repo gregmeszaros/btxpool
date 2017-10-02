@@ -1,0 +1,14 @@
+{
+    "name": "root/bitcore-web",
+    "description": "Bitcore (BTX) mining pool",
+    "type": "project",
+    "authors": [
+        {
+            "name": "gregmeszaros",
+            "email": "meszaros275@gmail.com"
+        }
+    ],
+    "require": {
+        "twig/twig": "~2.0"
+    }
+}
