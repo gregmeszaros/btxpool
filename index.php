@@ -45,7 +45,9 @@ if (!empty($load_routes[$page]['template'])) {
   print $twig->render($load_routes[$page]['template'], [
     'name' => 'Greg',
     'workers' => $workers,
-    'routes' => $load_routes
+    'routes' => $load_routes,
+    'current_route' => $page,
+    'load_charts' => $load_routes[$page]['load_charts'] ?? FALSE
   ]);
 }
 else {

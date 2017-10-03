@@ -17,6 +17,7 @@ class minerHelper {
         'label' => 'Home',
         'url' => $base_route . 'index',
         'template' => 'index.html.twig',
+        'load_charts' => TRUE
       ],
       'miners' => [
         'id' => 'users',

@@ -4,10 +4,28 @@
     <title>Bitcore (BTX) - Stable and profitable Bitcore mining pool with regular payouts.</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" type="text/css" href="css/fontawesome/css/font-awesome.min.css">
+
+    <!-- Custom CSS -->
     <link rel="stylesheet" type="text/css" href="css/bitcore_timeline.css" />
 
-    <script type="text/javascript" src="js/jquery.js"></script>
+    <!-- fontawesome -->
+    <link rel="stylesheet" type="text/css" href="css/fontawesome/css/font-awesome.min.css">
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+
+    {% if load_charts %}
+        <!-- Highcharts -->
+        <script src="https://code.highcharts.com/highcharts.js"></script>
+        <script src="https://code.highcharts.com/modules/data.js"></script>
+        <script src="https://code.highcharts.com/modules/exporting.js"></script>
+
+        <!-- Additional files for the Highslide popup effect -->
+        <script src="https://www.highcharts.com/media/com_demo/js/highslide-full.min.js"></script>
+        <script src="https://www.highcharts.com/media/com_demo/js/highslide.config.js" charset="utf-8"></script>
+        <link rel="stylesheet" type="text/css" href="https://www.highcharts.com/media/com_demo/css/highslide.css" />
+    {% endif %}
+
 </head>
 <body>
 
