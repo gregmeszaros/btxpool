@@ -65,6 +65,16 @@ class minerHelper {
   }
 
   /**
+   * Return available coins
+   * @return array
+   */
+  public static function miner_getAlgos() {
+    return [
+      'bitcore'
+    ];
+  }
+
+  /**
    * Returns active workers for the miner address
    * @param Database connection
    * @param $miner_address
@@ -76,7 +86,6 @@ class minerHelper {
   }
 
   public static function getHashrate($db, $algo, $version, $miner_address) {
-
     $target = self::miner_hashrate_constant($algo);
     $interval = self::miner_hashrate_step();
     $delay = time()-$interval;
@@ -94,6 +103,24 @@ AND workerid IN (SELECT id FROM workers WHERE algo=:algo and version=:version)")
 
   }
 
+  /**
+   * Total hashrate for specific coin
+   * @param $algo
+   */
+  public static function getPoolHashrate($db, $algo) {
+    $target = self::miner_hashrate_constant($algo);
+    $interval = self::miner_hashrate_step();
+    $delay = time()-$interval;
+
+    $stmt = $db->prepare("SELECT sum(difficulty) * :target / :interval / 1000 AS hashrate FROM shares WHERE valid AND time > :delay AND algo=:algo");
+    $stmt->execute([
+      ':target' => $target,
+      ':interval' => $interval,
+      ':delay' => $delay,
+      ':algo' => $algo
+    ]);
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+  }
 
 }
 

@@ -1,7 +1,8 @@
 
 // Get the CSV and create the chart
-$.getJSON('https://www.highcharts.com/samples/data/jsonp.php?filename=analytics.csv&callback=?', function (csv) {
+$.getJSON('api.php?type=hashrate&callback=?', function (csv) {
 
+  console.log(csv);
   // Load the fonts
   Highcharts.createElement('link', {
     href: 'https://fonts.googleapis.com/css?family=Dosis:400,600',
