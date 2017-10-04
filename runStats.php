@@ -9,11 +9,20 @@ $conn = include_once('config.php');
  */
 include_once('minerHelper.php');
 
+$ip_check = minerHelper::getClientIp();
+$sapi_type = php_sapi_name();
+if(substr($sapi_type, 0, 3) == 'cli' || empty($_SERVER['REMOTE_ADDR'])) {
+  print "shell current time: " . time() . "\n";
+} else {
+  print "webserver - your IP: " . $ip_check;
+  exit();
+}
+
 // Run stats
 updatePoolHashrate($conn);
 
-function updatePoolHashrate($db) {
 
+function updatePoolHashrate($db) {
   $t = time() - 2 * 60;
 
   // Delete old connections
@@ -43,9 +52,8 @@ function updatePoolHashrate($db) {
     ]);
 
   }
-  print_r($pool_rate);
 
-  print minerHelper::Itoa2($pool_rate['hashrate']) . 'h/s';
+  print minerHelper::Itoa2($pool_rate['hashrate']) . 'h/s' . "\n";
 
   /**
   dborun("DELETE FROM stratums WHERE time < $t");

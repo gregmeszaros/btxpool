@@ -20,7 +20,8 @@ if (!empty($callback)) {
   AVG(hashrate) AS pool_hashrate,
   COUNT(*) AS number_of_submissions
   FROM hashstats
-  GROUP BY hourly_time
+  WHERE time > (UNIX_TIMESTAMP(NOW()) - (24 * 60 * 60))
+  GROUP BY hourly_time;
    */
 
   print $_GET['callback'] . '(' . json_encode($data) . ')';
