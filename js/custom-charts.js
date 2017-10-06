@@ -87,14 +87,26 @@ $.getJSON('api.php?type=hashrate&callback=?', function (csv) {
     },
 
     xAxis: {
-      tickInterval: 7 * 24 * 3600 * 1000, // one week
+      //tickAmount: 24,
+      //tickInterval: 24 / 12,
+      //minTickInterval: 3600,
+      //dateTimeLabelFormats : {
+      //  day: '%H:%M'
+      //},
       tickWidth: 0,
       gridLineWidth: 1,
       labels: {
         align: 'left',
         x: 3,
         y: -3
-      }
+      },
+      labels: {
+        rotation: 290,
+        step: 2 // show every tick regardless of spacing
+      },
+      //startOnTick: false,
+      //endOnTick: true,
+      showLastLabel: true
     },
 
     yAxis: [{ // left y axis

@@ -3,6 +3,10 @@
 // Connect mysql
 $conn = include_once('config.php');
 
+// RPC wallet
+include_once('wallet-rpc.php');
+include_once('easybitcoin.php');
+
 /**
  * Helper class
  * @var minerHelper.php
@@ -18,9 +22,11 @@ if(substr($sapi_type, 0, 3) == 'cli' || empty($_SERVER['REMOTE_ADDR'])) {
   exit();
 }
 
-// Run stats
+// Pool total hashrate
 updatePoolHashrate($conn);
 
+// Update earnings
+updateEarnings($conn);
 
 function updatePoolHashrate($db) {
   $t = time() - 2 * 60;
@@ -96,5 +102,38 @@ function updatePoolHashrate($db) {
       $stats->save();
   }
   */
+
+}
+
+/**
+ * Update earnings when block is found
+ * @param $db
+ */
+function updateEarnings($db) {
+
+  // Get all new blocks
+  $stmt = $db->prepare("SELECT * FROM blocks WHERE category = :category ORDER by time");
+  $stmt->execute([
+    ':category' => 'new'
+  ]);
+
+  $new_blocks = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+  foreach($new_blocks as $db_block) {
+    // Check for the coin details
+    $stmt = $db->prepare("SELECT * FROM coins WHERE id = :coin_id");
+    $stmt->execute([
+      ':coin_id' => $db_block['coin_id']
+    ]);
+
+    $coin_info = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    $remote_check = new WalletRPC($coin_info);
+
+    // Get more detailed info about the block we found
+    $block = $remote_check->getblock($db_block['blockhash']);
+    print_r($block);
+
+  }
 
 }
