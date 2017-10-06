@@ -126,7 +126,7 @@ function updateEarnings($db) {
       ':coin_id' => $db_block['coin_id']
     ]);
 
-    $coin_info = $stmt->fetch(PDO::FETCH_ASSOC);
+    $coin_info = $stmt->fetch(PDO::FETCH_OBJ);
 
     $remote_check = new WalletRPC($coin_info);
 
