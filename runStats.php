@@ -178,6 +178,16 @@ function updateEarnings($db) {
 
       }
 
+      // When all earnings saved set the block from 'new' to 'immature'
+      // So the other script can trigger, calculate number of confirmations, once confirmed update the earnings to mature
+      $stmt = $db->prepare("UPDATE blocks set category = :category WHERE id = :block_id");
+      $stmt->execute([
+        ':category' => 'immature',
+        ':block_id' => $db_block['id']
+      ]);
+
+      // Delete shares where we calculated the earnings
+
     }
 
   }

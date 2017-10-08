@@ -191,8 +191,8 @@ AND workerid IN (SELECT id FROM workers WHERE algo=:algo and version=:version)")
   public static function addEarning($db, $user, $block, $amount_earned) {
 
     // Status -1 - immature
-    // Status 0 - confirmed, balance not updated
-    // Status 1 - confirmed, balance updated
+    // Status 0 - mature/confirmed, balance not updated
+    // Status 1 - mature/confirmed, balance updated
     $stmt = $db->prepare("INSERT INTO earnings(userid, coinid, blockid, create_time, amount, price, status) 
 VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
     $stmt->execute([
