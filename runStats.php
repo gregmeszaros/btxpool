@@ -187,7 +187,18 @@ function updateEarnings($db) {
       ]);
 
       // Delete shares where we calculated the earnings
+      $stmt = $db->prepare("DELETE FROM shares WHERE algo = :algo AND coinid = :coin_id");
+      $stmt->execute([
+        ':algo' => minerHelper::miner_getAlgos()[$db_block['coin_id']],
+        ':coin_id' => $db_block['coin_id']
+      ]);
 
+      // Update user balance
+      // Mature balance - user->balance - sum(immature earnings)
+      // When mature balance > 0.5 do a payout and deduct user balance
+      // Total paid (sum(payouts)
+
+      // check orphan blocks?
     }
 
   }
