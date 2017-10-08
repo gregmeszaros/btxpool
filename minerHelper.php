@@ -180,6 +180,34 @@ AND workerid IN (SELECT id FROM workers WHERE algo=:algo and version=:version)")
     return $amount - ($amount * $percent / 100.0);
   }
 
+  /**
+   * Add the earning for user for the specified block found
+   * @param $db
+   * @param $user
+   * @param $block
+   * @param $coin_id
+   * @param $amount_earned
+   */
+  public static function addEarning($db, $user, $block, $amount_earned) {
+
+    // Status -1 - immature
+    // Status 0 - confirmed, balance not updated
+    // Status 1 - confirmed, balance updated
+    $stmt = $db->prepare("INSERT INTO earnings(userid, coinid, blockid, create_time, amount, price, status) 
+VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
+    $stmt->execute([
+      ':userid' => $user['id'],
+      ':coinid' => $block['coin_id'],
+      ':blockid' => $block['id'],
+      ':create_time' => $block['time'],
+      ':amount' => $amount_earned,
+      ':price' => $block['amount'],
+      ':status' => -1
+    ]);
+
+    return TRUE;
+  }
+
 }
 
 

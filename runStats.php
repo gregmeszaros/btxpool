@@ -165,21 +165,16 @@ function updateEarnings($db) {
         // Calculate how much each user will earn
         $amount = $reward * $hash_user['total_user_hash'] / $total_hash_power['total_hash'];
         print 'Earned: ' . $amount . "\n";
-        print 'Earned - fee deducted: ' . minerHelper::takePoolFee($amount, minerHelper::miner_getAlgos()[$db_block['coin_id']]) . "\n";
+
+        // Earned amount
+        $amount_earned = minerHelper::takePoolFee($amount, minerHelper::miner_getAlgos()[$db_block['coin_id']]);
+        print 'Earned - fee deducted: ' . $amount_earned . "\n";
 
         // Get some user related info
         $user_data = minerHelper::getAccount($db, $hash_user['userid']);
 
-        print_r($user_data);
-
-        // Save the earning for the user
-        // $earning->userid = $user->id;
-        // $earning->coinid = $coin->id;
-        // $earning->blockid = $db_block->id;
-        // $earning->create_time = $db_block->time;
-        // $earning->amount = $amount;
-        // $earning->price = $coin->price;
-
+        // Save the earning for each user when block is found
+        minerHelper::addEarning($db, $user_data, $db_block, $amount_earned);
 
       }
 
