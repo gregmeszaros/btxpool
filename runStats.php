@@ -141,7 +141,7 @@ function updateEarnings($db) {
     if (!empty($block_tx)) {
 
       // Get the reward from the block we found
-      $reward = $block_tx->amount;
+      $reward = $block_tx['amount'];
 
       $stmt = $db->prepare("SELECT SUM(difficulty) as total_hash FROM shares WHERE valid = :valid AND algo = :coin_id");
       $stmt->execute([
