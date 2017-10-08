@@ -140,20 +140,19 @@ function updateEarnings($db) {
     if (!empty($block_tx)) {
       print_r($block_tx);
 
-      $stmt = $db->prepare("SELECT SUM(difficulty) FROM shares WHERE valid = :valid AND algo = :coin_id");
+      $stmt = $db->prepare("SELECT SUM(difficulty) as total_hash FROM shares WHERE valid = :valid AND algo = :coin_id");
       $stmt->execute([
         ':coin_id' => $db_block['coin_id'],
-        ':valid' => 1
+        ':valid' => '1'
       ]);
 
       $total_hash_power = $stmt->fetch(PDO::FETCH_ASSOC);
       print_r($total_hash_power);
 
-
-      $stmt = $db->prepare("SELECT userid, SUM(difficulty) AS total FROM shares WHERE valid = :valid AND algo=:coin_id GROUP BY userid");
+      $stmt = $db->prepare("SELECT userid, SUM(difficulty) AS total_user_hash FROM shares WHERE valid = :valid AND algo=:coin_id GROUP BY userid");
       $stmt->execute([
         ':coin_id' => $db_block['coin_id'],
-        ':valid' => 1
+        ':valid' => '1'
       ]);
 
       $hash_users = $stmt->fetchAll(PDO::FETCH_ASSOC);
