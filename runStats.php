@@ -150,7 +150,7 @@ function updateEarnings($db) {
       ]);
 
       $total_hash_power = $stmt->fetch(PDO::FETCH_ASSOC);
-      print 'Total hash power: ' . $total_hash_power['total_hash'] '\n';
+      print 'Total hash power: ' . $total_hash_power['total_hash'] . '\n';
 
       $stmt = $db->prepare("SELECT userid, SUM(difficulty) AS total_user_hash FROM shares WHERE valid = :valid AND algo=:coin_id GROUP BY userid");
       $stmt->execute([
@@ -164,7 +164,7 @@ function updateEarnings($db) {
 
         // Calculate how much each user will earn
         $amount = $reward * $hash_user['total_user_hash'] / $total_hash_power['total_hash'];
-        print $amount . '/n';
+        print $amount . '\n';
       }
 
     }
