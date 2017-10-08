@@ -135,7 +135,7 @@ function updateEarnings($db) {
     print_r($block);
 
     // Check for block transaction
-    $block_tx = $remote->gettransaction($block['tx'][0]);
+    $block_tx = $remote_check->gettransaction($block['tx'][0]);
 
     if (!empty($block_tx)) {
       print_r($block_tx);
