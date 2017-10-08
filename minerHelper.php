@@ -69,8 +69,9 @@ class minerHelper {
    * @return array
    */
   public static function miner_getAlgos() {
+    // return key / value pairs (coin ID, algo)
     return [
-      'bitcore'
+      '1425' => 'bitcore'
     ];
   }
 
