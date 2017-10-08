@@ -84,7 +84,7 @@ class minerHelper {
     if (!empty($account_id)) {
       $stmt = $db->query("SELECT * FROM accounts where id = :account_id");
       $stmt->execute([
-        'account_id' => $account_id
+        ':account_id' => $account_id
       ]);
       return $stmt->fetch(PDO::FETCH_ASSOC);
     }
