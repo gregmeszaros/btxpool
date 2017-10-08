@@ -160,11 +160,27 @@ function updateEarnings($db) {
 
       $hash_users = $stmt->fetchAll(PDO::FETCH_ASSOC);
       foreach ($hash_users as $hash_user) {
-        print 'Total hash power user ID: ' . $hash_user['userid'] . '---' . $hash_user['total_user_hash'] . "\n";
+        print 'Total hash power user ID: ' . $hash_user['userid'] . ' -- ' . $hash_user['total_user_hash'] . "\n";
 
         // Calculate how much each user will earn
         $amount = $reward * $hash_user['total_user_hash'] / $total_hash_power['total_hash'];
-        print $amount . "\n";
+        print 'Earned: ' . $amount . "\n";
+        print 'Earned - fee deducted: ' . minerHelper::takePoolFee($amount, minerHelper::miner_getAlgos()[$db_block['coin_id']]) . "\n";
+
+        // Get some user related info
+        $user_data = minerHelper::getAccount($db, $hash_user['userid']);
+
+        print_r($user_data);
+
+        // Save the earning for the user
+        // $earning->userid = $user->id;
+        // $earning->coinid = $coin->id;
+        // $earning->blockid = $db_block->id;
+        // $earning->create_time = $db_block->time;
+        // $earning->amount = $amount;
+        // $earning->price = $coin->price;
+
+
       }
 
     }

@@ -76,6 +76,21 @@ class minerHelper {
   }
 
   /**
+   * Return user data for specified ID
+   * @param $db
+   * @param $account_id
+   */
+  public static function getAccount($db, $account_id = null) {
+    if (!empty($account_id)) {
+      $stmt = $db->query("SELECT * FROM accounts where id = :account_id");
+      $stmt->execute([
+        'account_id' => $account_id
+      ]);
+      return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+  }
+
+  /**
    * Returns active workers for the miner address
    * @param Database connection
    * @param $miner_address
@@ -145,11 +160,24 @@ AND workerid IN (SELECT id FROM workers WHERE algo=:algo and version=:version)")
 
   /**
    * Define pool fee
-   * @param float $fee
+   * @param float $fee (percentage)
    * @return float
    */
-  public static function getPoolFee($fee = 0.015) {
-    return $fee;
+  public static function getPoolFee($fee = 1.5) {
+    return [
+      'bitcore' => 1.5
+    ];
+  }
+
+  /**
+   * Deduct pool fee from amount for specified algo
+   * @param $amount
+   * @param $algo
+   * @return mixed
+   */
+  public static function takePoolFee($amount, $algo = 'bitcore') {
+    $percent = self::getPoolFee()[$algo];
+    return $amount - ($amount * $percent / 100.0);
   }
 
 }
