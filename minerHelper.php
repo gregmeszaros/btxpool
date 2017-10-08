@@ -142,6 +142,15 @@ AND workerid IN (SELECT id FROM workers WHERE algo=:algo and version=:version)")
     return $ipaddress;
   }
 
+  /**
+   * Define pool fee
+   * @param float $fee
+   * @return float
+   */
+  public static function getPoolFee($fee = 0.015) {
+    return $fee;
+  }
+
 }
 
 

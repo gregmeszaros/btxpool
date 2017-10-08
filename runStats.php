@@ -132,13 +132,33 @@ function updateEarnings($db) {
 
     // Get more detailed info about the block we found
     $block = $remote_check->getblock($db_block['blockhash']);
-    print_r($block);
 
     // Check for block transaction
     $block_tx = $remote_check->gettransaction($block['tx'][0]);
 
+    // If we found the transaction
     if (!empty($block_tx)) {
       print_r($block_tx);
+
+      $stmt = $db->prepare("SELECT SUM(difficulty) FROM shares WHERE valid = :valid AND algo = :coin_id");
+      $stmt->execute([
+        ':coin_id' => $db_block['coin_id'],
+        ':valid' => 1
+      ]);
+
+      $total_hash_power = $stmt->fetch(PDO::FETCH_ASSOC);
+      print_r($total_hash_power);
+
+
+      $stmt = $db->prepare("SELECT userid, SUM(difficulty) AS total FROM shares WHERE valid = :valid AND algo=:coin_id GROUP BY userid");
+      $stmt->execute([
+        ':coin_id' => $db_block['coin_id'],
+        ':valid' => 1
+      ]);
+
+      $hash_users = $stmt->fetchAll(PDO::FETCH_ASSOC);
+      print_r($hash_users);
+
     }
 
   }
