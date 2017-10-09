@@ -143,6 +143,9 @@ function updateEarnings($db) {
       // Get the reward from the block we found
       $reward = $block_tx['amount'];
 
+      // How much is the block reward
+      $db_block['reward'] = $reward;
+
       $stmt = $db->prepare("SELECT SUM(difficulty) as total_hash FROM shares WHERE valid = :valid AND algo = :coin_id");
       $stmt->execute([
         ':coin_id' => minerHelper::miner_getAlgos()[$db_block['coin_id']],
@@ -180,10 +183,11 @@ function updateEarnings($db) {
 
       // When all earnings saved set the block from 'new' to 'immature'
       // So the other script can trigger, calculate number of confirmations, once confirmed update the earnings to mature
-      $stmt = $db->prepare("UPDATE blocks set category = :category WHERE id = :block_id");
+      $stmt = $db->prepare("UPDATE blocks SET category = :category, amount = :amount WHERE id = :block_id");
       $stmt->execute([
         ':category' => 'immature',
-        ':block_id' => $db_block['id']
+        ':block_id' => $db_block['id'],
+        ':amount' => $db_block['reward']
       ]);
 
       // Delete shares where we calculated the earnings
@@ -192,15 +196,29 @@ function updateEarnings($db) {
         ':algo' => minerHelper::miner_getAlgos()[$db_block['coin_id']],
         ':coin_id' => $db_block['coin_id']
       ]);
-
-      // Update user balance
-      // Mature balance - user->balance - sum(immature earnings)
-      // When mature balance > 0.5 do a payout and deduct user balance
-      // Total paid (sum(payouts)
-
-      // check orphan blocks?
     }
-
   }
+
+  /////////////////////////////////////////////////
+  /// //////// Update exisiting blocks /// ////////
+  ///
+  /// ////////                        /// ////////
+  // Update all 'immature' blocks
+  $stmt = $db->prepare("SELECT * FROM blocks WHERE category = :category ORDER by time");
+  $stmt->execute([
+    ':category' => 'immature'
+  ]);
+
+  $immature_blocks = $stmt->fetchAll(PDO::FETCH_ASSOC);
+  foreach($immature_blocks as $db_block) {
+    print_r($db_block);
+  }
+
+  // Update user balance
+  // Mature balance - user->balance - add mature earnings
+  // When mature balance > 0.5 do a payout and deduct user balance
+  // Total paid (sum(payouts)
+
+  // check orphan blocks?
 
 }
