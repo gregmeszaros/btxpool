@@ -146,8 +146,8 @@ function updateEarnings($db) {
       // How much is the block reward
       $db_block['reward'] = $reward;
 
-      print_r($block_tx);
-      //$db_block['tx_hash'] = $block_tx['']
+      // Save tx hash
+      $db_block['tx_hash'] = $block_tx['txid'];
 
       $stmt = $db->prepare("SELECT SUM(difficulty) as total_hash FROM shares WHERE valid = :valid AND algo = :coin_id");
       $stmt->execute([
@@ -215,6 +215,23 @@ function updateEarnings($db) {
   $immature_blocks = $stmt->fetchAll(PDO::FETCH_ASSOC);
   foreach($immature_blocks as $db_block) {
     print_r($db_block);
+
+    // Check for the coin details
+    $stmt = $db->prepare("SELECT * FROM coins WHERE id = :coin_id");
+    $stmt->execute([
+      ':coin_id' => $db_block['coin_id']
+    ]);
+
+    $coin_info = $stmt->fetch(PDO::FETCH_OBJ);
+
+    // New Wallet RPC call
+    $remote_check = new WalletRPC($coin_info);
+
+    $block_tx = $remote_check->gettransaction($db_block->txhash);
+
+    print_r($block_tx);
+
+    // update confirmations -> if we hit 100 confirmations -> mature the block and update user balance
   }
 
   // Update user balance
