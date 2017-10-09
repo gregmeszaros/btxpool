@@ -146,6 +146,9 @@ function updateEarnings($db) {
       // How much is the block reward
       $db_block['reward'] = $reward;
 
+      print_r($block_tx);
+      //$db_block['tx_hash'] = $block_tx['']
+
       $stmt = $db->prepare("SELECT SUM(difficulty) as total_hash FROM shares WHERE valid = :valid AND algo = :coin_id");
       $stmt->execute([
         ':coin_id' => minerHelper::miner_getAlgos()[$db_block['coin_id']],
