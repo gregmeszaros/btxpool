@@ -201,6 +201,9 @@ function updateEarnings($db) {
         ':coin_id' => $db_block['coin_id']
       ]);
     }
+
+    // The cron run every minute if more than 1 block is found every minute causing issue so we break after 1 block
+    break;
   }
 
   /////////////////////////////////////////////////
@@ -228,12 +231,20 @@ function updateEarnings($db) {
     // New Wallet RPC call
     $remote_check = new WalletRPC($coin_info);
 
-    if (!empty($db_block->txhash)) {
-      $block_tx = $remote_check->gettransaction($db_block->txhash);
+    if (!empty($db_block['txhash'])) {
+      $block_tx = $remote_check->gettransaction($db_block['txhash']);
       print_r($block_tx);
+
+      // Update block confirmations
+      $stmt = $db->prepare("UPDATE blocks SET confirmations = :confirmations WHERE id = :block_id");
+      $stmt->execute([
+        ':confirmations' => $block_tx['confirmations'],
+        ':block_id' => $db_block['id'],
+      ]);
+
     }
     else {
-      print 'empty tx hash -> orphah block?';
+      print 'empty tx hash -> orphan block?';
     }
     // update confirmations -> if we hit 100 confirmations -> mature the block and update user balance
   }
