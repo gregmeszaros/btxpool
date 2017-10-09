@@ -186,11 +186,12 @@ function updateEarnings($db) {
 
       // When all earnings saved set the block from 'new' to 'immature'
       // So the other script can trigger, calculate number of confirmations, once confirmed update the earnings to mature
-      $stmt = $db->prepare("UPDATE blocks SET category = :category, amount = :amount WHERE id = :block_id");
+      $stmt = $db->prepare("UPDATE blocks SET category = :category, amount = :amount, txhash = :txhash WHERE id = :block_id");
       $stmt->execute([
         ':category' => 'immature',
         ':block_id' => $db_block['id'],
-        ':amount' => $db_block['reward']
+        ':amount' => $db_block['reward'],
+        ':txhash' => $db_block['tx_hash']
       ]);
 
       // Delete shares where we calculated the earnings
@@ -227,10 +228,13 @@ function updateEarnings($db) {
     // New Wallet RPC call
     $remote_check = new WalletRPC($coin_info);
 
-    $block_tx = $remote_check->gettransaction($db_block->txhash);
-
-    print_r($block_tx);
-
+    if (!empty($db_block->txhash)) {
+      $block_tx = $remote_check->gettransaction($db_block->txhash);
+      print_r($block_tx);
+    }
+    else {
+      print 'empty tx hash -> orphah block?';
+    }
     // update confirmations -> if we hit 100 confirmations -> mature the block and update user balance
   }
 
