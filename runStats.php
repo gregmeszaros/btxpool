@@ -218,8 +218,6 @@ function updateEarnings($db) {
 
   $immature_blocks = $stmt->fetchAll(PDO::FETCH_ASSOC);
   foreach($immature_blocks as $db_block) {
-    print_r($db_block);
-
     // Check for the coin details
     $stmt = $db->prepare("SELECT * FROM coins WHERE id = :coin_id");
     $stmt->execute([
@@ -233,26 +231,37 @@ function updateEarnings($db) {
 
     if (!empty($db_block['txhash'])) {
       $block_tx = $remote_check->gettransaction($db_block['txhash']);
-      print_r($block_tx);
+      print 'Confirmations: ' . $block_tx['confirmations'] . "\n";
 
+      // Check if the block is confirmed
+      if ($block_tx['confirmations'] > 100) {
+        // mature the block
+        $category = 'mature';
+
+        // @TODO -> shall we update earnings (status) here and update user balances?
+        // @TODO ????
+        // Update user balance
+        // Mature balance - user->balance - add mature earnings
+
+        // When mature balance > 0.5 do a payout and deduct user balance
+        // Total paid (sum(payouts)
+      }
+      else {
+        $category = 'immature';
+      }
       // Update block confirmations
-      $stmt = $db->prepare("UPDATE blocks SET confirmations = :confirmations WHERE id = :block_id");
+      $stmt = $db->prepare("UPDATE blocks SET confirmations = :confirmations, category = :category WHERE id = :block_id");
       $stmt->execute([
         ':confirmations' => $block_tx['confirmations'],
         ':block_id' => $db_block['id'],
+        ':category' => $category
       ]);
 
     }
     else {
       print 'empty tx hash -> orphan block?';
     }
-    // update confirmations -> if we hit 100 confirmations -> mature the block and update user balance
   }
-
-  // Update user balance
-  // Mature balance - user->balance - add mature earnings
-  // When mature balance > 0.5 do a payout and deduct user balance
-  // Total paid (sum(payouts)
 
   // check orphan blocks?
 
