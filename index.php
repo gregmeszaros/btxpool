@@ -34,6 +34,9 @@ $load_routes = minerHelper::getRoutes();
 // Get workers for miner address
 $workers = minerHelper::getWorkers($conn, $miner_address);
 
+// Check if $_GET['wallet'] is set or we have cookie value with a wallet
+$wallet = minerHelper::checkWallet();
+
 foreach ($workers as $key => $worker) {
   $hashrate = minerHelper::getHashrate($conn, $algo, $worker['version'], $worker['name']);
   $workers[$key]['hashrate'] = minerHelper::Itoa2($hashrate['hashrate']) . 'h/s';
@@ -47,7 +50,8 @@ if (!empty($load_routes[$page]['template'])) {
     'workers' => $workers,
     'routes' => $load_routes,
     'current_route' => $page,
-    'load_charts' => $load_routes[$page]['load_charts'] ?? FALSE
+    'load_charts' => $load_routes[$page]['load_charts'] ?? FALSE,
+    'wallet' => $wallet
   ]);
 }
 else {

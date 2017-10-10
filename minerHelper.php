@@ -159,6 +159,17 @@ AND workerid IN (SELECT id FROM workers WHERE algo=:algo and version=:version)")
   }
 
   /**
+   * Checks if we have active wallet
+   */
+  public static function checkWallet() {
+    if (!empty($_GET['wallet'])) {
+      return $_GET['wallet'];
+    }
+
+    return FALSE;
+  }
+
+  /**
    * Define pool fee
    * @param float $fee (percentage)
    * @return float

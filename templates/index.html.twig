@@ -27,7 +27,62 @@
     </div>
 
     <div class="intro">
-        <div id="container" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+
+        <h2>Search Wallet</h2>
+        <form name="wallet-check" action="index.php?page=index" class="wallet-input">
+            <ul class="input-list wallet-input clearfix">
+                <li class="li-inline">
+                    <input placeholder="ie. 1NgZ7MjHmVUuuy2Y4UMxDaVm4Me3TcNMpt" name="wallet" type="text" size="40">
+                </li>
+                <li class="li-inline">
+                    <input value="Submit" class="focus wallet-submit" type="submit">
+                </li>
+            </ul>
+        </form>
+
+    </div>
+
+    {% if wallet %}
+        <div class="intro">
+            <div class="wallet-info-label">Your wallet address is set to: <strong> {{ wallet }} </strong></div>
+            <div class="intro-info">
+                <strong>Immature Balance: <span class="label label-btx">0.223 BTX</span> </strong>
+                <div class="help-text">Earnings awaiting blocks to mature.</div>
+            </div>
+
+            <div class="intro-info">
+                <strong>Pending Balance: <span class="label label-btx">0.48 BTX</span> </strong>
+                <div class="help-text">Matured earnings awaiting payout.</div>
+            </div>
+
+            <div class="intro-info">
+                <strong>Total Paid: <span class="label label-btx">11 BTX</span> </strong>
+                <div class="help-text">Total paid for the wallet address.</div>
+            </div>
+
+            <div class="tab">
+                <button class="tablinks" onclick="openTab(event, 'workers')" id="defaultOpen">Workers (0)</button>
+                <button class="tablinks" onclick="openTab(event, 'payouts')">Payouts</button>
+            </div>
+
+            <div id="workers" class="tabcontent">
+                <div>workers graph</div>
+                <div>workers graph</div>
+                <div>workers graph</div>
+            </div>
+
+            <div id="payouts" class="tabcontent">
+                <div>Time: TX ID: Amount:</div>
+                <div>pay1 tx</div>
+                <div>pay2 tx</div>
+            </div>
+
+        </div>
+
+    {% endif %}
+
+    <div class="intro">
+        <div id="container" style="min-width: 310px; height: 300px; margin: 0 auto"></div>
     </div>
 
     <div class="intro">

@@ -46,5 +46,7 @@
     </a>
     {% endfor %}
 
-    <div class="button download" data-link="#"><span><label>Your hashrate: </label> 35 Mh/s </span></div>
+    {% if wallet %}
+        <div class="button download" data-link="#"><span><label>Your hashrate: </label> 35 Mh/s </span></div>
+    {% endif %}
 </div>
