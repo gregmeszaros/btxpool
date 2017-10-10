@@ -7,7 +7,7 @@
             Total pool hashrate:
             {% for miner in miners %}
                 <div>Miner: Hashrate: (5 min) / (1h) / (24h)</div>
-                <div>
+                <div class="wallet-info-label">
                     <a href="index.php?page=index&wallet={{ miner.username }}"> {{ miner.username }} </a>
                 </div>
             {% endfor %}
