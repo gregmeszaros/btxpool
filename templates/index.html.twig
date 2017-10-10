@@ -4,25 +4,27 @@
 
     <div class="intro">
         <h1 class="header-h1">BTXpool - Bitcore (BTX) mining pool</h1>
-        <div class="intro-info">
-            <strong>Miners online: <span class="label label-btx">1222</span> </strong>
-            <div class="help-text">Data last refreshed: 20:06.</div>
-        </div>
-        <div class="intro-info">
-            <strong>Min. payout threshold: <span class="label label-btx">1 BTX</span> </strong>
-            <div class="help-text">Payouts are continuous throughout the day.</div>
-        </div>
-        <div class="intro-info">
-            <strong>Pool hashrate: <span class="label label-btx">224.70 GH</span> </strong>
-            <div class="help-text">Data last refreshed: 20:06.</div>
-        </div>
-        <div class="intro-info">
-            <strong>Reward structure: <span class="label label-btx">Proportional</span> </strong>
-            <div class="help-text">Proportional reward based on the number of submitted "valid" shares and difficulty.</div>
-        </div>
-        <div class="intro-info">
-            <strong>Pool fee: <span class="label label-btx">1%</span> </strong>
-            <div class="help-text">No transaction fees!</div>
+        <div class="minercontent">
+            <div class="intro-info">
+                <strong>Miners online: <span class="label label-btx">1222</span> </strong>
+                <div class="help-text">Data last refreshed: 20:06.</div>
+            </div>
+            <div class="intro-info">
+                <strong>Min. payout threshold: <span class="label label-btx">1 BTX</span> </strong>
+                <div class="help-text">Payouts are continuous throughout the day.</div>
+            </div>
+            <div class="intro-info">
+                <strong>Pool hashrate: <span class="label label-btx">224.70 GH</span> </strong>
+                <div class="help-text">Data last refreshed: 20:06.</div>
+            </div>
+            <div class="intro-info">
+                <strong>Reward structure: <span class="label label-btx">Proportional</span> </strong>
+                <div class="help-text">Proportional reward based on the number of submitted "valid" shares and difficulty.</div>
+            </div>
+            <div class="intro-info">
+                <strong>Pool fee: <span class="label label-btx">1%</span> </strong>
+                <div class="help-text">No transaction fees!</div>
+            </div>
         </div>
     </div>
 
@@ -44,37 +46,43 @@
 
     {% if wallet %}
         <div class="intro">
-            <div class="wallet-info-label">Your wallet address is set to: <strong> {{ wallet }} </strong></div>
-            <div class="intro-info">
-                <strong>Immature Balance: <span class="label label-btx">0.223 BTX</span> </strong>
-                <div class="help-text">Earnings awaiting blocks to mature.</div>
-            </div>
+            <div class="minercontent">
+                <div class="wallet-info-label">Your wallet address is set to: <strong> {{ wallet }} </strong></div>
+                <div class="intro-info">
+                    <strong>Immature Balance: <span class="label label-btx">0.223 BTX</span> </strong>
+                    <div class="help-text">Earnings awaiting blocks to mature.</div>
+                </div>
 
-            <div class="intro-info">
-                <strong>Pending Balance: <span class="label label-btx">0.48 BTX</span> </strong>
-                <div class="help-text">Matured earnings awaiting payout.</div>
-            </div>
+                <div class="intro-info">
+                    <strong>Pending Balance: <span class="label label-btx">0.48 BTX</span> </strong>
+                    <div class="help-text">Matured earnings awaiting payout.</div>
+                </div>
 
-            <div class="intro-info">
-                <strong>Total Paid: <span class="label label-btx">11 BTX</span> </strong>
-                <div class="help-text">Total paid for the wallet address.</div>
-            </div>
+                <div class="intro-info">
+                    <strong>Total Paid: <span class="label label-btx">11 BTX</span> </strong>
+                    <div class="help-text">Total paid for the wallet address.</div>
+                </div>
 
-            <div class="tab">
-                <button class="tablinks" onclick="openTab(event, 'workers')" id="defaultOpen">Workers (0)</button>
-                <button class="tablinks" onclick="openTab(event, 'payouts')">Payouts</button>
-            </div>
+                <div class="tab">
+                    <button class="tablinks" onclick="openTab(event, 'workers')" id="defaultOpen">Workers (0)</button>
+                    <button class="tablinks" onclick="openTab(event, 'payouts')">Payouts</button>
+                </div>
 
-            <div id="workers" class="tabcontent">
-                <div>workers graph</div>
-                <div>workers graph</div>
-                <div>workers graph</div>
-            </div>
+                <div id="workers" class="tabcontent">
+                    {% for worker in workers %}
+                        <div>
+                            <span>{{ worker.version }}: </span>
+                            <span>{{ worker.hashrate }}</span>
+                        </div>
+                    {% endfor %}
+                </div>
 
-            <div id="payouts" class="tabcontent">
-                <div>Time: TX ID: Amount:</div>
-                <div>pay1 tx</div>
-                <div>pay2 tx</div>
+                <div id="payouts" class="tabcontent">
+                    <div>Time: TX ID: Amount:</div>
+                    <div>pay1 tx</div>
+                    <div>pay2 tx</div>
+                </div>
+
             </div>
 
         </div>

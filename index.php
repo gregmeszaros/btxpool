@@ -13,10 +13,14 @@ $conn = include_once('config.php');
 include_once('minerHelper.php');
 
 // What page/algo we are on
-$algo = 'bitcore';
+$coin_id = 1425;
 
-// Gets data for specific miner address
-$miner_address = $_GET['address'] ?? "";
+// Check if $_GET['wallet'] is set or we have cookie value with a wallet
+$wallet = minerHelper::checkWallet();
+
+$data = [];
+$data['miner_address'] = $wallet;
+$data['coin_id'] = $coin_id;
 
 // Get the current page
 $page = $_GET['page'] ?? "index";
@@ -31,28 +35,17 @@ $twig = new Twig_Environment($loader, [
 // Load available routes
 $load_routes = minerHelper::getRoutes();
 
-// Get workers for miner address
-$workers = minerHelper::getWorkers($conn, $miner_address);
-
-// Check if $_GET['wallet'] is set or we have cookie value with a wallet
-$wallet = minerHelper::checkWallet();
-
-foreach ($workers as $key => $worker) {
-  $hashrate = minerHelper::getHashrate($conn, $algo, $worker['version'], $worker['name']);
-  $workers[$key]['hashrate'] = minerHelper::Itoa2($hashrate['hashrate']) . 'h/s';
-}
-
 // If template found, load otherwise 404
 if (!empty($load_routes[$page]['template'])) {
   // Return TWIG template
-  print $twig->render($load_routes[$page]['template'], [
-    'name' => 'Greg',
-    'workers' => $workers,
+  $default_variables = [
     'routes' => $load_routes,
     'current_route' => $page,
     'load_charts' => $load_routes[$page]['load_charts'] ?? FALSE,
     'wallet' => $wallet
-  ]);
+  ];
+
+  print $twig->render($load_routes[$page]['template'], array_merge($default_variables, minerHelper::_templateVariables($conn, $page, $data)));
 }
 else {
   header("HTTP/1.0 404 Not Found");

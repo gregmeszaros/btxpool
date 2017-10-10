@@ -346,7 +346,6 @@ h2 {
 
 .header-h1 {
     float: left;
-    margin-top: 0px;
     width: 100%;
 }
 
@@ -469,6 +468,12 @@ div.tab button.active {
 /* Style the tab content */
 .tabcontent {
     display: none;
+    padding: 6px 12px;
+    border: solid 2px #c9c9c9;
+    background-color: #eeeeee;
+}
+
+.minercontent {
     padding: 6px 12px;
     border: solid 2px #c9c9c9;
     background-color: #eeeeee;

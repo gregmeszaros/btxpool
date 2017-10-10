@@ -56,7 +56,7 @@ class minerHelper {
     return $s;
   }
 
-  public static function miner_hashrate_constant($algo=null) {
+  public static function miner_hashrate_constant($algo = null) {
     return pow(2, 42);		// 0x400 00000000
   }
 
@@ -91,17 +91,38 @@ class minerHelper {
   }
 
   /**
+   * Load list of miners (cache the query for 1 minute)
+   * @param $db
+   * @param $coin_id
+   * @return mixed
+   */
+  public static function getMiners($db, $coin_id) {
+    $stmt = $db->prepare("SELECT DISTINCT username FROM accounts ac INNER JOIN workers w ON ac.id = w.userid WHERE ac.coinid = :coin_id");
+    $stmt->execute([
+      ':coin_id' => $coin_id,
+    ]);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+  }
+
+  /**
    * Returns active workers for the miner address
    * @param Database connection
    * @param $miner_address
    * @return array
    */
   public static function getWorkers($db, $miner_address = "") {
-    $stmt = $db->query("SELECT * FROM workers");
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    if (!empty($miner_address)) {
+      $stmt = $db->prepare("SELECT * FROM workers where name = :miner_address");
+      $stmt->execute([
+        ':miner_address' => $miner_address
+      ]);
+      return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    return [];
   }
 
-  public static function getHashrate($db, $algo, $version, $miner_address) {
+  public static function getHashrate($db, $coin_id, $version, $miner_address) {
+    $algo = self::miner_getAlgos()[$coin_id];
     $target = self::miner_hashrate_constant($algo);
     $interval = self::miner_hashrate_step();
     $delay = time()-$interval;
@@ -217,6 +238,38 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
     ]);
 
     return TRUE;
+  }
+
+  /**
+   * Prepare some route specific variables
+   * @param $db
+   * @param null $route
+   * @param $data
+   * @return array
+   */
+  public static function _templateVariables($db, $route = null, $data) {
+    switch ($route) {
+      case 'index':
+        // Get workers for miner address
+        $workers = self::getWorkers($db, $data['miner_address']);
+        foreach ($workers as $key => $worker) {
+          $hashrate = self::getHashrate($db, $data['coin_id'], $worker['version'], $worker['name']);
+          $workers[$key]['hashrate'] = self::Itoa2($hashrate['hashrate']) . 'h/s';
+        }
+
+        return [
+          'workers' => $workers
+        ];
+        break;
+      case 'miners':
+        // Load all miners
+        return [
+          'miners' => minerHelper::getMiners($db, $data['coin_id'])
+        ];
+        break;
+    }
+
+    return [];
   }
 
 }

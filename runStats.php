@@ -59,6 +59,8 @@ function updatePoolHashrate($db) {
 
   }
 
+  // @TODO -> Store user hashstats too and earnings too??
+
   print minerHelper::Itoa2($pool_rate['hashrate']) . 'h/s' . "\n";
 
   /**

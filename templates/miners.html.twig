@@ -3,12 +3,15 @@
 <div id="main">
     <div class="intro">
         <h1 class="header-h1">Miners</h1>
-        {% for worker in workers %}
-            <div>
-                <span>{{ worker.version }}: </span>
-                <span>{{ worker.hashrate }}</span>
-            </div>
-        {% endfor %}
+        <div class="minercontent">
+            Total pool hashrate:
+            {% for miner in miners %}
+                <div>Miner: Hashrate: (5 min) / (1h) / (24h)</div>
+                <div>
+                    <a href="index.php?page=index&wallet={{ miner.username }}"> {{ miner.username }} </a>
+                </div>
+            {% endfor %}
+        </div>
     </div>
 </div>
 
