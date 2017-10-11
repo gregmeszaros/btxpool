@@ -17,9 +17,7 @@
                 {% for miner in miners %}
                 <tr>
                     <td>
-                        <div class="wallet-info-label">
-                            <a href="index.php?page=index&wallet={{ miner.username }}"> {{ miner.username }} </a>
-                        </div>
+                        <a href="index.php?page=index&wallet={{ miner.username }}"> {{ miner.username }} </a>
                     </td>
                     <td>{{ showFriendlyHash(attribute(hahsrates_5_min, miner.userid).hashrate) }}</td>
                     <td>long average</td>
