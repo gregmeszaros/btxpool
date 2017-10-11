@@ -60,8 +60,16 @@ class minerHelper {
     return pow(2, 42);		// 0x400 00000000
   }
 
-  public static function miner_hashrate_step() {
-    return 300;
+  /**
+   *
+   * 300 -> 5 min
+   * 3600 -> 60 x 60 (1h)
+   * 86400 -> 60 x 60 x 24 (1 day)
+   *
+   * @return int
+   */
+  public static function miner_hashrate_step($step = 300) {
+    return $step;
   }
 
   /**
@@ -172,36 +180,63 @@ AND workerid IN (SELECT id FROM workers WHERE algo=:algo AND version=:version AN
   }
 
   /**
+   * Total hashrate stats for specific coin
+   * @param $algo
+   */
+  public static function getPoolHashrateStats($db, $algo, $step = 300, $redis = FALSE) {
+    $interval = self::miner_hashrate_step($step);
+    $delay = time()-$interval;
+    $data = [];
+
+    // If we have redis connection try to load cached data first
+    if (!empty($redis) && is_object($redis)) {
+      $total_hashrate = $redis->get('total_pool_hashrate_' . $step);
+
+      // We have the data cached
+      if (!empty($total_hashrate)) {
+        $data['hashrate'] = $redis->get('total_pool_hashrate_' . $step);
+        print '<!–- total_pool_hashrate - return from redis –>';
+        return $data;
+      }
+    }
+
+    $stmt = $db->prepare("SELECT avg(hashrate) AS hashrate FROM hashstats WHERE time > :delay AND algo=:algo");
+    $stmt->execute([
+      ':delay' => $delay,
+      ':algo' => $algo
+    ]);
+
+    if (!empty($redis) && is_object($redis)) {
+      // We didn't have cached value let's cache it now
+      $data = $stmt->fetch(PDO::FETCH_ASSOC);
+
+      // Cache for 5mins
+      $redis->set('total_pool_hashrate_' . $step, $data['hashrate'], 300);
+    }
+
+    print '<!–- total_pool_hashrate - return from mysql –>';
+    // No cache just pure sql
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+  }
+
+  /**
    * Total hashrate for specific coin and user
    * @param $algo
    */
-  public static function getUserPoolHashrate($db, $algo, $user = null) {
+  public static function getUserPoolHashrate($db, $algo) {
     $target = self::miner_hashrate_constant($algo);
     $interval = self::miner_hashrate_step();
     $delay = time()-$interval;
 
-    if (!empty($user)) {
-      $stmt = $db->prepare("SELECT sum(difficulty) * :target / :interval / 1000 AS hashrate FROM shares WHERE valid AND time > :delay AND userid = :user_id AND algo=:algo");
-      $stmt->execute([
-        ':target' => $target,
-        ':interval' => $interval,
-        ':delay' => $delay,
-        ':user_id' => $user['id'],
-        ':algo' => $algo
-      ]);
-      return $stmt->fetch(PDO::FETCH_ASSOC);
-    }
-    else {
-      // Return results for all users grouped by accounts
-      $stmt = $db->prepare("SELECT userid, userid, sum(difficulty) * :target / :interval / 1000 AS hashrate FROM shares WHERE valid AND time > :delay AND algo=:algo GROUP BY userid");
-      $stmt->execute([
-        ':target' => $target,
-        ':interval' => $interval,
-        ':delay' => $delay,
-        ':algo' => $algo
-      ]);
-      return array_map('reset', $stmt->fetchAll(PDO::FETCH_GROUP|PDO::FETCH_ASSOC));
-    }
+    // Return results for all users grouped by accounts
+    $stmt = $db->prepare("SELECT userid, userid, sum(difficulty) * :target / :interval / 1000 AS hashrate FROM shares WHERE valid AND time > :delay AND algo=:algo GROUP BY userid");
+    $stmt->execute([
+      ':target' => $target,
+      ':interval' => $interval,
+      ':delay' => $delay,
+      ':algo' => $algo
+    ]);
+    return array_map('reset', $stmt->fetchAll(PDO::FETCH_GROUP|PDO::FETCH_ASSOC));
   }
 
   // Function to get the client IP address

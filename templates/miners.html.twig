@@ -4,7 +4,7 @@
     <div class="intro">
         <h1 class="header-h1">Miners</h1>
         <div class="minercontent">
-            Total pool hashrate:
+            Total pool hashrate: {{ showFriendlyHash(total_pool_hashrate.hashrate) }}
             {% for miner in miners %}
                 <div>Miner: Hashrate: (5 min) / (1h) / (24h)</div>
                 <div class="wallet-info-label">
