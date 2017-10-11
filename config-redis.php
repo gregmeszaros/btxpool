@@ -7,6 +7,8 @@ if (class_exists('Redis')) {
     if (!$connected) {
       return "Can't connect to REDIS";
     }
+    // Successful connection
+    return $redis;
   } catch (Exception $e) {
     return $e->getMessage();
   }
