@@ -365,7 +365,7 @@ h2 {
     padding-left: 5px;
     background-color: #eeeeee;
     margin: 10px;
-    font-size: 3.2vmin
+    font-size: 3vmin
 }
 
 .wallet-info-label {
@@ -477,4 +477,40 @@ div.tab button.active {
     padding: 6px 12px;
     border: solid 2px #c9c9c9;
     background-color: #eeeeee;
+}
+
+/**
+ * Responsive tables
+ */
+table.table { width: 100%; }
+
+.table th, .table td {
+    text-align: left;
+    padding: 0.25em;
+}
+
+.table tr {
+    border-bottom: 1px solid #DDD;
+}
+
+@media screen and (max-width: 800px) {
+    tr {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        margin: 0.5em 0;
+        border: 1px solid rgba(3,3,3,0.2);
+    }
+    td, th {
+        min-width: 150px;
+        flex: 1 1 150px;
+        border: 0.5px solid rgba(3,3,3,0.2);
+    }
+    th:nth-child(1) {
+        min-width: 300px;
+    }
+    td:nth-child(1) {
+        min-width: 300px;
+        font-size: 1.9vmax;
+    }
 }

@@ -4,14 +4,30 @@
     <div class="intro">
         <h1 class="header-h1">Miners</h1>
         <div class="minercontent">
+
             Total pool hashrate: {{ showFriendlyHash(total_pool_hashrate.hashrate) }}
-            {% for miner in miners %}
-                <div>Miner: Hashrate: (5 min) / (1h) / (24h)</div>
-                <div class="wallet-info-label">
-                    <a href="index.php?page=index&wallet={{ miner.username }}"> {{ miner.username }} </a>
-                    {{ showFriendlyHash(attribute(hahsrates_5_min, miner.userid).hashrate) }}
-                </div>
-            {% endfor %}
+
+            <table class="table">
+                <tr>
+                    <th>Miner</th>
+                    <th>Hashrate (last 5 minutes, short average)</th>
+                    <th>Hashrate (last 3 hours, more accurate)</th>
+                </tr>
+
+                {% for miner in miners %}
+                <tr>
+                    <td>
+                        <div class="wallet-info-label">
+                            <a href="index.php?page=index&wallet={{ miner.username }}"> {{ miner.username }} </a>
+                        </div>
+                    </td>
+                    <td>{{ showFriendlyHash(attribute(hahsrates_5_min, miner.userid).hashrate) }}</td>
+                    <td>long average</td>
+                </tr>
+                {% endfor %}
+
+            </table>
+
         </div>
     </div>
 </div>
