@@ -369,7 +369,7 @@ h2 {
 }
 
 .wallet-info-label {
-    font-size: 2.2vmin;
+    /*font-size: 2.2vmin;*/
     margin-bottom: 10px;
 }
 
@@ -507,10 +507,17 @@ table.table { width: 100%; }
         border: 0.5px solid rgba(3,3,3,0.2);
     }
     th:nth-child(1) {
-        min-width: 300px;
+        min-width: 280px;
     }
     td:nth-child(1) {
-        min-width: 300px;
-        font-size: 1.9vmax;
+        min-width: 280px;
+        font-size: calc(1vw + 1vh);
+    }
+}
+
+@media screen and (max-width: 500px) {
+    td:nth-child(1) {
+        min-width: 280px;
+        font-size: calc(2vw + 1vh);
     }
 }
