@@ -32,6 +32,14 @@ $twig = new Twig_Environment($loader, [
   'auto_reload' => true // Should be turned off on production
 ]);
 
+// Create some custom functions to twig
+$function = new Twig_SimpleFunction('showFriendlyHash', function ($hashrate) {
+  return minerHelper::Itoa2($hashrate) . 'h/s';
+});
+
+// Add the function
+$twig->addFunction($function);
+
 // Load available routes
 $load_routes = minerHelper::getRoutes();
 

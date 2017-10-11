@@ -80,11 +80,22 @@ class minerHelper {
    * @param $db
    * @param $account_id
    */
-  public static function getAccount($db, $account_id = null) {
+  public static function getAccount($db, $account_id = null, $miner_address = null) {
+
+    // Return account for specific user ID
     if (!empty($account_id)) {
       $stmt = $db->prepare("SELECT * FROM accounts WHERE id=:account_id");
       $stmt->execute([
         ':account_id' => (int) $account_id
+      ]);
+      return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    // Return account for miner address
+    if (!empty($miner_address)) {
+      $stmt = $db->prepare("SELECT * FROM accounts WHERE username=:miner_address");
+      $stmt->execute([
+        ':miner_address' => $miner_address
       ]);
       return $stmt->fetch(PDO::FETCH_ASSOC);
     }
@@ -97,7 +108,7 @@ class minerHelper {
    * @return mixed
    */
   public static function getMiners($db, $coin_id) {
-    $stmt = $db->prepare("SELECT DISTINCT username FROM accounts ac INNER JOIN workers w ON ac.id = w.userid WHERE ac.coinid = :coin_id");
+    $stmt = $db->prepare("SELECT DISTINCT userid, username FROM accounts ac INNER JOIN workers w ON ac.id = w.userid WHERE ac.coinid = :coin_id");
     $stmt->execute([
       ':coin_id' => $coin_id,
     ]);
@@ -128,13 +139,14 @@ class minerHelper {
     $delay = time()-$interval;
 
     $stmt = $db->prepare("SELECT sum(difficulty) * :target / :interval / 1000 AS hashrate FROM shares WHERE valid AND time > :delay
-AND workerid IN (SELECT id FROM workers WHERE algo=:algo and version=:version)");
+AND workerid IN (SELECT id FROM workers WHERE algo=:algo AND version=:version AND name = :miner_address)");
     $stmt->execute([
       ':target' => $target,
       ':interval' => $interval,
       ':delay' => $delay,
       ':algo' => $algo,
-      ':version' => $version
+      ':version' => $version,
+      'miner_address' => $miner_address
     ]);
     return $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -157,6 +169,39 @@ AND workerid IN (SELECT id FROM workers WHERE algo=:algo and version=:version)")
       ':algo' => $algo
     ]);
     return $stmt->fetch(PDO::FETCH_ASSOC);
+  }
+
+  /**
+   * Total hashrate for specific coin and user
+   * @param $algo
+   */
+  public static function getUserPoolHashrate($db, $algo, $user = null) {
+    $target = self::miner_hashrate_constant($algo);
+    $interval = self::miner_hashrate_step();
+    $delay = time()-$interval;
+
+    if (!empty($user)) {
+      $stmt = $db->prepare("SELECT sum(difficulty) * :target / :interval / 1000 AS hashrate FROM shares WHERE valid AND time > :delay AND userid = :user_id AND algo=:algo");
+      $stmt->execute([
+        ':target' => $target,
+        ':interval' => $interval,
+        ':delay' => $delay,
+        ':user_id' => $user['id'],
+        ':algo' => $algo
+      ]);
+      return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+    else {
+      // Return results for all users grouped by accounts
+      $stmt = $db->prepare("SELECT userid, userid, sum(difficulty) * :target / :interval / 1000 AS hashrate FROM shares WHERE valid AND time > :delay AND algo=:algo GROUP BY userid");
+      $stmt->execute([
+        ':target' => $target,
+        ':interval' => $interval,
+        ':delay' => $delay,
+        ':algo' => $algo
+      ]);
+      return array_map('reset', $stmt->fetchAll(PDO::FETCH_GROUP|PDO::FETCH_ASSOC));
+    }
   }
 
   // Function to get the client IP address
@@ -253,7 +298,7 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
         // Get workers for miner address
         $workers = self::getWorkers($db, $data['miner_address']);
         foreach ($workers as $key => $worker) {
-          $hashrate = self::getHashrate($db, $data['coin_id'], $worker['version'], $worker['name']);
+          $hashrate = self::getHashrate($db, $data['coin_id'], $worker['version'], $worker['name'], $data['miner_address']);
           $workers[$key]['hashrate'] = self::Itoa2($hashrate['hashrate']) . 'h/s';
         }
 
@@ -262,9 +307,12 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
         ];
         break;
       case 'miners':
+
         // Load all miners
         return [
-          'miners' => minerHelper::getMiners($db, $data['coin_id'])
+          'miners' => minerHelper::getMiners($db, $data['coin_id']),
+          // @ TODO -> should use averages from hashuser table instead (and cache it for 5 mins)
+          'hahsrates_5_min' => minerHelper::getUserPoolHashrate($db, minerHelper::miner_getAlgos()[$data['coin_id']])
         ];
         break;
     }

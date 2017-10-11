@@ -42,13 +42,13 @@ function updatePoolHashrate($db) {
   $stmt->execute();
 
   //
-  // Long term stats
+  // Long term stats (pool and invidiual users)
   //
   $tm = floor(time() / 60 / 60) * 60 * 60;
   foreach(minerHelper::miner_getAlgos() as $algo) {
     $pool_rate = minerHelper::getPoolHashrate($db, $algo);
 
-    // Insert pool hashrate stats
+    // Insert total pool hashrate stats
     $stmt = $db->prepare("INSERT INTO hashstats(time, hashrate, earnings, algo) VALUES(:time, :hashrate, :earnings, :algo)");
     $stmt->execute([
       ':time' => $t,
@@ -57,9 +57,22 @@ function updatePoolHashrate($db) {
       ':algo' => $algo
     ]);
 
+    // Individual user stats
+    $user_hashstats = minerHelper::getUserPoolHashrate($db, $algo);
+    foreach ($user_hashstats as $user_hash_data) {
+      $stmt = $db->prepare("INSERT INTO hashuser(userid, time, hashrate, hashrate_bad, algo) VALUES(:userid, :time, :hashrate, :hashrate_bad, :algo)");
+      $stmt->execute([
+        ':userid' => $user_hash_data['userid'],
+        ':time' => $t,
+        ':hashrate' => $user_hash_data['hashrate'],
+        ':hashrate_bad' => 0,
+        ':algo' => $algo
+      ]);
+    }
+
   }
 
-  // @TODO -> Store user hashstats too and earnings too??
+  // @TODO -> Store pool and user earnings too??
 
   print minerHelper::Itoa2($pool_rate['hashrate']) . 'h/s' . "\n";
 
