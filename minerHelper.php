@@ -186,15 +186,15 @@ AND workerid IN (SELECT id FROM workers WHERE algo=:algo AND version=:version AN
   public static function getPoolHashrateStats($db, $algo, $step = 300, $redis = FALSE) {
     $interval = self::miner_hashrate_step($step);
     $delay = time()-$interval;
-    $data = [];
 
     // If we have redis connection try to load cached data first
     if (!empty($redis) && is_object($redis)) {
+      $data = [];
       $total_hashrate = $redis->get('total_pool_hashrate_' . $step);
 
       // We have the data cached
       if (!empty($total_hashrate)) {
-        $data['hashrate'] = $redis->get('total_pool_hashrate_' . $step);
+        $data['hashrate'] = $total_hashrate;
         print '<!–- total_pool_hashrate - return from redis –>';
         return $data;
       }
@@ -207,6 +207,7 @@ AND workerid IN (SELECT id FROM workers WHERE algo=:algo AND version=:version AN
     ]);
 
     if (!empty($redis) && is_object($redis)) {
+      $data = [];
       // We didn't have cached value let's cache it now
       $data = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -216,7 +217,7 @@ AND workerid IN (SELECT id FROM workers WHERE algo=:algo AND version=:version AN
 
     print '<!–- total_pool_hashrate - return from mysql –>';
     // No cache just pure sql
-    return $stmt->fetch(PDO::FETCH_ASSOC);
+    return $data ?? $stmt->fetch(PDO::FETCH_ASSOC);
   }
 
   /**
