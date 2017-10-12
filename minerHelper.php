@@ -25,6 +25,12 @@ class minerHelper {
         'url' => $base_route . 'miners',
         'template' => 'miners.html.twig',
       ],
+      'blocks' => [
+        'id' => 'cubes',
+        'label' => 'Blocks',
+        'url' => $base_route . 'blocks',
+        'template' => 'blocks.html.twig',
+      ],
       'explorer' => [
         'id' => 'search',
         'label' => 'Blockchain',
@@ -345,6 +351,15 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
       case 'miners':
 
         // Load all miners
+        return [
+          'miners' => minerHelper::getMiners($db, $data['coin_id']),
+          // @ TODO -> should use averages from hashuser table instead (and cache it for 5 mins)
+          'hahsrates_5_min' => minerHelper::getUserPoolHashrate($db, minerHelper::miner_getAlgos()[$data['coin_id']])
+        ];
+        break;
+      case 'blocks':
+
+        // Load last 30 blocks
         return [
           'miners' => minerHelper::getMiners($db, $data['coin_id']),
           // @ TODO -> should use averages from hashuser table instead (and cache it for 5 mins)
