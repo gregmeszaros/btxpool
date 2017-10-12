@@ -5,22 +5,20 @@
         <h1 class="header-h1">Last 30 Blocks</h1>
         <div class="minercontent">
 
-            Last 30 blocks mined by this pool, if you logged in with your wallet, you can see your contribution for each block.
+            Last 30 blocks mined by this pool, if you logged in with your wallet, you can see your earnings for each block.
 
             <table class="table">
                 <tr>
-                    <th>Miner</th>
-                    <th>Hashrate (last 5 minutes, short average)</th>
-                    <th>Hashrate (last 3 hours, more accurate)</th>
+                    <th>Block number</th>
+                    <th>Block reward</th>
+                    <th>Time found</th>
                 </tr>
 
-                {% for miner in miners %}
+                {% for block in blocks %}
                     <tr>
-                        <td>
-                            <a href="index.php?page=index&wallet={{ miner.username }}"> {{ miner.username }} </a>
-                        </td>
-                        <td>{{ showFriendlyHash(attribute(hahsrates_5_min, miner.userid).hashrate) }}</td>
-                        <td>long average</td>
+                        <td> {{ block.height }} </td>
+                        <td> {{ block.amount }} </td>
+                        <td> {{ block.time }}</td>
                     </tr>
                 {% endfor %}
 

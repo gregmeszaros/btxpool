@@ -146,6 +146,23 @@ class minerHelper {
     return [];
   }
 
+  /**
+   * Get the last X number of blocks
+   * @param $db
+   * @param string $miner_address
+   */
+  public static function getBlocks($db, $coin_id, $miner_address = "") {
+    $limit = 30;
+
+    // @TODO -> if we have miner address join with earnings!
+    // @TODO -> cache the call for 2 mins
+    $stmt = $db->prepare("SELECT * FROM blocks WHERE coin_id = :coin_id ORDER BY height DESC LIMIT 0, 30");
+    $stmt->execute([
+      ':coin_id' => $coin_id
+    ]);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+  }
+
   public static function getHashrate($db, $coin_id, $version, $miner_address) {
     $algo = self::miner_getAlgos()[$coin_id];
     $target = self::miner_hashrate_constant($algo);
@@ -361,9 +378,7 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
 
         // Load last 30 blocks
         return [
-          'miners' => minerHelper::getMiners($db, $data['coin_id']),
-          // @ TODO -> should use averages from hashuser table instead (and cache it for 5 mins)
-          'hahsrates_5_min' => minerHelper::getUserPoolHashrate($db, minerHelper::miner_getAlgos()[$data['coin_id']])
+          'blocks' => minerHelper::getBlocks($db, $data['coin_id'])
         ];
         break;
     }
