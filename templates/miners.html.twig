@@ -1,12 +1,18 @@
 {% include 'header.html' %}
 
 <div id="main">
+
+    <div class="intro">
+        <div class="minercontent">
+            <strong>Total pool hashrate: {{ showFriendlyHash(total_pool_hashrate.hashrate) }}</strong>
+
+            <div id="container-miners-pie" style="min-width: 310px; height: 300px; margin: 0 auto"></div>
+        </div>
+    </div>
+
     <div class="intro">
         <h1 class="header-h1">Miners</h1>
         <div class="minercontent">
-
-            Total pool hashrate: {{ showFriendlyHash(total_pool_hashrate.hashrate) }}
-
             <table class="table">
                 <tr>
                     <th>Miner</th>

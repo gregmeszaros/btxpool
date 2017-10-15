@@ -24,6 +24,7 @@ class minerHelper {
         'label' => 'Miners',
         'url' => $base_route . 'miners',
         'template' => 'miners.html.twig',
+        'load_miner_charts' => TRUE
       ],
       'blocks' => [
         'id' => 'cubes',

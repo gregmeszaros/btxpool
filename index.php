@@ -54,10 +54,11 @@ if (!empty($load_routes[$page]['template'])) {
     'routes' => $load_routes,
     'current_route' => $page,
     'load_charts' => $load_routes[$page]['load_charts'] ?? FALSE,
+    'load_miner_charts' => $load_routes[$page]['load_miner_charts'] ?? FALSE,
     'wallet' => $wallet,
     'total_pool_hashrate' => $total_pool_hashrate
   ];
-  
+
   print $twig->render($load_routes[$page]['template'], array_merge($default_variables, minerHelper::_templateVariables($conn, $page, $data, $redis)));
 }
 else {
