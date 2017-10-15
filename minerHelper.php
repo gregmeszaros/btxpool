@@ -392,7 +392,7 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
    * @param $data
    * @return array
    */
-  public static function _templateVariables($db, $route = null, $data) {
+  public static function _templateVariables($db, $route = null, $data = FALSE, $redis = FALSE) {
     switch ($route) {
       case 'index':
         // Get workers for miner address
@@ -410,8 +410,8 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
         // Load all miners
         return [
           'miners' => minerHelper::getMiners($db, $data['coin_id']),
-          'hahsrates_5_min' => minerHelper::getUserPoolHashrateStats($db, minerHelper::miner_getAlgos()[$data['coin_id']], 300, FALSE),
-          'hashrates_3_hours' => minerHelper::getUserPoolHashrateStats($db, minerHelper::miner_getAlgos()[$data['coin_id']], 60 * 60 * 3, FALSE)
+          'hahsrates_5_min' => minerHelper::getUserPoolHashrateStats($db, minerHelper::miner_getAlgos()[$data['coin_id']], 300, $redis),
+          'hashrates_3_hours' => minerHelper::getUserPoolHashrateStats($db, minerHelper::miner_getAlgos()[$data['coin_id']], 60 * 60 * 3, $redis)
         ];
         break;
       case 'blocks':

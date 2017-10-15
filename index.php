@@ -58,7 +58,7 @@ if (!empty($load_routes[$page]['template'])) {
     'total_pool_hashrate' => $total_pool_hashrate
   ];
 
-  print $twig->render($load_routes[$page]['template'], array_merge($default_variables, minerHelper::_templateVariables($conn, $page, $data)));
+  print $twig->render($load_routes[$page]['template'], array_merge($default_variables, minerHelper::_templateVariables($conn, $page, $data, $redis)));
 }
 else {
   header("HTTP/1.0 404 Not Found");
