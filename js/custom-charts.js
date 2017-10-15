@@ -20,10 +20,10 @@ function openTab(evt, tabName) {
   evt.currentTarget.className += " active";
 }
 
-// Get the CSV and create the chart
-$.getJSON('api.php?type=hashrate&callback=?', function (csv) {
-
-  console.log(csv);
+/**
+ * Plots line graph
+ */
+function plotLineGraph(json, element_id, label) {
   // Load the fonts
   Highcharts.createElement('link', {
     href: 'https://fonts.googleapis.com/css?family=Dosis:400,600',
@@ -93,14 +93,14 @@ $.getJSON('api.php?type=hashrate&callback=?', function (csv) {
 // Apply the theme
   Highcharts.setOptions(Highcharts.theme);
 
-  Highcharts.chart('container', {
+  Highcharts.chart(element_id, {
 
     data: {
-      csv: csv
+      csv: json
     },
 
     title: {
-      text: 'Your hashrate'
+      text: label
     },
 
     subtitle: {
@@ -122,8 +122,8 @@ $.getJSON('api.php?type=hashrate&callback=?', function (csv) {
         y: -3
       },
       labels: {
-        rotation: 290,
-        step: 2 // show every tick regardless of spacing
+        rotation: 0,
+        step: 24 // show every tick regardless of spacing
       },
       //startOnTick: false,
       //endOnTick: true,
@@ -171,7 +171,7 @@ $.getJSON('api.php?type=hashrate&callback=?', function (csv) {
     },
 
     plotOptions: {
-      series: {
+      /**series: {
         cursor: 'pointer',
         point: {
           events: {
@@ -192,23 +192,26 @@ $.getJSON('api.php?type=hashrate&callback=?', function (csv) {
         marker: {
           lineWidth: 1
         }
-      }
+      } - No click event for now... */
     },
 
     series: [{
-      name: 'All visits',
+      name: 'Hashrate',
       lineWidth: 4,
       marker: {
         radius: 4
       }
     }, {
-      name: 'New visitors'
+      name: 'Earnings'
     }]
   });
-});
+}
 
-
+/**
+ * JS clicks for tabs
+ */
 if (document.getElementById('defaultOpen') !== null) {
   // Open workers tab by default
   document.getElementById("defaultOpen").click();
 }
+

@@ -9,6 +9,22 @@
 {% if load_charts %}
     <!-- custom js for charts -->
     <script src="js/custom-charts.js"></script>
+
+    <script>
+      {% if wallet %}
+        // Get the user charts if we have active wallet
+        $.getJSON('api.php?type=user-hashrate&callback=?', function (json) {
+          console.log(json);
+          plotLineGraph(json, 'container-user', 'Your hashrate');
+        });
+      {% endif %}
+
+      // Get total pool hashrate chart
+      $.getJSON('api.php?type=pool-hashrate&callback=?', function (json) {
+        console.log(json);
+        plotLineGraph(json, 'container-pool', 'Pool hashrate');
+      });
+    </script>
 {% endif %}
 
 </body>
