@@ -234,7 +234,7 @@ AND workerid IN (SELECT id FROM workers WHERE algo=:algo AND version=:version AN
       // We didn't have cached value let's cache it now
       $data = $stmt->fetch(PDO::FETCH_ASSOC);
 
-      // Cache for 5mins
+      // Cache for 5 mins
       $redis->set('total_pool_hashrate_' . $step, $data['hashrate'], 300);
     }
 
@@ -271,13 +271,37 @@ AND workerid IN (SELECT id FROM workers WHERE algo=:algo AND version=:version AN
     $interval = self::miner_hashrate_step($step);
     $delay = time()-$interval;
 
+    // If we have redis connection try to load cached data first
+    if (!empty($redis) && is_object($redis)) {
+      $data = [];
+      $total_users_hashrate = json_decode($redis->get('total_users_hashrate_' . $step), TRUE);
+
+      // We have the data cached
+      if (!empty($total_users_hashrate)) {
+        $data['hashrate'] = $total_users_hashrate;
+        print '<!–- total_users_hashrate ' . $step . ' - return from redis –>';
+        return $data;
+      }
+    }
+
     $stmt = $db->prepare("SELECT userid, userid, avg(hashrate) AS hashrate FROM hashuser WHERE time > :delay AND algo=:algo GROUP BY userid");
     $stmt->execute([
       ':delay' => $delay,
       ':algo' => $algo
     ]);
 
-    return array_map('reset', $stmt->fetchAll(PDO::FETCH_GROUP|PDO::FETCH_ASSOC));
+    if (!empty($redis) && is_object($redis)) {
+      $data = [];
+      // We didn't have cached value let's cache it now
+      $data = array_map('reset', $stmt->fetchAll(PDO::FETCH_GROUP|PDO::FETCH_ASSOC));
+
+      // Cache for 5 mins
+      $redis->set('total_users_hashrate_' . $step, json_encode($data['hashrate']), 300);
+    }
+
+    print '<!–- total_users_hashrate ' . $step . ' - return from mysql –>';
+    // No cache just pure sql
+    return $data ?? array_map('reset', $stmt->fetchAll(PDO::FETCH_GROUP|PDO::FETCH_ASSOC));
   }
 
   // Function to get the client IP address
