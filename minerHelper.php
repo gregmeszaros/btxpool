@@ -402,8 +402,12 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
           $workers[$key]['hashrate'] = self::Itoa2($hashrate['hashrate']) . 'h/s';
         }
 
+        // Load the user
+        $user = self::getAccount($db, null, $data['miner_address']);
+
         return [
-          'workers' => $workers
+          'workers' => $workers,
+          'user' => $user
         ];
         break;
       case 'miners':
