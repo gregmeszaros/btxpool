@@ -263,6 +263,23 @@ AND workerid IN (SELECT id FROM workers WHERE algo=:algo AND version=:version AN
     return array_map('reset', $stmt->fetchAll(PDO::FETCH_GROUP|PDO::FETCH_ASSOC));
   }
 
+  /**
+   * Total hashrate for specific coin and user
+   * @param $algo
+   */
+  public static function getUserPoolHashrateStats($db, $algo, $step = 300, $redis = FALSE) {
+    $interval = self::miner_hashrate_step($step);
+    $delay = time()-$interval;
+
+    $stmt = $db->prepare("SELECT userid, userid, avg(hashrate) AS hashrate FROM hashuser WHERE time > :delay AND algo=:algo GROUP BY userid");
+    $stmt->execute([
+      ':delay' => $delay,
+      ':algo' => $algo
+    ]);
+
+    return array_map('reset', $stmt->fetchAll(PDO::FETCH_GROUP|PDO::FETCH_ASSOC));
+  }
+
   // Function to get the client IP address
   public static function getClientIp() {
     $ipaddress = '';
@@ -366,12 +383,11 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
         ];
         break;
       case 'miners':
-
         // Load all miners
         return [
           'miners' => minerHelper::getMiners($db, $data['coin_id']),
-          // @ TODO -> should use averages from hashuser table instead (and cache it for 5 mins)
-          'hahsrates_5_min' => minerHelper::getUserPoolHashrate($db, minerHelper::miner_getAlgos()[$data['coin_id']])
+          'hahsrates_5_min' => minerHelper::getUserPoolHashrateStats($db, minerHelper::miner_getAlgos()[$data['coin_id']], 300, FALSE),
+          'hashrates_3_hours' => minerHelper::getUserPoolHashrateStats($db, minerHelper::miner_getAlgos()[$data['coin_id']], 60 * 60 * 3, FALSE)
         ];
         break;
       case 'blocks':

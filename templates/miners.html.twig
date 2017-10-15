@@ -20,7 +20,7 @@
                         <a href="index.php?page=index&wallet={{ miner.username }}"> {{ miner.username }} </a>
                     </td>
                     <td>{{ showFriendlyHash(attribute(hahsrates_5_min, miner.userid).hashrate) }}</td>
-                    <td>long average</td>
+                    <td>{{ showFriendlyHash(attribute(hashrates_3_hours, miner.userid).hashrate) }}</td>
                 </tr>
                 {% endfor %}
 

@@ -65,6 +65,7 @@
 
                 <div class="tab">
                     <button class="tablinks" onclick="openTab(event, 'workers')" id="defaultOpen">Workers (0)</button>
+                    <button class="tablinks" onclick="openTab(event, 'earnings')">Earnings</button>
                     <button class="tablinks" onclick="openTab(event, 'payouts')">Payouts</button>
                 </div>
 
@@ -75,6 +76,13 @@
                             <span>{{ worker.hashrate }}</span>
                         </div>
                     {% endfor %}
+                </div>
+
+                <div id="earnings" class="tabcontent">
+                    <div>Earnings last 1 hour:</div>
+                    <div>Earnings last 24 hours:</div>
+                    <div>Earnings last 7 days:</div>
+                    <div>Earning estimates based on average hashrate: </div>
                 </div>
 
                 <div id="payouts" class="tabcontent">
