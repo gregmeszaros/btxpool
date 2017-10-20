@@ -11,7 +11,7 @@ include_once('easybitcoin.php');
  * Helper class
  * @var minerHelper.php
  */
-include_once('minerHelper.php');
+include_once('web/minerHelper.php');
 
 $ip_check = minerHelper::getClientIp();
 $sapi_type = php_sapi_name();

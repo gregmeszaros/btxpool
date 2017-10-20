@@ -1,11 +1,11 @@
 <?php
 
 // Add autoload
-require __DIR__ . '/vendor/autoload.php';
+require __DIR__ . '/../vendor/autoload.php';
 
 // Connect mysql
-$conn = include_once('config.php');
-$redis = include_once('config-redis.php');
+$conn = include_once('../config.php');
+$redis = include_once('../config-redis.php');
 
 /**
  * Helper class
@@ -32,7 +32,7 @@ $page = $_GET['page'] ?? "index";
 // Prepare twig
 $loader = new Twig_Loader_Filesystem(__DIR__ . '/templates');
 $twig = new Twig_Environment($loader, [
-  'cache' => __DIR__ . '/twig_cache',
+  'cache' => __DIR__ . '/../twig_cache',
   'auto_reload' => true // Should be turned off on production
 ]);
 
