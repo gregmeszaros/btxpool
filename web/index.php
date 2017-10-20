@@ -4,8 +4,8 @@
 require __DIR__ . '/../vendor/autoload.php';
 
 // Connect mysql
-$conn = include_once('../config.php');
-$redis = include_once('../config-redis.php');
+$conn = include_once(__DIR__ . '/../config.php');
+$redis = include_once(__DIR__ . '/../config-redis.php');
 
 /**
  * Helper class

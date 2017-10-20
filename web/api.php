@@ -5,7 +5,7 @@ $type = $_GET['type'] ?? FALSE;
 $uid = $_GET['uid'] ?? FALSE;
 
 // Connect mysql
-$conn = include_once('../config.php');
+$conn = include_once(__DIR__ . '/../config.php');
 
 /**
  * Convert a multi-dimensional, associative array to CSV data
