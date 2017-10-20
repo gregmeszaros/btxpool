@@ -68,6 +68,15 @@ if (!empty($callback)) {
       $array_data = $stmt->fetchAll(PDO::FETCH_ASSOC);
       $data = str_putcsv($array_data);
       break;
+
+    case 'worker-distribution':
+      // Total miners distribution graph
+      $stmt = $conn->prepare("SELECT version, COUNT(*) as worker_count FROM workers GROUP BY version");
+      $stmt->execute();
+
+      $array_data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+      $data = str_putcsv($array_data);
+      break;
   }
 
   print $_GET['callback'] . '(' . json_encode($data, JSON_UNESCAPED_SLASHES) . ')';

@@ -31,9 +31,11 @@
     <!-- custom js for pie charts -->
     <script src="js/custom-charts-pie.js"></script>
     <script>
-        // Get miner pie chart
-        console.log('pie');
-        plotPieGraph('', 'container-miners-pie', 'Miner distribution');
+        // Get workers pie chart
+        $.getJSON("api.php?type=worker-distribution&callback=?", function (json) {
+            console.log(json);
+            plotPieGraph(json, 'container-miners-pie', 'Workers distribution');
+        });
     </script>
 {% endif %}
 

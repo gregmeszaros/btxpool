@@ -3,6 +3,24 @@
  * Plots charts graph
  */
 function plotPieGraph(data, element_id, label) {
+
+  var pseriesData = [];
+  var data = data.split('\n');
+  //var seriesData = [];
+  $.each(data, function(itemRow, item) {
+    console.log(item);
+    if (itemRow > 0) {
+      var items = item.split(',');
+      if (items.length > 1) {
+        console.log(items);
+        pseriesData.push({name: items[0], y: parseFloat(items[1])});
+      }
+    }
+  });
+
+  pseriesData.push({name: 'spmod3', y: parseFloat(2)});
+  console.log(pseriesData);
+
   Highcharts.chart(element_id, {
     chart: {
       plotBackgroundColor: null,
@@ -21,38 +39,19 @@ function plotPieGraph(data, element_id, label) {
         allowPointSelect: true,
         cursor: 'pointer',
         dataLabels: {
-          enabled: true,
+          enabled: false,
           format: '<b>{point.name}</b>: {point.percentage:.1f} %',
           style: {
             color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
           }
-        }
+        },
+        showInLegend: true
       }
     },
     series: [{
-      name: 'Brands',
+      name: 'Percentage of total active workers',
       colorByPoint: true,
-      data: [{
-        name: 'Microsoft Internet Explorer',
-        y: 56.33
-      }, {
-        name: 'Chrome',
-        y: 24.03,
-        sliced: true,
-        selected: true
-      }, {
-        name: 'Firefox',
-        y: 10.38
-      }, {
-        name: 'Safari',
-        y: 4.77
-      }, {
-        name: 'Opera',
-        y: 0.91
-      }, {
-        name: 'Proprietary or Undetectable',
-        y: 0.2
-      }]
+      data: pseriesData
     }]
   });
 }
