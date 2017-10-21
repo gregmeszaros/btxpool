@@ -402,6 +402,21 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
   }
 
   /**
+   * Get the pending balance for specific user ID
+   * Balance matured / waiting for payout
+   * @param $db
+   * @param $user_id
+   */
+  public static function getPendingBalance($db, $coin_id, $user_id) {
+    $stmt = $db->prepare("SELECT id, balance AS pending_balance FROM accounts WHERE id = :userid AND coinid = :coinid");
+    $stmt->execute([
+      ':userid' => $user_id,
+      ':coinid' => $coin_id,
+    ]);
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+  }
+
+  /**
    * Prepare some route specific variables
    * @param $db
    * @param null $route
@@ -423,12 +438,14 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
           // Load the user
           $user = self::getAccount($db, null, $data['miner_address']);
           $immature_balance = self::getImmatureBalance($db, $data['coin_id'], $user['id']);
+          $pending_balance = self::getPendingBalance($db, $data['coin_id'], $user['id']);
         }
 
         return [
           'workers' => $workers,
           'user' => $user ?? FALSE,
-          'immature_balance' => $immature_balance ?? FALSE
+          'immature_balance' => $immature_balance ?? FALSE,
+          'pending_balance' => $pending_balance ?? FALSE
         ];
         break;
       case 'miners':

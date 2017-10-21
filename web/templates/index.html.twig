@@ -51,18 +51,18 @@
             <div class="minercontent">
                 <div class="get-started wallet-info-label">Your wallet address is set to: <strong> {{ wallet }} </strong></div>
                 <div class="intro-info">
-                    <strong>Immature Balance: <span class="label label-btx"> {{ immature_balance.immature_balance }} BTX</span> </strong>
+                    <strong>Immature Balance: <span class="label label-btx"> {{ immature_balance.immature_balance|default(0) }} BTX </span> </strong>
                     <div class="help-text">Earnings awaiting blocks to mature.</div>
                 </div>
 
                 <div class="intro-info">
-                    <strong>Pending Balance: <span class="label label-btx">0.48 BTX</span> </strong>
+                    <strong>Pending Balance: <span class="label label-btx"> {{ pending_balance.pending_balance|default(0) }} BTX </span> </strong>
                     <div class="help-text">Matured earnings awaiting payout.</div>
                 </div>
 
                 <div class="intro-info">
-                    <strong>Total Paid: <span class="label label-btx">11 BTX</span> </strong>
-                    <div class="help-text">Total paid for the wallet address.</div>
+                    <strong>Total Paid: <span class="label label-btx">0 BTX</span> </strong>
+                    <div class="help-text">Total paid to this wallet address.</div>
                 </div>
 
                 <div class="tab">

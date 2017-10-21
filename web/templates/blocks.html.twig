@@ -7,11 +7,16 @@
 
             Last 30 blocks mined by this pool, if you logged in with your wallet, you can see your earnings for each block.
 
+            <div>
+                <strong>Last block found: 4sec ago</strong>
+            </div>
+
             <table class="table">
                 <tr>
                     <th>Block number</th>
                     <th>Block reward</th>
                     <th>Time found</th>
+                    <th>Confirmations</th>
                 </tr>
 
                 {% for block in blocks %}
@@ -19,6 +24,7 @@
                         <td> {{ block.height }} </td>
                         <td> {{ block.amount }} </td>
                         <td> {{ block.time }}</td>
+                        <td> 100+ </td>
                     </tr>
                 {% endfor %}
 
