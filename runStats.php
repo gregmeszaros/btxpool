@@ -154,69 +154,55 @@ function updateEarnings($db) {
 
     // If we found the transaction
     if (!empty($block_tx)) {
-
       // Get the reward from the block we found
       $reward = $block_tx['amount'];
 
-      // How much is the block reward
-      $db_block['reward'] = $reward;
+      // We continue if reward is set, when the block is found the reward is not set for few seconds
+      if ($reward > 0) {
+        // How much is the block reward
+        $db_block['reward'] = $reward;
 
-      // Save tx hash
-      $db_block['tx_hash'] = $block_tx['txid'];
+        // Save tx hash
+        $db_block['tx_hash'] = $block_tx['txid'];
 
-      $stmt = $db->prepare("SELECT SUM(difficulty) as total_hash FROM shares WHERE valid = :valid AND algo = :coin_id");
-      $stmt->execute([
-        ':coin_id' => minerHelper::miner_getAlgos()[$db_block['coin_id']],
-        ':valid' => 1
-      ]);
+        $stmt = $db->prepare("SELECT SUM(difficulty) as total_hash FROM shares WHERE valid = :valid AND algo = :coin_id");
+        $stmt->execute([':coin_id' => minerHelper::miner_getAlgos()[$db_block['coin_id']], ':valid' => 1]);
 
-      $total_hash_power = $stmt->fetch(PDO::FETCH_ASSOC);
-      print 'Total hash power: ' . $total_hash_power['total_hash'] . "\n";
+        $total_hash_power = $stmt->fetch(PDO::FETCH_ASSOC);
+        print 'Total hash power: ' . $total_hash_power['total_hash'] . "\n";
 
-      $stmt = $db->prepare("SELECT userid, SUM(difficulty) AS total_user_hash FROM shares WHERE valid = :valid AND algo=:coin_id GROUP BY userid");
-      $stmt->execute([
-        ':coin_id' => minerHelper::miner_getAlgos()[$db_block['coin_id']],
-        ':valid' => 1
-      ]);
+        $stmt = $db->prepare("SELECT userid, SUM(difficulty) AS total_user_hash FROM shares WHERE valid = :valid AND algo=:coin_id GROUP BY userid");
+        $stmt->execute([':coin_id' => minerHelper::miner_getAlgos()[$db_block['coin_id']], ':valid' => 1]);
 
-      $hash_users = $stmt->fetchAll(PDO::FETCH_ASSOC);
-      foreach ($hash_users as $hash_user) {
-        print 'Total hash power user ID: ' . $hash_user['userid'] . ' -- ' . $hash_user['total_user_hash'] . "\n";
+        $hash_users = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        foreach ($hash_users as $hash_user) {
+          print 'Total hash power user ID: ' . $hash_user['userid'] . ' -- ' . $hash_user['total_user_hash'] . "\n";
 
-        // Calculate how much each user will earn
-        $amount = $reward * $hash_user['total_user_hash'] / $total_hash_power['total_hash'];
-        print 'Earned: ' . $amount . "\n";
+          // Calculate how much each user will earn
+          $amount = $reward * $hash_user['total_user_hash'] / $total_hash_power['total_hash'];
+          print 'Earned: ' . $amount . "\n";
 
-        // Earned amount
-        $amount_earned = minerHelper::takePoolFee($amount, minerHelper::miner_getAlgos()[$db_block['coin_id']]);
-        print 'Earned - fee deducted: ' . $amount_earned . "\n";
+          // Earned amount
+          $amount_earned = minerHelper::takePoolFee($amount, minerHelper::miner_getAlgos()[$db_block['coin_id']]);
+          print 'Earned - fee deducted: ' . $amount_earned . "\n";
 
-        // Get some user related info
-        $user_data = minerHelper::getAccount($db, $hash_user['userid']);
+          // Get some user related info
+          $user_data = minerHelper::getAccount($db, $hash_user['userid']);
 
-        // Save the earning for each user when block is found
-        minerHelper::addEarning($db, $user_data, $db_block, $amount_earned);
+          // Save the earning for each user when block is found
+          minerHelper::addEarning($db, $user_data, $db_block, $amount_earned);
+        }
 
+        // When all earnings saved set the block from 'new' to 'immature'
+        // So the other script can trigger, calculate number of confirmations, once confirmed update the earnings to mature
+        $stmt = $db->prepare("UPDATE blocks SET category = :category, amount = :amount, txhash = :txhash WHERE id = :block_id");
+        $stmt->execute([':category' => 'immature', ':block_id' => $db_block['id'], ':amount' => $db_block['reward'], ':txhash' => $db_block['tx_hash']]);
+
+        // Delete shares where we calculated the earnings
+        $stmt = $db->prepare("DELETE FROM shares WHERE algo = :algo AND coinid = :coin_id");
+        $stmt->execute([':algo' => minerHelper::miner_getAlgos()[$db_block['coin_id']], ':coin_id' => $db_block['coin_id']]);
       }
-
-      // When all earnings saved set the block from 'new' to 'immature'
-      // So the other script can trigger, calculate number of confirmations, once confirmed update the earnings to mature
-      $stmt = $db->prepare("UPDATE blocks SET category = :category, amount = :amount, txhash = :txhash WHERE id = :block_id");
-      $stmt->execute([
-        ':category' => 'immature',
-        ':block_id' => $db_block['id'],
-        ':amount' => $db_block['reward'],
-        ':txhash' => $db_block['tx_hash']
-      ]);
-
-      // Delete shares where we calculated the earnings
-      $stmt = $db->prepare("DELETE FROM shares WHERE algo = :algo AND coinid = :coin_id");
-      $stmt->execute([
-        ':algo' => minerHelper::miner_getAlgos()[$db_block['coin_id']],
-        ':coin_id' => $db_block['coin_id']
-      ]);
     }
-
     // The cron run every minute if more than 1 block is found every minute causing issue so we break after 1 block
     break;
   }
