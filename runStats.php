@@ -125,7 +125,7 @@ function updatePoolHashrate($db) {
  * @param $db
  */
 function updateEarnings($db) {
-  print "version: 1.0" . "\n";
+  print "version: 1.1" . "\n";
 
   // Get all new blocks
   $stmt = $db->prepare("SELECT * FROM blocks WHERE category = :category ORDER by time");
@@ -280,7 +280,7 @@ function updateEarnings($db) {
   $mature_blocks = $stmt->fetchAll(PDO::FETCH_ASSOC);
   foreach($mature_blocks as $db_block) {
 
-    print 'Processing block: ' . $db_block['id'] . ' -- ' . $db_block['height'] . "/n";
+    print 'Processing block: ' . $db_block['id'] . ' -- ' . $db_block['height'] . "\n";
     $stmt = $db->prepare("SELECT userid, SUM(amount) AS immature_balance FROM earnings where blockid = :block_id AND status = -1 GROUP BY userid");
     $stmt->execute([
       ':block_id' => $db_block['id']
@@ -288,7 +288,31 @@ function updateEarnings($db) {
 
     // Mature earnings, calculate user balance
     $immature_balances = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    print_r($immature_balances, TRUE);
+
+    foreach ($immature_balances as $immature_balance) {
+      print 'user ID: ' . $immature_balance['userid'] . ' -- ' . $immature_balance['immature_balance'] . "\n";
+
+      // Update pending user balance
+      $stmt = $db->prepare("UPDATE accounts SET balance = balance + :balance WHERE id = :userid");
+      $stmt->execute([
+        ':balance' => $immature_balance['immature_balance'],
+        ':userid' => $immature_balance['userid']
+      ]);
+
+      // Mature earnings
+      $stmt = $db->prepare("UPDATE earnings SET status = 1 WHERE status = -1 AND userid = :userid AND blockid = :block_id");
+      $stmt->execute([
+        ':userid' => $immature_balance['userid'],
+        ':block_id' => $db_block['id']
+      ]);
+    }
+
+    // Set block category to 'settled' which means the earnings matured for this block and ready to be paid
+    $stmt = $db->prepare("UPDATE blocks SET category = :category WHERE id = :block_id");
+    $stmt->execute([
+      ':category' => 'settled',
+      ':block_id' => $db_block['id']
+    ]);
 
   }
 
