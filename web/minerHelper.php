@@ -343,7 +343,7 @@ AND workerid IN (SELECT id FROM workers WHERE algo=:algo AND version=:version AN
    */
   public static function getPoolFee($fee = 1.5) {
     return [
-      'bitcore' => 1.5
+      'bitcore' => 1
     ];
   }
 
@@ -387,6 +387,21 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
   }
 
   /**
+   * Get the immature balance for specific user ID
+   * @param $db
+   * @param $user_id
+   */
+  public static function getImmatureBalance($db, $coin_id, $user_id) {
+    $stmt = $db->prepare("SELECT userid, SUM(amount) AS immature_balance FROM earnings WHERE userid = :userid AND coinid = :coinid AND status = :status");
+    $stmt->execute([
+      ':userid' => $user_id,
+      ':coinid' => $coin_id,
+      ':status' => -1
+    ]);
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+  }
+
+  /**
    * Prepare some route specific variables
    * @param $db
    * @param null $route
@@ -403,12 +418,17 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
           $workers[$key]['hashrate'] = self::Itoa2($hashrate['hashrate']) . 'h/s';
         }
 
-        // Load the user
-        $user = self::getAccount($db, null, $data['miner_address']);
+        // If we have miner address
+        if (!empty($data['miner_address'])) {
+          // Load the user
+          $user = self::getAccount($db, null, $data['miner_address']);
+          $immature_balance = self::getImmatureBalance($db, $data['coin_id'], $user['id']);
+        }
 
         return [
           'workers' => $workers,
-          'user' => $user
+          'user' => $user ?? FALSE,
+          'immature_balance' => $immature_balance ?? FALSE
         ];
         break;
       case 'miners':

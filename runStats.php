@@ -125,6 +125,7 @@ function updatePoolHashrate($db) {
  * @param $db
  */
 function updateEarnings($db) {
+  print "version: 1.0" . "\n";
 
   // Get all new blocks
   $stmt = $db->prepare("SELECT * FROM blocks WHERE category = :category ORDER by time");
@@ -260,10 +261,22 @@ function updateEarnings($db) {
 
     }
     else {
+      // check orphan blocks?
       print 'empty tx hash -> orphan block?';
     }
   }
 
-  // check orphan blocks?
+  /////////////////////////////////////////////////
+  /// //////// Update exisiting blocks /// ////////
+  ///
+  /// ////////                        /// ////////
+  // Update all 'mature' blocks
+  // Mature earnings, calculate user balance
+  $stmt = $db->prepare("SELECT * FROM blocks WHERE category = :category ORDER by time");
+  $stmt->execute([
+    ':category' => 'mature'
+  ]);
+
+  $mature_blocks = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 }

@@ -10,7 +10,7 @@
                 <div class="help-text">Data last refreshed: 20:06.</div>
             </div>
             <div class="intro-info">
-                <strong>Min. payout threshold: <span class="label label-btx">1 BTX</span> </strong>
+                <strong>Min. payout threshold: <span class="label label-btx">0.5 BTX</span> </strong>
                 <div class="help-text">Payouts are continuous throughout the day.</div>
             </div>
             <div class="intro-info">
@@ -30,26 +30,28 @@
 
     <div class="intro">
 
-        <h2>Search Wallet</h2>
-        <form name="wallet-check" action="index.php?page=index" class="wallet-input">
-            <ul class="input-list wallet-input clearfix">
-                <li class="li-inline">
-                    <input placeholder="ie. 1NgZ7MjHmVUuuy2Y4UMxDaVm4Me3TcNMpt" name="wallet" type="text" size="40">
-                </li>
-                <li class="li-inline">
-                    <input value="Submit" class="focus wallet-submit" type="submit">
-                </li>
-            </ul>
-        </form>
+        <div class="minercontent">
+            <h2>Search Wallet</h2>
+            <form name="wallet-check" action="index.php?page=index" class="wallet-input">
+                <ul class="input-list wallet-input clearfix">
+                    <li class="li-inline">
+                        <input placeholder="ie. 1NgZ7MjHmVUuuy2Y4UMxDaVm4Me3TcNMpt" name="wallet" type="text" size="40">
+                    </li>
+                    <li class="li-inline">
+                        <input value="Submit" class="focus all-news-btn" type="submit">
+                    </li>
+                </ul>
+            </form>
+        </div>
 
     </div>
 
     {% if wallet %}
         <div class="intro">
             <div class="minercontent">
-                <div class="wallet-info-label">Your wallet address is set to: <strong> {{ wallet }} </strong></div>
+                <div class="get-started wallet-info-label">Your wallet address is set to: <strong> {{ wallet }} </strong></div>
                 <div class="intro-info">
-                    <strong>Immature Balance: <span class="label label-btx">0.223 BTX</span> </strong>
+                    <strong>Immature Balance: <span class="label label-btx"> {{ immature_balance.immature_balance }} BTX</span> </strong>
                     <div class="help-text">Earnings awaiting blocks to mature.</div>
                 </div>
 
@@ -105,20 +107,21 @@
 
     <div class="intro">
 
-        <h2>Instructions - getting started</h2>
+        <div class="minercontent">
+            <h2>Instructions - getting started</h2>
 
-        <div><strong>Stratum port</strong></div>
-        <div class="get-started">stratum+tcp://btxpool.com:1111</div>
+            <div><strong>Stratum port</strong></div>
+            <div class="get-started">stratum+tcp://btxpool.com:1111</div>
 
-        <div><strong>Nvidia cards using <a href="https://github.com/tpruvot/ccminer/releases" target="_blank">CCMINER</a></strong></div>
-        <div class="get-started">ccminer-x64 -a bitcore -o stratum+tcp://btxpool.com:1111 -u 1NgZ7MjHmVUuuy2Y4UMxDaVm4Me3TcNMpt -p x</div>
+            <div><strong>Nvidia cards using <a href="https://github.com/tpruvot/ccminer/releases" target="_blank">CCMINER</a></strong></div>
+            <div class="get-started">ccminer-x64 -a bitcore -o stratum+tcp://btxpool.com:1111 -u 1NgZ7MjHmVUuuy2Y4UMxDaVm4Me3TcNMpt -p x</div>
 
-        <div><strong>Nvidia cards using SPMOD2</strong></div>
-        <div class="get-started">ccminer -a bitcore -o stratum+tcp://btxpool.com:1111 -u 1NgZ7MjHmVUuuy2Y4UMxDaVm4Me3TcNMpt -p x</div>
+            <div><strong>Nvidia cards using SPMOD2</strong></div>
+            <div class="get-started">ccminer -a bitcore -o stratum+tcp://btxpool.com:1111 -u 1NgZ7MjHmVUuuy2Y4UMxDaVm4Me3TcNMpt -p x</div>
 
-        <div><strong>AMD cards using <a href="https://github.com/LIMXTEC/BitCore/releases" target="_blank">SGMINER</a></strong></div>
-        <div class="get-started">sgminer.exe --kernel timetravel10 -o stratum+tcp://btxpool.com:1111 -u 1NgZ7MjHmVUuuy2Y4UMxDaVm4Me3TcNMpt -p x -I 19</div>
-
+            <div><strong>AMD cards using <a href="https://github.com/LIMXTEC/BitCore/releases" target="_blank">SGMINER</a></strong></div>
+            <div class="get-started">sgminer.exe --kernel timetravel10 -o stratum+tcp://btxpool.com:1111 -u 1NgZ7MjHmVUuuy2Y4UMxDaVm4Me3TcNMpt -p x -I 19</div>
+        </div>
     </div>
 
 

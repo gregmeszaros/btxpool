@@ -350,7 +350,7 @@ h2 {
 }
 
 .intro-info {
-    margin-left: 20px;
+    margin-left: 10px;
     display: inline-block;
 }
 
@@ -395,39 +395,44 @@ li.li-inline {
     border-bottom: solid 2px #969696;
 }
 
-.wallet-submit {
-    display: inline-block;
-    position: relative;
-    cursor: pointer;
-    min-height: 36px;
-    min-width: 88px;
-    line-height: 36px;
-    vertical-align: middle;
-    -webkit-box-align: center;
-    -webkit-align-items: center;
-    align-items: center;
-    text-align: center;
-    border-radius: 2px;
-    box-sizing: border-box;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-    outline: none;
-    border: 0;
-    padding: 0 6px;
-    color: currentColor;
-    white-space: nowrap;
-    text-transform: uppercase;
-    font-weight: 500;
-    font-size: 14px;
-    font-style: inherit;
-    font-variant: inherit;
-    font-family: inherit;
+.wallet-input {
+    width: 100%;
+    min-height: 50px;
+}
+
+.all-news-btn {
+    background: #666666;
+    background-image: -webkit-linear-gradient(top, #666666, #333333);
+    background-image: -moz-linear-gradient(top, #666666, #333333);
+    background-image: -ms-linear-gradient(top, #666666, #333333);
+    background-image: -o-linear-gradient(top, #666666, #333333);
+    background-image: linear-gradient(to bottom, #666666, #333333);
+
+    border: none;
+    color: #ffffff !important;
+    font-size: 12px !important;
+    padding: 7px 8px 9px 7px;
     text-decoration: none;
-    overflow: hidden;
-    -webkit-transition: box-shadow 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), background-color 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
-    transition: box-shadow 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), background-color 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    cursor: pointer;
+    text-transform: uppercase;
+    min-width: 100px;
+    min-height: 30px;
+    display: inline;
+}
+
+.all-news-btn:hover {
+    background: #666666;
+    background-image: -webkit-linear-gradient(top, #666666, #000000);
+    background-image: -moz-linear-gradient(top, #666666, #000000);
+    background-image: -ms-linear-gradient(top, #666666, #000000);
+    background-image: -o-linear-gradient(top, #666666, #000000);
+    background-image: linear-gradient(to bottom, #666666, #000000);
+    text-decoration: none;
+}
+
+@media only screen and (max-width:480px) {
+    .wallet-input { min-height: 80px; }
+    .all-news-btn { min-width: 200px; font-size: 4.25em; }
 }
 
 /* Style the tab */
