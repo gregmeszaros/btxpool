@@ -278,5 +278,18 @@ function updateEarnings($db) {
   ]);
 
   $mature_blocks = $stmt->fetchAll(PDO::FETCH_ASSOC);
+  foreach($mature_blocks as $db_block) {
+
+    print 'Processing block: ' . $db_block['id'] . ' -- ' . $db_block['height'] . "/n";
+    $stmt = $db->prepare("SELECT userid, SUM(amount) AS immature_balance FROM earnings where blockid = :block_id AND status = -1 GROUP BY userid");
+    $stmt->execute([
+      ':block_id' => $db_block['id']
+    ]);
+
+    // Mature earnings, calculate user balance
+    $immature_balances = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    print_r($immature_balances, TRUE);
+
+  }
 
 }
