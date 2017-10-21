@@ -91,6 +91,17 @@ class minerHelper {
   }
 
   /**
+   * Return min payouts for coins
+   * @return array
+   */
+  public static function miner_getMinPayouts() {
+    // return key / value pairs (algo, min_payout amount)
+    return [
+      'bitcore' => 1
+    ];
+  }
+
+  /**
    * Return user data for specified ID
    * @param $db
    * @param $account_id

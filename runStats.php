@@ -28,6 +28,9 @@ updatePoolHashrate($conn);
 // Update earnings
 updateEarnings($conn);
 
+// Send payouts
+sendPayouts($conn);
+
 function updatePoolHashrate($db) {
   $t = time() - 2 * 60;
 
@@ -311,5 +314,95 @@ function updateEarnings($db) {
     ]);
 
   }
+
+}
+
+/**
+ * Function to check for users with balances pending to payout
+ * @param $db
+ */
+function sendPayouts($db, $coin_id = 1425) {
+
+  // Check for the coin details
+  $stmt = $db->prepare("SELECT * FROM coins WHERE id = :coin_id");
+  $stmt->execute([
+    ':coin_id' => $coin_id
+  ]);
+
+  // Get coin data
+  $coin_info = $stmt->fetch(PDO::FETCH_OBJ);
+
+  // Connect to wallet
+  $remote = new WalletRPC($coin_info);
+
+  $min_payout = minerHelper::miner_getMinPayouts()[minerHelper::miner_getAlgos()[$coin_id]];
+  print 'Wallet min. payout: ' . $min_payout . "\n";
+
+  $info = $remote->getinfo();
+  if(!$info) {
+    print "Send payouts: can't connect to " . $coin_info->symbol . " wallet" . "\n";
+    return;
+  }
+
+  // Get the accounts which due payout
+  $stmt = $db->prepare("SELECT * FROM accounts WHERE balance > :min_payout AND coinid = :coin_id ORDER BY balance DESC");
+  $stmt->execute([
+    ':min_payout' => $min_payout,
+    ':coin_id' => $coin_id
+  ]);
+
+  $balances = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+  foreach ($balances as $user_account) {
+    print $user_account['balance'] . "\n";
+  }
+
+  /**
+
+  // todo: enhance/detect payout_max from normal sendmany error
+  if($coin->symbol == 'BOD' || $coin->symbol == 'DIME' || $coin->symbol == 'BTCRY' || !empty($coin->payout_max))
+  {
+    foreach($users as $user)
+    {
+      $user = getdbo('db_accounts', $user->id);
+      if(!$user) continue;
+
+      $amount = $user->balance;
+      while($user->balance > $min_payout && $amount > $min_payout)
+      {
+        debuglog("$coin->symbol sendtoaddress $user->username $amount");
+        $tx = $remote->sendtoaddress($user->username, round($amount, 8));
+        if(!$tx)
+        {
+          $error = $remote->error;
+          debuglog("RPC $error, {$user->username}, $amount");
+          if (stripos($error,'transaction too large') !== false || stripos($error,'invalid amount') !== false
+            || stripos($error,'insufficient funds') !== false || stripos($error,'transaction creation failed') !== false
+          ) {
+            $coin->payout_max = min((double) $amount, (double) $coin->payout_max);
+            $coin->save();
+            $amount /= 2;
+            continue;
+          }
+          break;
+        }
+
+        $payout = new db_payouts;
+        $payout->account_id = $user->id;
+        $payout->time = time();
+        $payout->amount = bitcoinvaluetoa($amount);
+        $payout->fee = 0;
+        $payout->tx = $tx;
+        $payout->idcoin = $coin->id;
+        $payout->save();
+
+        $user->balance -= $amount;
+        $user->save();
+      }
+    }
+
+    debuglog("payment done");
+    return;
+  } */
 
 }
