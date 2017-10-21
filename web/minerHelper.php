@@ -417,6 +417,25 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
   }
 
   /**
+   * Get total earnings for specific user ID
+   * Cache for 1 minute
+   * @param $db
+   * @param $user_id
+   */
+  public static function getUserEarnings($db, $coin_id, $user_id, $step = 300, $redis = FALSE) {
+    $interval = self::miner_hashrate_step($step);
+    $delay = time()-$interval;
+
+    $stmt = $db->prepare("SELECT userid, SUM(amount) AS total_earnings FROM earnings WHERE userid = :userid AND coinid = :coinid AND create_time > :delay");
+    $stmt->execute([
+      ':userid' => $user_id,
+      ':coinid' => $coin_id,
+      ':delay' => $delay
+    ]);
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+  }
+
+  /**
    * Prepare some route specific variables
    * @param $db
    * @param null $route
@@ -439,13 +458,25 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
           $user = self::getAccount($db, null, $data['miner_address']);
           $immature_balance = self::getImmatureBalance($db, $data['coin_id'], $user['id']);
           $pending_balance = self::getPendingBalance($db, $data['coin_id'], $user['id']);
+
+          $earnings_last_hour = self::getUserEarnings($db, $data['coin_id'], $user['id'], 60 * 60 * 1);
+          $earnings_last_3_hours = self::getUserEarnings($db, $data['coin_id'], $user['id'], 60 * 60 * 3);
+          $earnings_last_24_hours = self::getUserEarnings($db, $data['coin_id'], $user['id'], 60 * 60 * 24);
+          $earnings_last_7_days = self::getUserEarnings($db, $data['coin_id'], $user['id'], 60 * 60 * 24 * 7);
+          $earnings_last_30_days = self::getUserEarnings($db, $data['coin_id'], $user['id'], 60 * 60 * 24 * 30);
         }
 
         return [
           'workers' => $workers,
+          'workers_count' => count($workers),
           'user' => $user ?? FALSE,
           'immature_balance' => $immature_balance ?? FALSE,
-          'pending_balance' => $pending_balance ?? FALSE
+          'pending_balance' => $pending_balance ?? FALSE,
+          'earnings_last_hour' => $earnings_last_hour ?? FALSE,
+          'earnings_last_3_hours' => $earnings_last_3_hours ?? FALSE,
+          'earnings_last_24_hours' => $earnings_last_24_hours ?? FALSE,
+          'earnings_last_7_days' => $earnings_last_7_days ?? FALSE,
+          'earnings_last_30_days' => $earnings_last_30_days ?? FALSE
         ];
         break;
       case 'miners':

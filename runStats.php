@@ -240,13 +240,9 @@ function updateEarnings($db) {
         // mature the block
         $category = 'mature';
 
-        // @TODO -> shall we update earnings (status) here and update user balances?
-        // @TODO ????
-        // Update user balance
-        // Mature balance - user->balance - add mature earnings
-
+        // @TODO
         // When mature balance > 0.5 do a payout and deduct user balance
-        // Total paid (sum(payouts)
+        // Total paid -> sum(payouts)
       }
       else {
         $category = 'immature';

@@ -66,7 +66,7 @@
                 </div>
 
                 <div class="tab">
-                    <button class="tablinks" onclick="openTab(event, 'workers')" id="defaultOpen">Workers (0)</button>
+                    <button class="tablinks" onclick="openTab(event, 'workers')" id="defaultOpen">Workers ({{ workers_count|default(0) }})</button>
                     <button class="tablinks" onclick="openTab(event, 'earnings')">Earnings</button>
                     <button class="tablinks" onclick="openTab(event, 'payouts')">Payouts</button>
                 </div>
@@ -83,10 +83,11 @@
                 </div>
 
                 <div id="earnings" class="tabcontent">
-                    <div>Earnings last 1 hour:</div>
-                    <div>Earnings last 24 hours:</div>
-                    <div>Earnings last 7 days:</div>
-                    <div>Earning estimates based on average hashrate: </div>
+                    <div>Total earnings last 1 hour: {{ earnings_last_hour.total_earnings|default(0) }} BTX </div>
+                    <div>Total earnings last 3 hours: {{ earnings_last_3_hours.total_earnings|default(0) }} BTX </div>
+                    <div>Total earnings last 24 hours: {{ earnings_last_24_hours.total_earnings|default(0) }} BTX </div>
+                    <div>Total earnings last 7 days: {{ earnings_last_7_days.total_earnings|default(0) }} BTX </div>
+                    <div>Total earnings last 30 days: {{ earnings_last_30_days.total_earnings|default(0) }} BTX </div>
                 </div>
 
                 <div id="payouts" class="tabcontent">
