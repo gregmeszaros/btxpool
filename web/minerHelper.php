@@ -447,6 +447,19 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
   }
 
   /**
+   * Get total payout for the user
+   */
+  public static function getTotalPayout($db, $coin_id, $user_id, $redis = FALSE) {
+    // @TODO -> cache this
+    $stmt = $db->prepare("SELECT idcoin, SUM(amount) AS total_payout FROM payouts WHERE account_id = :user_id AND idcoin = :coin_id");
+    $stmt->execute([
+      ':user_id' => $user_id,
+      ':coin_id' => $coin_id
+    ]);
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+  }
+
+  /**
    * List last 30 payouts for the user
    */
   public static function getPayouts($db, $coin_id, $user_id, $redis = FALSE) {
@@ -490,6 +503,7 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
           $earnings_last_30_days = self::getUserEarnings($db, $data['coin_id'], $user['id'], 60 * 60 * 24 * 30);
 
           $payouts = self::getPayouts($db, $data['coin_id'], $user['id']);
+          $total_paid = self::getTotalPayout($db, $data['coin_id'], $user['id']);
         }
 
         return [
@@ -505,7 +519,8 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
           'earnings_last_24_hours' => $earnings_last_24_hours ?? FALSE,
           'earnings_last_7_days' => $earnings_last_7_days ?? FALSE,
           'earnings_last_30_days' => $earnings_last_30_days ?? FALSE,
-          'payouts' => $payouts ?? []
+          'payouts' => $payouts ?? [],
+          'total_paid' => $total_paid ?? FALSE
         ];
         break;
       case 'miners':
