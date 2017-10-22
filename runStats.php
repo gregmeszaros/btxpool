@@ -128,7 +128,7 @@ function updatePoolHashrate($db) {
  * @param $db
  */
 function updateEarnings($db) {
-  print "version: 1.1" . "\n";
+  print "version: 1.2" . "\n";
 
   // Get all new blocks
   $stmt = $db->prepare("SELECT * FROM blocks WHERE category = :category ORDER by time");
@@ -355,54 +355,32 @@ function sendPayouts($db, $coin_id = 1425) {
 
   foreach ($balances as $user_account) {
     print $user_account['balance'] . "\n";
-  }
+    // Try to clear the balance
+    $tx = $remote->sendtoaddress($user_account['username'], round($user_account['balance'], 8));
 
-  /**
-
-  // todo: enhance/detect payout_max from normal sendmany error
-  if($coin->symbol == 'BOD' || $coin->symbol == 'DIME' || $coin->symbol == 'BTCRY' || !empty($coin->payout_max))
-  {
-    foreach($users as $user)
-    {
-      $user = getdbo('db_accounts', $user->id);
-      if(!$user) continue;
-
-      $amount = $user->balance;
-      while($user->balance > $min_payout && $amount > $min_payout)
-      {
-        debuglog("$coin->symbol sendtoaddress $user->username $amount");
-        $tx = $remote->sendtoaddress($user->username, round($amount, 8));
-        if(!$tx)
-        {
-          $error = $remote->error;
-          debuglog("RPC $error, {$user->username}, $amount");
-          if (stripos($error,'transaction too large') !== false || stripos($error,'invalid amount') !== false
-            || stripos($error,'insufficient funds') !== false || stripos($error,'transaction creation failed') !== false
-          ) {
-            $coin->payout_max = min((double) $amount, (double) $coin->payout_max);
-            $coin->save();
-            $amount /= 2;
-            continue;
-          }
-          break;
-        }
-
-        $payout = new db_payouts;
-        $payout->account_id = $user->id;
-        $payout->time = time();
-        $payout->amount = bitcoinvaluetoa($amount);
-        $payout->fee = 0;
-        $payout->tx = $tx;
-        $payout->idcoin = $coin->id;
-        $payout->save();
-
-        $user->balance -= $amount;
-        $user->save();
-      }
+    if(!$tx) {
+      $error = $remote->error;
+      print "Send payouts ERROR: " . $error . ' -- ' . $user_account['username'] . $user_account['balance'];
     }
+    else {
+      // Add entry about the transaction
+      $stmt = $db->prepare("INSERT INTO payouts(account_id, time, amount, fee, tx, idcoin) VALUES(:account_id, :time, :amount, :fee, :tx, :idcoin)");
+      $stmt->execute([
+        ':account_id' => $user_account['id'],
+        ':time' => time(),
+        ':amount' => $user_account['balance'],
+        ':fee' => 0,
+        ':tx' => $tx,
+        ':idcoin' => $coin_id
+      ]);
 
-    debuglog("payment done");
-    return;
-  } */
+      // Deduct user balance
+      $stmt = $db->prepare("UPDATE accounts SET balance = balance - :payout WHERE id = :userid");
+      $stmt->execute([
+        ':payout' => $user_account['balance'],
+        ':userid' => $user_account['id']
+      ]);
 
+    }
+  }
 }
