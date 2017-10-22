@@ -354,13 +354,13 @@ function sendPayouts($db, $coin_id = 1425) {
   $balances = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
   foreach ($balances as $user_account) {
-    print $user_account['balance'] . "\n";
+    print 'Send payouts: ' . $user_account['id'] . ' -- ' . $user_account['balance'] . "\n";
     // Try to clear the balance
     $tx = $remote->sendtoaddress($user_account['username'], round($user_account['balance'], 8));
 
     if(!$tx) {
       $error = $remote->error;
-      print "Send payouts ERROR: " . $error . ' -- ' . $user_account['username'] . $user_account['balance'];
+      print "Send payouts ERROR: " . $error . ' -- ' . $user_account['username'] . ' -- ' . $user_account['balance'];
     }
     else {
       // Add entry about the transaction

@@ -10,7 +10,7 @@
                 <div class="help-text">Data last refreshed: 20:06.</div>
             </div>
             <div class="intro-info">
-                <strong>Min. payout threshold: <span class="label label-btx">0.5 BTX</span> </strong>
+                <strong>Min. payout threshold: <span class="label label-btx">{{ min_payout }} BTX</span> </strong>
                 <div class="help-text">Payouts are continuous throughout the day.</div>
             </div>
             <div class="intro-info">
@@ -22,7 +22,7 @@
                 <div class="help-text">Proportional reward based on the number of submitted "valid" shares and difficulty.</div>
             </div>
             <div class="intro-info">
-                <strong>Pool fee: <span class="label label-btx">1%</span> </strong>
+                <strong>Pool fee: <span class="label label-btx">{{ pool_fee }}%</span> </strong>
                 <div class="help-text">No transaction fees!</div>
             </div>
         </div>
@@ -91,9 +91,24 @@
                 </div>
 
                 <div id="payouts" class="tabcontent">
-                    <div>Time: TX ID: Amount:</div>
-                    <div>pay1 tx</div>
-                    <div>pay2 tx</div>
+                    <table class="table">
+                        <tr>
+                            <th>TX ID</th>
+                            <th>Amount</th>
+                            <th>Time</th>
+                        </tr>
+
+                        {% for payout in payouts %}
+                            <tr>
+                                <td>
+                                    <a href="https://chainz.cryptoid.info/btx/tx.dws?{{ payout.tx }}.htm" target="_blank"> {{ payout.tx }} </a>
+                                </td>
+                                <td>{{ payout.amount }}</td>
+                                <td>{{ payout.time }}</td>
+                            </tr>
+                        {% endfor %}
+
+                    </table>
                 </div>
 
             </div>

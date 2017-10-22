@@ -354,7 +354,7 @@ AND workerid IN (SELECT id FROM workers WHERE algo=:algo AND version=:version AN
    */
   public static function getPoolFee($fee = 1.5) {
     return [
-      'bitcore' => 1
+      'bitcore' => 1.5
     ];
   }
 
@@ -447,6 +447,19 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
   }
 
   /**
+   * List last 30 payouts for the user
+   */
+  public static function getPayouts($db, $coin_id, $user_id, $redis = FALSE) {
+    // @TODO -> cache this
+    $stmt = $db->prepare("SELECT * FROM payouts WHERE account_id = :user_id AND idcoin = :coin_id LIMIT 0, 30");
+    $stmt->execute([
+      ':user_id' => $user_id,
+      ':coin_id' => $coin_id
+    ]);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+  }
+
+  /**
    * Prepare some route specific variables
    * @param $db
    * @param null $route
@@ -475,19 +488,24 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
           $earnings_last_24_hours = self::getUserEarnings($db, $data['coin_id'], $user['id'], 60 * 60 * 24);
           $earnings_last_7_days = self::getUserEarnings($db, $data['coin_id'], $user['id'], 60 * 60 * 24 * 7);
           $earnings_last_30_days = self::getUserEarnings($db, $data['coin_id'], $user['id'], 60 * 60 * 24 * 30);
+
+          $payouts = self::getPayouts($db, $data['coin_id'], $user['id']);
         }
 
         return [
           'workers' => $workers,
           'workers_count' => count($workers),
           'user' => $user ?? FALSE,
+          'min_payout' => self::miner_getMinPayouts()[self::miner_getAlgos()[$data['coin_id']]],
+          'pool_fee' => self::getPoolFee()[self::miner_getAlgos()[$data['coin_id']]],
           'immature_balance' => $immature_balance ?? FALSE,
           'pending_balance' => $pending_balance ?? FALSE,
           'earnings_last_hour' => $earnings_last_hour ?? FALSE,
           'earnings_last_3_hours' => $earnings_last_3_hours ?? FALSE,
           'earnings_last_24_hours' => $earnings_last_24_hours ?? FALSE,
           'earnings_last_7_days' => $earnings_last_7_days ?? FALSE,
-          'earnings_last_30_days' => $earnings_last_30_days ?? FALSE
+          'earnings_last_30_days' => $earnings_last_30_days ?? FALSE,
+          'payouts' => $payouts ?? []
         ];
         break;
       case 'miners':
