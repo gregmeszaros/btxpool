@@ -4,9 +4,9 @@
 
     <div class="intro">
         <div class="minercontent">
-            <div><strong>Total pool hashrate: {{ showFriendlyHash(total_pool_hashrate.hashrate) }}</strong></div>
-            <div><strong>Total active miners: </strong></div>
-            <div><strong>Total active workers: </strong></div>
+            <div><strong>Total pool hashrate: {{ showFriendlyHash(total_pool_hashrate.hashrate) }} </strong></div>
+            <div><strong>Total active miners: {{ total_count_miners.total_count|default(0) }} </strong></div>
+            <div><strong>Total active workers: {{ total_count_workers.total_count|default(0) }} </strong></div>
 
             <div id="container-miners-pie" style="min-width: 310px; height: 300px; margin: 0 auto"></div>
         </div>

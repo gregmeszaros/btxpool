@@ -6,8 +6,8 @@
         <h1 class="header-h1">BTXpool - Bitcore (BTX) mining pool</h1>
         <div class="minercontent">
             <div class="intro-info">
-                <strong>Miners online: <span class="label label-btx">1222</span> </strong>
-                <div class="help-text">Data last refreshed: 20:06.</div>
+                <strong>Miners online / Workers: <span class="label label-btx"> {{ total_count_miners.total_count|default(0) }} / {{ total_count_workers.total_count|default(0) }}</span> </strong>
+                <div class="help-text">Total unique miner addresses and workers.</div>
             </div>
             <div class="intro-info">
                 <strong>Min. payout threshold: <span class="label label-btx">{{ min_payout }} BTX</span> </strong>

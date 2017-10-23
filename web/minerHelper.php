@@ -159,6 +159,34 @@ class minerHelper {
   }
 
   /**
+   * Get total miners count
+   * @param $db
+   * @param $coin_id
+   */
+  public static function countMiners($db, $coin_id, $redis = FALSE) {
+    $stmt = $db->prepare("SELECT COUNT(DISTINCT(ac.id)) AS total_count FROM accounts ac INNER JOIN workers w ON ac.id = w.userid WHERE ac.coinid = :coin_id;");
+    $stmt->execute([
+      ':coin_id' => $coin_id
+    ]);
+
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+  }
+
+  /**
+   * Get total workers count
+   * @param $db
+   * @param $coin_id
+   */
+  public static function countWorkers($db, $coin_id, $redis = FALSE) {
+    $stmt = $db->prepare("SELECT COUNT(w.id) as total_count FROM accounts ac INNER JOIN workers w ON ac.id = w.userid WHERE ac.coinid = :coin_id;");
+    $stmt->execute([
+      ':coin_id' => $coin_id
+    ]);
+
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+  }
+
+  /**
    * Get the last X number of blocks
    * @param $db
    * @param string $miner_address
@@ -510,6 +538,8 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
           'workers' => $workers,
           'workers_count' => count($workers),
           'user' => $user ?? FALSE,
+          'total_count_miners' => self::countMiners($db, $data['coin_id']) ?? FALSE,
+          'total_count_workers' => self::countWorkers($db, $data['coin_id']) ?? FALSE,
           'min_payout' => self::miner_getMinPayouts()[self::miner_getAlgos()[$data['coin_id']]],
           'pool_fee' => self::getPoolFee()[self::miner_getAlgos()[$data['coin_id']]],
           'immature_balance' => $immature_balance ?? FALSE,
@@ -527,6 +557,8 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
         // Load all miners
         return [
           'miners' => minerHelper::getMiners($db, $data['coin_id']),
+          'total_count_miners' => self::countMiners($db, $data['coin_id']) ?? FALSE,
+          'total_count_workers' => self::countWorkers($db, $data['coin_id']) ?? FALSE,
           'hahsrates_5_min' => minerHelper::getUserPoolHashrateStats($db, minerHelper::miner_getAlgos()[$data['coin_id']], 300, $redis),
           'hashrates_3_hours' => minerHelper::getUserPoolHashrateStats($db, minerHelper::miner_getAlgos()[$data['coin_id']], 60 * 60 * 3, $redis)
         ];
