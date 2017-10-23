@@ -43,6 +43,17 @@ class minerHelper {
   }
 
   /**
+   * Return human readable date and time
+   * @param bool $timestamp
+   * @return false|string
+   */
+  public static function getDateTime($timestamp = FALSE) {
+    if (!empty($timestamp)) {
+      return date('m/d/Y H:i:s', $timestamp);
+    }
+  }
+
+  /**
    * Conversion for hash rates
    */
   public static function Itoa2($i, $precision = 1) {

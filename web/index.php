@@ -37,12 +37,17 @@ $twig = new Twig_Environment($loader, [
 ]);
 
 // Create some custom functions to twig
-$function = new Twig_SimpleFunction('showFriendlyHash', function ($hashrate) {
+$addFriendlyHash = new Twig_SimpleFunction('showFriendlyHash', function ($hashrate) {
   return minerHelper::Itoa2($hashrate) . 'h/s';
 });
 
-// Add the function
-$twig->addFunction($function);
+$addDateTime = new Twig_SimpleFunction('showDateTime', function ($timestamp) {
+  return minerHelper::getDateTime($timestamp);
+});
+
+// Add the functions
+$twig->addFunction($addFriendlyHash);
+$twig->addFunction($addDateTime);
 
 // Load available routes
 $load_routes = minerHelper::getRoutes();

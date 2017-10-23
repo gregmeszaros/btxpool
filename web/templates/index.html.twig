@@ -116,7 +116,7 @@
                                     <a href="https://chainz.cryptoid.info/btx/tx.dws?{{ payout.tx }}.htm" target="_blank"> {{ payout.tx }} </a>
                                 </td>
                                 <td>{{ payout.amount }}</td>
-                                <td>{{ payout.time }}</td>
+                                <td>{{ showDateTime(payout.time) }}</td>
                             </tr>
                         {% endfor %}
 
