@@ -45,9 +45,14 @@ $addDateTime = new Twig_SimpleFunction('showDateTime', function ($timestamp) {
   return minerHelper::getDateTime($timestamp);
 });
 
+$roundSimple = new Twig_SimpleFunction('roundSimple', function ($value) {
+  return minerHelper::roundSimple($value);
+});
+
 // Add the functions
 $twig->addFunction($addFriendlyHash);
 $twig->addFunction($addDateTime);
+$twig->addFunction($roundSimple);
 
 // Load available routes
 $load_routes = minerHelper::getRoutes();

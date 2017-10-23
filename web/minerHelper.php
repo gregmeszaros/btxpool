@@ -54,6 +54,16 @@ class minerHelper {
   }
 
   /**
+   * Use same round function as it's used during payouts
+   * @param $value
+   * @param int $precision
+   * @return float
+   */
+  public static function roundSimple($value, $precision = 8) {
+    return round($value, $precision);
+  }
+
+  /**
    * Conversion for hash rates
    */
   public static function Itoa2($i, $precision = 1) {

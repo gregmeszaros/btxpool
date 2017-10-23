@@ -51,17 +51,17 @@
             <div class="minercontent">
                 <div class="get-started wallet-info-label">Your wallet address is set to: <strong> {{ wallet }} </strong></div>
                 <div class="intro-info">
-                    <strong>Immature Balance: <span class="label label-btx"> {{ immature_balance.immature_balance|default(0) }} BTX </span> </strong>
+                    <strong>Immature Balance: <span class="label label-btx"> {{ roundSimple(immature_balance.immature_balance)|default(0) }} BTX </span> </strong>
                     <div class="help-text">Earnings awaiting blocks to mature.</div>
                 </div>
 
                 <div class="intro-info">
-                    <strong>Pending Balance: <span class="label label-btx"> {{ pending_balance.pending_balance|default(0) }} BTX </span> </strong>
+                    <strong>Pending Balance: <span class="label label-btx"> {{ roundSimple(pending_balance.pending_balance)|default(0) }} BTX </span> </strong>
                     <div class="help-text">Matured earnings awaiting payout.</div>
                 </div>
 
                 <div class="intro-info">
-                    <strong>Total Paid: <span class="label label-btx">{{ total_paid.total_payout|default(0) }} BTX</span> </strong>
+                    <strong>Total Paid: <span class="label label-btx">{{ roundSimple(total_paid.total_payout)|default(0) }} BTX</span> </strong>
                     <div class="help-text">Total paid to this wallet address.</div>
                 </div>
 
@@ -95,11 +95,11 @@
                 </div>
 
                 <div id="earnings" class="tabcontent">
-                    <div>Total earnings last 1 hour: {{ earnings_last_hour.total_earnings|default(0) }} BTX </div>
-                    <div>Total earnings last 3 hours: {{ earnings_last_3_hours.total_earnings|default(0) }} BTX </div>
-                    <div>Total earnings last 24 hours: {{ earnings_last_24_hours.total_earnings|default(0) }} BTX </div>
-                    <div>Total earnings last 7 days: {{ earnings_last_7_days.total_earnings|default(0) }} BTX </div>
-                    <div>Total earnings last 30 days: {{ earnings_last_30_days.total_earnings|default(0) }} BTX </div>
+                    <div>Total earnings last 1 hour: {{ roundSimple(earnings_last_hour.total_earnings)|default(0) }} BTX </div>
+                    <div>Total earnings last 3 hours: {{ roundSimple(earnings_last_3_hours.total_earnings)|default(0) }} BTX </div>
+                    <div>Total earnings last 24 hours: {{ roundSimple(earnings_last_24_hours.total_earnings)|default(0) }} BTX </div>
+                    <div>Total earnings last 7 days: {{ roundSimple(earnings_last_7_days.total_earnings)|default(0) }} BTX </div>
+                    <div>Total earnings last 30 days: {{ roundSimple(earnings_last_30_days.total_earnings)|default(0) }} BTX </div>
                 </div>
 
                 <div id="payouts" class="tabcontent">
@@ -115,8 +115,8 @@
                                 <td>
                                     <a href="https://chainz.cryptoid.info/btx/tx.dws?{{ payout.tx }}.htm" target="_blank"> {{ payout.tx }} </a>
                                 </td>
-                                <td>{{ payout.amount }}</td>
-                                <td>{{ showDateTime(payout.time) }}</td>
+                                <td>{{ roundSimple(payout.amount) }} BTX </td>
+                                <td>{{ showDateTime(payout.time) }} </td>
                             </tr>
                         {% endfor %}
 
