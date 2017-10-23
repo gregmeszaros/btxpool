@@ -37,10 +37,10 @@ if (!empty($callback)) {
   // What type of graph data to return
   switch ($type) {
     case 'pool-hashrate':
-      // Total pool hashrate graph query
+      // Total pool hashrate graph query (gh/s)
       $stmt = $conn->prepare("SELECT
         CONCAT(DAY(FROM_UNIXTIME(time)), '/', MONTH(FROM_UNIXTIME(time)), '/', YEAR(FROM_UNIXTIME(time)), ' ', HOUR(FROM_UNIXTIME(time)), ':00') AS TimeDate,
-        AVG(hashrate) AS Hashrate
+        AVG(hashrate) / 1000 / 1000 / 1000 AS Hashrate
         FROM hashstats
         WHERE time > (UNIX_TIMESTAMP(NOW()) - (24 * 60 * 60))
         GROUP BY TimeDate
@@ -52,10 +52,10 @@ if (!empty($callback)) {
       break;
 
     case 'user-hashrate':
-      // Total user pool hashrate graph query
+      // Total user pool hashrate graph query (mh/s)
       $stmt = $conn->prepare("SELECT
         CONCAT(DAY(FROM_UNIXTIME(time)), '/', MONTH(FROM_UNIXTIME(time)), '/', YEAR(FROM_UNIXTIME(time)), ' ', HOUR(FROM_UNIXTIME(time)), ':00') AS TimeDate,
-        AVG(hashrate) AS Hashrate
+        AVG(hashrate) / 1000 / 1000 AS Hashrate
         FROM hashuser
         WHERE time > (UNIX_TIMESTAMP(NOW()) - (24 * 60 * 60))
         AND userid = :uid

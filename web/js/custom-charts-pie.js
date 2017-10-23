@@ -18,9 +18,6 @@ function plotPieGraph(data, element_id, label) {
     }
   });
 
-  pseriesData.push({name: 'spmod3', y: parseFloat(2)});
-  console.log(pseriesData);
-
   Highcharts.chart(element_id, {
     chart: {
       plotBackgroundColor: null,
