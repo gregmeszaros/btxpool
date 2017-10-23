@@ -15,7 +15,7 @@
             </div>
             <div class="intro-info">
                 <strong>Pool hashrate: <span class="label label-btx">{{ showFriendlyHash(total_pool_hashrate.hashrate) }}</span> </strong>
-                <div class="help-text">Data last refreshed: 20:06.</div>
+                <div class="help-text">Total current pool hashrate.</div>
             </div>
             <div class="intro-info">
                 <strong>Reward structure: <span class="label label-btx">Proportional</span> </strong>
@@ -72,14 +72,26 @@
                 </div>
 
                 <div id="workers" class="tabcontent">
-                    {% for worker in workers %}
-                        <div>
-                            <span>{{ worker.version }}: </span>
-                            <span>{{ worker.hashrate }}</span>
 
-                            <div id="container-user" style="min-width: 310px; height: 300px; margin: 0 auto"></div>
-                        </div>
-                    {% endfor %}
+                    <table class="table">
+                        <tr>
+                            <th>ID</th>
+                            <th>Miner version</th>
+                            <th>Hashrate (Last Beat / 1h average / 3h average)</th>
+                        </tr>
+
+                        {% for worker in workers %}
+                            <tr>
+                                <td> {{ worker.id }} </td>
+                                <td> {{ worker.version }} </td>
+                                <td> {{ worker.hashrate }} </td>
+                            </tr>
+                        {% endfor %}
+
+                    </table>
+
+                    <div id="container-user" style="min-width: 310px; height: 300px; margin: 0 auto"></div>
+
                 </div>
 
                 <div id="earnings" class="tabcontent">
@@ -127,16 +139,16 @@
             <h2>Instructions - getting started</h2>
 
             <div><strong>Stratum port</strong></div>
-            <div class="get-started">stratum+tcp://btxpool.com:1111</div>
+            <div class="get-started">stratum+tcp://bitcorepool.cc:1111</div>
 
             <div><strong>Nvidia cards using <a href="https://github.com/tpruvot/ccminer/releases" target="_blank">CCMINER</a></strong></div>
-            <div class="get-started">ccminer-x64 -a bitcore -o stratum+tcp://btxpool.com:1111 -u 1NgZ7MjHmVUuuy2Y4UMxDaVm4Me3TcNMpt -p x</div>
+            <div class="get-started">ccminer-x64 -a bitcore -o stratum+tcp://bitcorepool.cc:1111 -u 1NgZ7MjHmVUuuy2Y4UMxDaVm4Me3TcNMpt -p x</div>
 
             <div><strong>Nvidia cards using SPMOD2</strong></div>
-            <div class="get-started">ccminer -a bitcore -o stratum+tcp://btxpool.com:1111 -u 1NgZ7MjHmVUuuy2Y4UMxDaVm4Me3TcNMpt -p x</div>
+            <div class="get-started">ccminer -a bitcore -o stratum+tcp://bitcorepool.cc:1111 -u 1NgZ7MjHmVUuuy2Y4UMxDaVm4Me3TcNMpt -p x</div>
 
             <div><strong>AMD cards using <a href="https://github.com/LIMXTEC/BitCore/releases" target="_blank">SGMINER</a></strong></div>
-            <div class="get-started">sgminer.exe --kernel timetravel10 -o stratum+tcp://btxpool.com:1111 -u 1NgZ7MjHmVUuuy2Y4UMxDaVm4Me3TcNMpt -p x -I 19</div>
+            <div class="get-started">sgminer.exe --kernel timetravel10 -o stratum+tcp://bitcorepool.cc:1111 -u 1NgZ7MjHmVUuuy2Y4UMxDaVm4Me3TcNMpt -p x -I 19</div>
         </div>
     </div>
 
