@@ -647,6 +647,7 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
           foreach ($workers as $key => $worker) {
             $hashrate = self::getHashrate($db, $data['coin_id'], $worker['version'], $worker['id'], $worker['name']);
             $hashrate_15_mins = self::getHashrateStats($db, $data['coin_id'], $worker['version'], $worker['id'], $worker['name'], 900, $redis);
+            $workers[$key]['worker'] = $worker['worker'];
             $workers[$key]['hashrate'] = self::Itoa2($hashrate['hashrate']) . 'h/s';
             $workers[$key]['hashrate_15_mins'] = self::Itoa2($hashrate_15_mins['hashrate']) . 'h/s';
             $workers[$key]['hashrate'] = self::Itoa2($hashrate['hashrate']) . 'h/s';

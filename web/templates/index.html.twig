@@ -82,7 +82,7 @@
 
                         {% for worker in workers %}
                             <tr>
-                                <td> {{ worker.id }} </td>
+                                <td> {{ worker.worker|default(worker.id) }} </td>
                                 <td> {{ worker.version }} </td>
                                 <td> {{ worker.hashrate }} / {{ worker.hashrate_15_mins }} </td>
                             </tr>
