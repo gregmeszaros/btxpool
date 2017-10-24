@@ -49,10 +49,17 @@ $roundSimple = new Twig_SimpleFunction('roundSimple', function ($value) {
   return minerHelper::roundSimple($value);
 });
 
+$formatConfirmations = new Twig_SimpleFunction('formatConfirmations', function ($value) {
+  return minerHelper::formatConfirmations($value);
+});
+
+
+
 // Add the functions
 $twig->addFunction($addFriendlyHash);
 $twig->addFunction($addDateTime);
 $twig->addFunction($roundSimple);
+$twig->addFunction($formatConfirmations);
 
 // Load available routes
 $load_routes = minerHelper::getRoutes();

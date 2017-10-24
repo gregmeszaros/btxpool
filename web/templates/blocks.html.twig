@@ -5,10 +5,10 @@
         <h1 class="header-h1">Last 30 Blocks</h1>
         <div class="minercontent">
 
-            Last 30 blocks mined by this pool, if you logged in with your wallet, you can see your earnings for each block.
+            Last 30 blocks mined by this pool.
 
             <div>
-                <strong>Last block found: 4sec ago</strong>
+                <strong>Last block found: {{ last_found }} ago</strong>
             </div>
 
             <table class="table">
@@ -24,7 +24,7 @@
                         <td> {{ block.height }} </td>
                         <td> {{ block.amount }} BTX </td>
                         <td> {{ showDateTime(block.time) }} </td>
-                        <td> 100+ </td>
+                        <td> {{ formatConfirmations(block.confirmations) }} </td>
                     </tr>
                 {% endfor %}
 

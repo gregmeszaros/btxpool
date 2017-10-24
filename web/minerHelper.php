@@ -123,6 +123,44 @@ class minerHelper {
   }
 
   /**
+   * Format block confirmations
+   * @param int $confirmations
+   */
+  public static function formatConfirmations($confirmations = 0) {
+    if ($confirmations >= 0 && $confirmations < 100) {
+      return "Immature " . "(" . $confirmations . ")";
+    }
+    if ($confirmations > 100) {
+      return "Confirmed " . "(100+)";
+    }
+  }
+
+  /**
+   * Get the last found block time (minutes ago)
+   * @param $time
+   * @return string
+   */
+  public static function lastFoundBlockTime($time) {
+    $time = time() - $time; // to get the time since that moment
+    $time = ($time < 1)? 1 : $time;
+    $tokens = array (
+      31536000 => 'year',
+      2592000 => 'month',
+      604800 => 'week',
+      86400 => 'day',
+      3600 => 'hour',
+      60 => 'minute',
+      1 => 'second'
+    );
+
+    foreach ($tokens as $unit => $text) {
+      if ($time < $unit) continue;
+      $numberOfUnits = floor($time / $unit);
+      return $numberOfUnits.' '. $text . (($numberOfUnits>1)? 's' : '');
+    }
+  }
+
+  /**
    * Return user data for specified ID
    * @param $db
    * @param $account_id
@@ -629,10 +667,12 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
         ];
         break;
       case 'blocks':
+        $blocks = minerHelper::getBlocks($db, $data['coin_id']);
 
         // Load last 30 blocks
         return [
-          'blocks' => minerHelper::getBlocks($db, $data['coin_id'])
+          'blocks' => $blocks,
+          'last_found' => self::lastFoundBlockTime($blocks[0]['time'])
         ];
         break;
     }
