@@ -14,14 +14,12 @@
       {% if wallet %}
         // Get the user charts if we have active wallet
         $.getJSON("api.php?type=user-hashrate&uid={{ user.id }}&callback=?", function (json) {
-          console.log(json);
           plotLineGraph(json, 'container-user', 'Your total hashrate - Mh/s');
         });
       {% endif %}
 
       // Get total pool hashrate chart
       $.getJSON("api.php?type=pool-hashrate&callback=?", function (json) {
-        console.log(json);
         plotLineGraph(json, 'container-pool', 'Pool hashrate - Gh/s');
       });
     </script>
@@ -33,7 +31,6 @@
     <script>
         // Get workers pie chart
         $.getJSON("api.php?type=worker-distribution&callback=?", function (json) {
-            console.log(json);
             plotPieGraph(json, 'container-miners-pie', 'Workers distribution');
         });
     </script>

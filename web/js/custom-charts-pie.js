@@ -8,11 +8,9 @@ function plotPieGraph(data, element_id, label) {
   var data = data.split('\n');
   //var seriesData = [];
   $.each(data, function(itemRow, item) {
-    console.log(item);
     if (itemRow > 0) {
       var items = item.split(',');
       if (items.length > 1) {
-        console.log(items);
         pseriesData.push({name: items[0], y: parseFloat(items[1])});
       }
     }

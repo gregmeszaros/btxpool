@@ -79,7 +79,7 @@ class minerHelper {
     else if($i >= 1000)
       $s = round(floatval($i)/1000, $precision) ." k";
     else
-      $s = round(floatval($i), $precision);
+      $s = round(floatval($i), $precision) . " ";
 
     return $s;
   }
