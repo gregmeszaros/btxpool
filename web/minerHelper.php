@@ -270,19 +270,20 @@ class minerHelper {
    * @param $miner_address
    * @return mixed
    */
-  public static function getHashrate($db, $coin_id, $version, $miner_address) {
+  public static function getHashrate($db, $coin_id, $version, $worker_id, $miner_address) {
     $algo = self::miner_getAlgos()[$coin_id];
     $target = self::miner_hashrate_constant($algo);
     $interval = self::miner_hashrate_step();
     $delay = time()-$interval;
 
     $stmt = $db->prepare("SELECT sum(difficulty) * :target / :interval / 1000 AS hashrate FROM shares WHERE valid AND time > :delay
-AND workerid IN (SELECT id FROM workers WHERE algo=:algo AND version=:version AND name = :miner_address)");
+AND workerid IN (SELECT id FROM workers WHERE algo=:algo AND id = :worker_id AND version=:version AND name = :miner_address)");
     $stmt->execute([
       ':target' => $target,
       ':interval' => $interval,
       ':delay' => $delay,
       ':algo' => $algo,
+      ':worker_id' => $worker_id,
       ':version' => $version,
       'miner_address' => $miner_address
     ]);
@@ -299,19 +300,20 @@ AND workerid IN (SELECT id FROM workers WHERE algo=:algo AND version=:version AN
    * @param $miner_address
    * @return mixed
    */
-  public static function getHashrateStats($db, $coin_id, $version, $miner_address, $step = 300, $redis = FALSE) {
+  public static function getHashrateStats($db, $coin_id, $version, $worker_id, $miner_address, $step = 300, $redis = FALSE) {
     $algo = self::miner_getAlgos()[$coin_id];
     $target = self::miner_hashrate_constant($algo);
     $interval = self::miner_hashrate_step($step);
     $delay = time()-$interval;
 
     $stmt = $db->prepare("SELECT sum(difficulty) * :target / :interval / 1000 AS hashrate FROM shares WHERE valid AND time > :delay
-AND workerid IN (SELECT id FROM workers WHERE algo=:algo AND version=:version AND name = :miner_address)");
+AND workerid IN (SELECT id FROM workers WHERE algo=:algo AND id = :worker_id AND version=:version AND name = :miner_address)");
     $stmt->execute([
       ':target' => $target,
       ':interval' => $interval,
       ':delay' => $delay,
       ':algo' => $algo,
+      ':worker_id' => $worker_id,
       ':version' => $version,
       'miner_address' => $miner_address
     ]);
@@ -643,8 +645,8 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
           // Get workers for miner address
           $workers = self::getWorkers($db, $data['miner_address']);
           foreach ($workers as $key => $worker) {
-            $hashrate = self::getHashrate($db, $data['coin_id'], $worker['version'], $worker['name'], $data['miner_address']);
-            $hashrate_15_mins = self::getHashrateStats($db, $data['coin_id'], $worker['version'], $worker['name'], 900, $redis);
+            $hashrate = self::getHashrate($db, $data['coin_id'], $worker['version'], $worker['id'], $worker['name']);
+            $hashrate_15_mins = self::getHashrateStats($db, $data['coin_id'], $worker['version'], $worker['id'], $worker['name'], 900, $redis);
             $workers[$key]['hashrate'] = self::Itoa2($hashrate['hashrate']) . 'h/s';
             $workers[$key]['hashrate_15_mins'] = self::Itoa2($hashrate_15_mins['hashrate']) . 'h/s';
             $workers[$key]['hashrate'] = self::Itoa2($hashrate['hashrate']) . 'h/s';
