@@ -464,8 +464,17 @@ AND workerid IN (SELECT id FROM workers WHERE algo=:algo AND version=:version AN
    * Checks if we have active wallet
    */
   public static function checkWallet() {
+
+    // First check if we have something in get
     if (!empty($_GET['wallet'])) {
+      // Update cookie
+      setcookie('wallet', $_GET['wallet'], time() + (86400 * 30 * 30), "/"); // 1 month
       return $_GET['wallet'];
+    }
+
+    if(!empty($_COOKIE['wallet'])) {
+      // We have cookie
+      return $_COOKIE['wallet'];
     }
 
     return FALSE;
