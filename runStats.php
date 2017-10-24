@@ -128,7 +128,7 @@ function updatePoolHashrate($db) {
  * @param $db
  */
 function updateEarnings($db) {
-  print "version: 1.2" . "\n";
+  print "version: 1.3" . "\n";
 
   // Get all new blocks
   $stmt = $db->prepare("SELECT * FROM blocks WHERE category = :category ORDER by time");
@@ -160,6 +160,18 @@ function updateEarnings($db) {
     if (!empty($block_tx)) {
       // Get the reward from the block we found
       $reward = $block_tx['amount'];
+
+      // Yet immature tx
+      if ($reward < 0) {
+        // Check for immature transaction
+        if (!empty($block_tx['details'])) {
+          if (!empty($block_tx['details']['amount']) && !empty($block_tx['details']['category']) && $block_tx['details']['category'] == 'immature') {
+            print 'Processing immature block';
+            $reward = $block_tx['details']['amount'];
+          }
+        }
+
+      }
 
       // We continue if reward is set, when the block is found the reward is not set for few seconds
       if ($reward > 0) {
