@@ -613,6 +613,28 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
    * @return array
    */
   public static function _templateVariables($db, $route = null, $data = FALSE, $redis = FALSE) {
+
+    $hashrates_5_min = minerHelper::getUserPoolHashrateStats($db, minerHelper::miner_getAlgos()[$data['coin_id']], 300, $redis);
+    $hashrates_3_hours = minerHelper::getUserPoolHashrateStats($db, minerHelper::miner_getAlgos()[$data['coin_id']], 60 * 60 * 3, $redis);
+    $hashrates_24_hours = minerHelper::getUserPoolHashrateStats($db, minerHelper::miner_getAlgos()[$data['coin_id']], 60 * 60 * 24, $redis);
+
+    if (!empty($data['miner_address'])) {
+
+      // Load the user (@TODO avoid loading on all pages?)
+      $user = self::getAccount($db, null, $data['miner_address']);
+
+      // User specific hashrate
+      if (!empty($hashrates_5_min[$user['id']])) {
+        $hashrate_user_5_min = $hashrates_5_min[$user['id']];
+      }
+
+      // User specific hashrate
+      if (!empty($hashrates_24_hours[$user['id']])) {
+        $hashrate_user_24_hours = $hashrates_24_hours[$user['id']];
+      }
+
+    }
+
     switch ($route) {
       case 'index':
 
@@ -628,9 +650,6 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
             $workers[$key]['hashrate'] = self::Itoa2($hashrate['hashrate']) . 'h/s';
           }
 
-
-          // Load the user
-          $user = self::getAccount($db, null, $data['miner_address']);
           $immature_balance = self::getImmatureBalance($db, $data['coin_id'], $user['id']);
           $pending_balance = self::getPendingBalance($db, $data['coin_id'], $user['id']);
 
@@ -662,7 +681,9 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
           'earnings_last_7_days' => $earnings_last_7_days ?? FALSE,
           'earnings_last_30_days' => $earnings_last_30_days ?? FALSE,
           'payouts' => $payouts ?? [],
-          'total_paid' => $total_paid ?? FALSE
+          'total_paid' => $total_paid ?? FALSE,
+          'hashrate_user_5_min' => $hashrate_user_5_min ?? FALSE,
+          'hashrate_user_24_hours' => $hashrate_user_24_hours ?? FALSE
         ];
         break;
       case 'miners':
@@ -671,8 +692,10 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
           'miners' => minerHelper::getMiners($db, $data['coin_id']),
           'total_count_miners' => self::countMiners($db, $data['coin_id']) ?? FALSE,
           'total_count_workers' => self::countWorkers($db, $data['coin_id']) ?? FALSE,
-          'hahsrates_5_min' => minerHelper::getUserPoolHashrateStats($db, minerHelper::miner_getAlgos()[$data['coin_id']], 300, $redis),
-          'hashrates_3_hours' => minerHelper::getUserPoolHashrateStats($db, minerHelper::miner_getAlgos()[$data['coin_id']], 60 * 60 * 3, $redis)
+          'hahsrates_5_min' => $hashrates_5_min,
+          'hashrates_3_hours' => $hashrates_3_hours,
+          'hashrate_user_5_min' => $hashrate_user_5_min ?? FALSE,
+          'hashrate_user_24_hours' => $hashrate_user_24_hours ?? FALSE
         ];
         break;
       case 'blocks':
@@ -681,7 +704,9 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
         // Load last 30 blocks
         return [
           'blocks' => $blocks,
-          'last_found' => self::lastFoundBlockTime($blocks[0]['time'])
+          'last_found' => self::lastFoundBlockTime($blocks[0]['time']),
+          'hashrate_user_5_min' => $hashrate_user_5_min ?? FALSE,
+          'hashrate_user_24_hours' => $hashrate_user_24_hours ?? FALSE
         ];
         break;
     }

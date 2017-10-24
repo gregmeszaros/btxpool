@@ -113,6 +113,9 @@ body {
 }
 #header div.button.download span {
     background-position: 0px -666px;
+    margin-right: 20px;
+    margin-left: 20px;
+    padding: 10px;
 }
 #header div.button.download:hover span {
     color: #FFFFFF;
