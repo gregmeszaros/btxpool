@@ -162,12 +162,12 @@ function updateEarnings($db) {
       $reward = $block_tx['amount'];
 
       // Yet immature tx
-      if ($reward < 0) {
+      if ($reward <= 0) {
         // Check for immature transaction
         if (!empty($block_tx['details'])) {
-          if (!empty($block_tx['details']['amount']) && !empty($block_tx['details']['category']) && $block_tx['details']['category'] == 'immature') {
+          if (!empty($block_tx['details'][0]['amount']) && !empty($block_tx['details'][0]['category']) && $block_tx['details'][0]['category'] == 'immature') {
             print 'Processing immature block';
-            $reward = $block_tx['details']['amount'];
+            $reward = $block_tx['details'][0]['amount'];
           }
         }
 
