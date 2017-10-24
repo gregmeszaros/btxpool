@@ -224,10 +224,47 @@ class minerHelper {
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
   }
 
+  /**
+   * Last beat / not yet cached
+   * @param $db
+   * @param $coin_id
+   * @param $version
+   * @param $miner_address
+   * @return mixed
+   */
   public static function getHashrate($db, $coin_id, $version, $miner_address) {
     $algo = self::miner_getAlgos()[$coin_id];
     $target = self::miner_hashrate_constant($algo);
     $interval = self::miner_hashrate_step();
+    $delay = time()-$interval;
+
+    $stmt = $db->prepare("SELECT sum(difficulty) * :target / :interval / 1000 AS hashrate FROM shares WHERE valid AND time > :delay
+AND workerid IN (SELECT id FROM workers WHERE algo=:algo AND version=:version AND name = :miner_address)");
+    $stmt->execute([
+      ':target' => $target,
+      ':interval' => $interval,
+      ':delay' => $delay,
+      ':algo' => $algo,
+      ':version' => $version,
+      'miner_address' => $miner_address
+    ]);
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+
+  }
+
+  /**
+   * Stats for user and worker
+   * Cached for 5 minutes
+   * @param $db
+   * @param $coin_id
+   * @param $version
+   * @param $miner_address
+   * @return mixed
+   */
+  public static function getHashrateStats($db, $coin_id, $version, $miner_address, $step = 300, $redis = FALSE) {
+    $algo = self::miner_getAlgos()[$coin_id];
+    $target = self::miner_hashrate_constant($algo);
+    $interval = self::miner_hashrate_step($step);
     $delay = time()-$interval;
 
     $stmt = $db->prepare("SELECT sum(difficulty) * :target / :interval / 1000 AS hashrate FROM shares WHERE valid AND time > :delay
@@ -531,33 +568,40 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
   public static function _templateVariables($db, $route = null, $data = FALSE, $redis = FALSE) {
     switch ($route) {
       case 'index':
-        // Get workers for miner address
-        $workers = self::getWorkers($db, $data['miner_address']);
-        foreach ($workers as $key => $worker) {
-          $hashrate = self::getHashrate($db, $data['coin_id'], $worker['version'], $worker['name'], $data['miner_address']);
-          $workers[$key]['hashrate'] = self::Itoa2($hashrate['hashrate']) . 'h/s';
-        }
 
         // If we have miner address
         if (!empty($data['miner_address'])) {
+          // Get workers for miner address
+          $workers = self::getWorkers($db, $data['miner_address']);
+          foreach ($workers as $key => $worker) {
+            $hashrate = self::getHashrate($db, $data['coin_id'], $worker['version'], $worker['name'], $data['miner_address']);
+            $hashrate_15_mins = self::getHashrateStats($db, $data['coin_id'], $worker['version'], $worker['name'], 900, $redis);
+            $workers[$key]['hashrate'] = self::Itoa2($hashrate['hashrate']) . 'h/s';
+            $workers[$key]['hashrate_15_mins'] = self::Itoa2($hashrate_15_mins['hashrate']) . 'h/s';
+            $workers[$key]['hashrate'] = self::Itoa2($hashrate['hashrate']) . 'h/s';
+          }
+
+
           // Load the user
           $user = self::getAccount($db, null, $data['miner_address']);
           $immature_balance = self::getImmatureBalance($db, $data['coin_id'], $user['id']);
           $pending_balance = self::getPendingBalance($db, $data['coin_id'], $user['id']);
 
+          // Earnings
           $earnings_last_hour = self::getUserEarnings($db, $data['coin_id'], $user['id'], 60 * 60 * 1);
           $earnings_last_3_hours = self::getUserEarnings($db, $data['coin_id'], $user['id'], 60 * 60 * 3);
           $earnings_last_24_hours = self::getUserEarnings($db, $data['coin_id'], $user['id'], 60 * 60 * 24);
           $earnings_last_7_days = self::getUserEarnings($db, $data['coin_id'], $user['id'], 60 * 60 * 24 * 7);
           $earnings_last_30_days = self::getUserEarnings($db, $data['coin_id'], $user['id'], 60 * 60 * 24 * 30);
 
+          // Payouts
           $payouts = self::getPayouts($db, $data['coin_id'], $user['id']);
           $total_paid = self::getTotalPayout($db, $data['coin_id'], $user['id']);
         }
 
         return [
-          'workers' => $workers,
-          'workers_count' => count($workers),
+          'workers' => $workers ?? [],
+          'workers_count' => !empty($workers) ? count($workers) : 0,
           'user' => $user ?? FALSE,
           'total_count_miners' => self::countMiners($db, $data['coin_id']) ?? FALSE,
           'total_count_workers' => self::countWorkers($db, $data['coin_id']) ?? FALSE,

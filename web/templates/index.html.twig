@@ -77,14 +77,14 @@
                         <tr>
                             <th>ID</th>
                             <th>Miner version</th>
-                            <th>Hashrate (Last Beat / 1h average / 3h average)</th>
+                            <th>Hashrate (5min average / 15min average)</th>
                         </tr>
 
                         {% for worker in workers %}
                             <tr>
                                 <td> {{ worker.id }} </td>
                                 <td> {{ worker.version }} </td>
-                                <td> {{ worker.hashrate }} </td>
+                                <td> {{ worker.hashrate }} / {{ worker.hashrate_15_mins }} </td>
                             </tr>
                         {% endfor %}
 
