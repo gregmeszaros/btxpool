@@ -128,7 +128,7 @@ function updatePoolHashrate($db) {
  * @param $db
  */
 function updateEarnings($db) {
-  print "version: 1.3" . "\n";
+  print "version: 1.4" . "\n";
 
   // Get all new blocks
   $stmt = $db->prepare("SELECT * FROM blocks WHERE category = :category ORDER by time");
