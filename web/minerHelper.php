@@ -599,7 +599,7 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
    */
   public static function getPayouts($db, $coin_id, $user_id, $redis = FALSE) {
     // @TODO -> cache this
-    $stmt = $db->prepare("SELECT * FROM payouts WHERE account_id = :user_id AND idcoin = :coin_id LIMIT 0, 30");
+    $stmt = $db->prepare("SELECT * FROM payouts WHERE account_id = :user_id AND idcoin = :coin_id ORDER BY id DESC LIMIT 0, 30");
     $stmt->execute([
       ':user_id' => $user_id,
       ':coin_id' => $coin_id
