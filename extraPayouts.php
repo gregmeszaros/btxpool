@@ -38,7 +38,7 @@ function sendExtraPayouts($db, $coin_id = 1425, $extra_payout = FALSE) {
   print 'Wallet min. payout: ' . $min_payout . "\n";
 
   // Process extra payout
-  if (!empty($extra_payout) {
+  if (!empty($extra_payout)) {
     print 'Activating extra payout: ' . $extra_payout . "\n";
     $min_payout =  $extra_payout;
   }
