@@ -50,5 +50,18 @@
     </script>
 {% endif %}
 
+{% if load_blocks_charts %}
+    <!-- custom js for charts -->
+    <script src="js/custom-charts.js"></script>
+
+    <script>
+      // Get total pool hashrate chart
+      $.getJSON("api.php?type=block-difficulty&callback=?", function (json) {
+        console.log(json);
+        plotLineGraph(json, 'container-block-diff', 'Block difficulty change');
+      });
+    </script>
+{% endif %}
+
 </body>
 </html>

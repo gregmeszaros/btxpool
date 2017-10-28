@@ -77,6 +77,15 @@ if (!empty($callback)) {
       $array_data = $stmt->fetchAll(PDO::FETCH_ASSOC);
       $data = str_putcsv($array_data);
       break;
+
+    case 'block-difficulty':
+      // Block difficulty change
+      $stmt = $conn->prepare("SELECT height as Block, ROUND(difficulty, 2) as Difficulty FROM blocks ORDER BY height DESC LIMIT 0, 30");
+      $stmt->execute();
+
+      $array_data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+      $data = str_putcsv($array_data);
+      break;
   }
 
   print $_GET['callback'] . '(' . json_encode($data, JSON_UNESCAPED_SLASHES) . ')';

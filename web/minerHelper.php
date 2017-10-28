@@ -16,21 +16,19 @@ class minerHelper {
         'id' => 'home',
         'label' => 'Home',
         'url' => $base_route . 'index',
-        'template' => 'index.html.twig',
-        'load_charts' => TRUE
+        'template' => 'index.html.twig'
       ],
       'miners' => [
         'id' => 'users',
         'label' => 'Miners',
         'url' => $base_route . 'miners',
-        'template' => 'miners.html.twig',
-        'load_miner_charts' => TRUE
+        'template' => 'miners.html.twig'
       ],
       'blocks' => [
         'id' => 'cubes',
         'label' => 'Blocks',
         'url' => $base_route . 'blocks',
-        'template' => 'blocks.html.twig',
+        'template' => 'blocks.html.twig'
       ],
       'explorer' => [
         'id' => 'search',
@@ -686,7 +684,8 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
           'payouts' => $payouts ?? [],
           'total_paid' => $total_paid ?? FALSE,
           'hashrate_user_5_min' => $hashrate_user_5_min ?? FALSE,
-          'hashrate_user_24_hours' => $hashrate_user_24_hours ?? FALSE
+          'hashrate_user_24_hours' => $hashrate_user_24_hours ?? FALSE,
+          'load_charts' => TRUE
         ];
         break;
       case 'miners':
@@ -698,7 +697,8 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
           'hahsrates_5_min' => $hashrates_5_min,
           'hashrates_3_hours' => $hashrates_3_hours,
           'hashrate_user_5_min' => $hashrate_user_5_min ?? FALSE,
-          'hashrate_user_24_hours' => $hashrate_user_24_hours ?? FALSE
+          'hashrate_user_24_hours' => $hashrate_user_24_hours ?? FALSE,
+          'load_miner_charts' => TRUE
         ];
         break;
       case 'blocks':
@@ -709,7 +709,8 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
           'blocks' => $blocks,
           'last_found' => self::lastFoundBlockTime($blocks[0]['time']),
           'hashrate_user_5_min' => $hashrate_user_5_min ?? FALSE,
-          'hashrate_user_24_hours' => $hashrate_user_24_hours ?? FALSE
+          'hashrate_user_24_hours' => $hashrate_user_24_hours ?? FALSE,
+          'load_blocks_charts' => TRUE
         ];
         break;
     }

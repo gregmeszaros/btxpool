@@ -90,8 +90,39 @@ function plotLineGraph(json, element_id, label) {
 
   };
 
-// Apply the theme
+  // Apply the theme
   Highcharts.setOptions(Highcharts.theme);
+
+  // Default setups
+  var c_series = {
+    dataLabels: {
+      align: 'left',
+      enabled: false
+    }
+  }
+
+  var c_tooltip = {
+    shared: true,
+    crosshairs: true
+  };
+
+  if (element_id == 'container-block-diff') {
+    var c_tooltip = {
+      formatter: function () {
+        return "Block height: " + this.x + "<br />" + " Difficulty: " + this.y;
+      },
+      shared: true,
+      crosshairs: true
+    };
+
+    var c_series = {
+      step: 'left',
+      dataLabels: {
+        align: 'left',
+        enabled: true
+      }
+    }
+  }
 
   Highcharts.chart(element_id, {
 
@@ -158,6 +189,7 @@ function plotLineGraph(json, element_id, label) {
     }],
 
     legend: {
+      enabled: false,
       align: 'left',
       verticalAlign: 'top',
       y: 10,
@@ -165,34 +197,10 @@ function plotLineGraph(json, element_id, label) {
       borderWidth: 0
     },
 
-    tooltip: {
-      shared: true,
-      crosshairs: true
-    },
+    tooltip: c_tooltip,
 
     plotOptions: {
-      /**series: {
-        cursor: 'pointer',
-        point: {
-          events: {
-            click: function (e) {
-              hs.htmlExpand(null, {
-                pageOrigin: {
-                  x: e.pageX || e.clientX,
-                  y: e.pageY || e.clientY
-                },
-                headingText: this.series.name,
-                maincontentText: Highcharts.dateFormat('%A, %b %e, %Y', this.x) + ':<br/> ' +
-                this.y + ' visits',
-                width: 200
-              });
-            }
-          }
-        },
-        marker: {
-          lineWidth: 1
-        }
-      } - No click event for now... */
+      series: c_series,
     },
 
     series: [{
@@ -201,8 +209,6 @@ function plotLineGraph(json, element_id, label) {
       marker: {
         radius: 4
       }
-    }, {
-      name: 'Earnings'
     }]
   });
 }

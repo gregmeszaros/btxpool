@@ -70,8 +70,6 @@ if (!empty($load_routes[$page]['template'])) {
   $default_variables = [
     'routes' => $load_routes,
     'current_route' => $page,
-    'load_charts' => $load_routes[$page]['load_charts'] ?? FALSE,
-    'load_miner_charts' => $load_routes[$page]['load_miner_charts'] ?? FALSE,
     'wallet' => $wallet,
     'total_pool_hashrate' => $total_pool_hashrate
   ];
