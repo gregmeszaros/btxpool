@@ -193,7 +193,7 @@ class minerHelper {
    * @return mixed
    */
   public static function getMiners($db, $coin_id) {
-    $stmt = $db->prepare("SELECT DISTINCT userid, username FROM accounts ac INNER JOIN workers w ON ac.id = w.userid WHERE ac.coinid = :coin_id");
+    $stmt = $db->prepare("SELECT DISTINCT userid, username, COUNT(w.id) AS workers_count FROM accounts ac INNER JOIN workers w ON ac.id = w.userid WHERE ac.coinid = :coin_id GROUP BY userid ORDER BY workers_count DESC");
     $stmt->execute([
       ':coin_id' => $coin_id,
     ]);
