@@ -376,7 +376,7 @@ ul.input-list {
     margin: 0 -10px;
     padding: 0;
 }
-ol, ul {
+ol, ul:not(.announcements) {
     list-style: none;
 }
 
