@@ -1,0 +1,36 @@
+{% include 'header.html' %}
+
+<div id="main">
+
+    <div class="intro">
+        <h1 class="header-h1">Block Earnings breakdown for block number {{ block_earnings[0].height }}</h1>
+        <div class="minercontent">
+            <table class="table">
+                <tr>
+                    <th>Miner</th>
+                    <th>Amount earned (after pool fee deducted)</th>
+                    <th>Round share</th>
+                </tr>
+
+                {% for block_data in block_earnings %}
+                    <tr>
+                        <td>
+                            <a href="index.php?page=index&wallet={{ block_data.username }}"> {{ block_data.username }} </a>
+                        </td>
+                        <td> {{ roundSimple(block_data.amount_earned) }} </td>
+                        <td> {{ roundSimple(block_data.round_share) }}% </td>
+                    </tr>
+                {% endfor %}
+
+            </table>
+
+            <br />
+            <div><strong> Total block reward: {{ block_reward.amount }} </strong></div>
+            <div><strong> Sum total paid for miners: {{ block_reward_after_fee }} </strong></div>
+            <div><strong> Pool fee paid: {{ pool_fee_amount }} BTX ({{ pool_fee_percent }}%) </strong></div>
+
+        </div>
+    </div>
+</div>
+
+{% include 'footer.html' %}
