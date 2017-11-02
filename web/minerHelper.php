@@ -30,6 +30,13 @@ class minerHelper {
         'url' => $base_route . 'blocks',
         'template' => 'blocks.html.twig'
       ],
+      'block-earnings' => [
+        'id' => 'cubes',
+        'label' => 'Block earnings',
+        'url' => $base_route . 'block-earnings',
+        'template' => 'block-earnings.html.twig',
+        'menu_exclude' => TRUE
+      ],
       'explorer' => [
         'id' => 'search',
         'label' => 'Blockchain',
@@ -580,6 +587,69 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
   }
 
   /**
+   * Returns earnings breakdown for specific block
+   * @param $db
+   * @param $coin_id
+   * @param $block_id
+   * @param bool $redis
+   */
+  public static function getBlockEarnings($db, $coin_id, $block_id, $redis = FALSE) {
+
+    // If we have redis connection try to load cached data first
+    if (!empty($redis) && is_object($redis)) {
+      $data = [];
+
+      $block_earnings = json_decode($redis->get('block_earnings_' . $block_id), TRUE);
+
+      // We have the data cached
+      if (!empty($block_earnings)) {
+        $data = $block_earnings;
+        print '<!–- block_earnings ' . $block_id . ' - return from redis –>';
+        return $data;
+      }
+
+    }
+
+    // Mysql query
+    $stmt = $db->prepare("SELECT ac.id, ac.username, e.amount AS amount_earned, b.height, b.amount, e.amount / b.amount * 100 AS round_share FROM earnings e INNER JOIN accounts ac ON ac.id = e.userid INNER JOIN blocks b ON e.blockid = b.id WHERE e.coinid = :coin_id AND e.blockid = :block_id ORDER BY e.amount DESC");
+    $stmt->execute([
+      ':coin_id' => $coin_id,
+      ':block_id' => $block_id
+    ]);
+
+    if (!empty($redis) && is_object($redis)) {
+      $data = [];
+      // We didn't have cached value let's cache it now
+      $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+      // Cache for 5 mins
+      $redis->set('block_earnings_' . $block_id, json_encode($data), 600);
+    }
+
+    print '<!–- block_earnings ' . $block_id . ' - return from mysql –>';
+
+    // Return with standard fallback
+    return $data ?? $stmt->fetchAll(PDO::FETCH_ASSOC);
+  }
+
+  /**
+   * Get specific block reward
+   * @param $db
+   * @param $coin_id
+   * @param $block_id
+   * @param bool $redis
+   * @return mixed
+   */
+  public static function getBlockReward($db, $coin_id, $block_id, $redis = FALSE) {
+    $stmt = $db->prepare("SELECT amount FROM blocks WHERE id = :block_id AND coin_id = :coin_id");
+    $stmt->execute([
+      ':coin_id' => $coin_id,
+      ':block_id' => $block_id
+    ]);
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+  }
+
+  /**
    * Get total payout for the user
    */
   public static function getTotalPayout($db, $coin_id, $user_id, $redis = FALSE) {
@@ -711,6 +781,22 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
           'hashrate_user_5_min' => $hashrate_user_5_min ?? FALSE,
           'hashrate_user_24_hours' => $hashrate_user_24_hours ?? FALSE,
           'load_blocks_charts' => TRUE
+        ];
+        break;
+      case 'block-earnings':
+        $block_id = $_GET['id'] ?? FALSE;
+        $block_earnings = minerHelper::getBlockEarnings($db, $data['coin_id'], $block_id, $redis);
+        $block_reward = minerHelper::getBlockReward($db, $data['coin_id'], $block_id);
+
+        // Load last 30 blocks
+        return [
+          'block_earnings' => $block_earnings,
+          'block_reward' => $block_reward,
+          'block_reward_after_fee' => self::takePoolFee($block_reward['amount'], self::miner_getAlgos()[$data['coin_id']]),
+          'pool_fee_amount' => $block_reward['amount'] - self::takePoolFee($block_reward['amount'], self::miner_getAlgos()[$data['coin_id']]),
+          'pool_fee_percent' => self::getPoolFee()[self::miner_getAlgos()[$data['coin_id']]],
+          'hashrate_user_5_min' => $hashrate_user_5_min ?? FALSE,
+          'hashrate_user_24_hours' => $hashrate_user_24_hours ?? FALSE
         ];
         break;
     }

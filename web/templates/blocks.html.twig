@@ -21,7 +21,7 @@
 
                 {% for block in blocks %}
                     <tr>
-                        <td> {{ block.height }} </td>
+                        <td> See earnings for <a href="index.php?page=block-earnings&id={{ block.id }}" > {{ block.height }} </a></td>
                         <td> {{ block.amount }} BTX </td>
                         <td> {{ showDateTime(block.time) }} </td>
                         <td> {{ formatConfirmations(block.confirmations) }} </td>
