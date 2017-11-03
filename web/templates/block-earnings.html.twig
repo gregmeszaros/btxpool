@@ -17,7 +17,7 @@
                         <td>
                             <a href="index.php?page=index&wallet={{ block_data.username }}"> {{ block_data.username }} </a>
                         </td>
-                        <td> {{ roundSimple(block_data.amount_earned) }} </td>
+                        <td> {{ roundSimple(block_data.amount_earned) }} BTX </td>
                         <td> {{ roundSimple(block_data.round_share) }}% </td>
                     </tr>
                 {% endfor %}
@@ -25,8 +25,8 @@
             </table>
 
             <br />
-            <div><strong> Total block reward: {{ block_reward.amount }} </strong></div>
-            <div><strong> Sum total paid for miners: {{ block_reward_after_fee }} </strong></div>
+            <div><strong> Total block reward: {{ block_reward.amount }} BTX </strong></div>
+            <div><strong> Sum total paid for miners: {{ block_reward_after_fee }} BTX </strong></div>
             <div><strong> Pool fee paid: {{ pool_fee_amount }} BTX ({{ pool_fee_percent }}%) </strong></div>
 
         </div>
