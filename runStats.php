@@ -36,9 +36,7 @@ function updatePoolHashrate($db) {
 
   // Delete old connections
   $stmt = $db->prepare("DELETE FROM stratums WHERE time < :time");
-  $stmt->execute([
-    ':time' => $t
-  ]);
+  $stmt->execute([':time' => $t]);
 
   // Delete old workers
   $stmt = $db->prepare("DELETE FROM workers WHERE pid NOT IN (SELECT pid FROM stratums)");
@@ -48,79 +46,85 @@ function updatePoolHashrate($db) {
   // Long term stats (pool and invidiual users)
   //
   $tm = floor(time() / 60 / 60) * 60 * 60;
-  foreach(minerHelper::miner_getAlgos() as $algo) {
-    $pool_rate = minerHelper::getPoolHashrate($db, $algo);
+  foreach (minerHelper::miner_getAlgos() as $algo_key => $algo) {
 
-    // Insert total pool hashrate stats
-    $stmt = $db->prepare("INSERT INTO hashstats(time, hashrate, earnings, algo) VALUES(:time, :hashrate, :earnings, :algo)");
-    $stmt->execute([
-      ':time' => $t,
-      ':hashrate' => $pool_rate['hashrate'],
-      ':earnings' => null,
-      ':algo' => $algo
-    ]);
+    $check_shares = $db->prepare("SELECT count(*) AS total_share_count FROM shares WHERE valid = 1 AND coinid = :coin_id");
+    $check_shares->execute([':coin_id' => $algo_key]);
 
-    // Individual user stats
-    $user_hashstats = minerHelper::getUserPoolHashrate($db, $algo);
-    foreach ($user_hashstats as $user_hash_data) {
-      $stmt = $db->prepare("INSERT INTO hashuser(userid, time, hashrate, hashrate_bad, algo) VALUES(:userid, :time, :hashrate, :hashrate_bad, :algo)");
-      $stmt->execute([
-        ':userid' => $user_hash_data['userid'],
-        ':time' => $t,
-        ':hashrate' => $user_hash_data['hashrate'],
-        ':hashrate_bad' => 0,
-        ':algo' => $algo
-      ]);
+    // How many shares are submitted
+    $tt_share_check = $check_shares->fetch(PDO::FETCH_ASSOC);
+
+    // Add stats entry if we have at least 10 entries from each active miner (when block is found the shares are reset causing stats issues)
+    $active_miners = minerHelper::countMiners($db, $algo_key)['total_count'];
+
+    if ($tt_share_check['total_share_count'] > ($active_miners * 10)) {
+
+      $pool_rate = minerHelper::getPoolHashrate($db, $algo);
+
+      // Insert total pool hashrate stats
+      $stmt = $db->prepare("INSERT INTO hashstats(time, hashrate, earnings, algo) VALUES(:time, :hashrate, :earnings, :algo)");
+      $stmt->execute([':time' => $t, ':hashrate' => $pool_rate['hashrate'], ':earnings' => null, ':algo' => $algo]);
+
+      // Individual user stats
+      $user_hashstats = minerHelper::getUserPoolHashrate($db, $algo);
+      foreach ($user_hashstats as $user_hash_data) {
+        $stmt = $db->prepare("INSERT INTO hashuser(userid, time, hashrate, hashrate_bad, algo) VALUES(:userid, :time, :hashrate, :hashrate_bad, :algo)");
+        $stmt->execute([':userid' => $user_hash_data['userid'], ':time' => $t, ':hashrate' => $user_hash_data['hashrate'], ':hashrate_bad' => 0, ':algo' => $algo]);
+      }
+
+
+      // @TODO -> Store pool and user earnings too??
+
+      print minerHelper::Itoa2($pool_rate['hashrate']) . 'h/s' . "\n";
+
+      /**
+       * dborun("DELETE FROM stratums WHERE time < $t");
+       * dborun("DELETE FROM workers WHERE pid NOT IN (SELECT pid FROM stratums)");
+       *
+       * // todo: cleanup could be done once per day or week...
+       * dborun("DELETE FROM hashstats WHERE IFNULL(hashrate,0) = 0 AND IFNULL(earnings,0) = 0");
+       *
+       * //////////////////////////////////////////////////////////////////////////////////////////////////////
+       * // long term stats
+       *
+       * $tm = floor(time()/60/60)*60*60;
+       * foreach(yaamp_get_algos() as $algo) {
+       * $pool_rate = yaamp_pool_rate($algo);
+       *
+       * $stats = getdbosql('db_hashstats', "time=$tm and algo=:algo", [':algo'=>$algo]);
+       * if(!$stats) {
+       * $stats = new db_hashstats;
+       * $stats->time = $tm;
+       * $stats->hashrate = $pool_rate;
+       * $stats->algo = $algo;
+       * $stats->earnings = null;
+       * }
+       * else {
+       * $percent = 1;
+       * $stats->hashrate = round(($stats->hashrate*(100-$percent) + $pool_rate*$percent) / 100);
+       * }
+       *
+       * $earnings = bitcoinvaluetoa(dboscalar(
+       * "SELECT SUM(amount*price) FROM blocks WHERE algo=:algo AND time>$tm AND category!='orphan'",
+       * [':algo'=>$algo]
+       * ));
+       *
+       * if (bitcoinvaluetoa($stats->earnings) != $earnings) {
+       * debuglog("$algo earnings: $earnings BTC");
+       * $stats->earnings = $earnings;
+       * }
+       *
+       * if (floatval($earnings) || $stats->hashrate)
+       * $stats->save();
+       * }
+       */
+
+      print 'Done stats calc' . "\n";
+    } else {
+      print 'Not inserting stats' . "\n";
     }
 
   }
-
-  // @TODO -> Store pool and user earnings too??
-
-  print minerHelper::Itoa2($pool_rate['hashrate']) . 'h/s' . "\n";
-
-  /**
-  dborun("DELETE FROM stratums WHERE time < $t");
-  dborun("DELETE FROM workers WHERE pid NOT IN (SELECT pid FROM stratums)");
-
-  // todo: cleanup could be done once per day or week...
-  dborun("DELETE FROM hashstats WHERE IFNULL(hashrate,0) = 0 AND IFNULL(earnings,0) = 0");
-
-  //////////////////////////////////////////////////////////////////////////////////////////////////////
-  // long term stats
-
-  $tm = floor(time()/60/60)*60*60;
-  foreach(yaamp_get_algos() as $algo) {
-    $pool_rate = yaamp_pool_rate($algo);
-
-    $stats = getdbosql('db_hashstats', "time=$tm and algo=:algo", [':algo'=>$algo]);
-    if(!$stats) {
-      $stats = new db_hashstats;
-      $stats->time = $tm;
-      $stats->hashrate = $pool_rate;
-      $stats->algo = $algo;
-      $stats->earnings = null;
-    }
-    else {
-      $percent = 1;
-      $stats->hashrate = round(($stats->hashrate*(100-$percent) + $pool_rate*$percent) / 100);
-    }
-
-    $earnings = bitcoinvaluetoa(dboscalar(
-      "SELECT SUM(amount*price) FROM blocks WHERE algo=:algo AND time>$tm AND category!='orphan'",
-      [':algo'=>$algo]
-    ));
-
-    if (bitcoinvaluetoa($stats->earnings) != $earnings) {
-      debuglog("$algo earnings: $earnings BTC");
-      $stats->earnings = $earnings;
-    }
-
-    if (floatval($earnings) || $stats->hashrate)
-      $stats->save();
-  }
-  */
-
 }
 
 /**
@@ -128,7 +132,7 @@ function updatePoolHashrate($db) {
  * @param $db
  */
 function updateEarnings($db) {
-  print "version: 1.4" . "\n";
+  print "version: 1.5" . "\n";
 
   // Get all new blocks
   $stmt = $db->prepare("SELECT * FROM blocks WHERE category = :category ORDER by time");
