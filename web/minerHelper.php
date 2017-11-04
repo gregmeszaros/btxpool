@@ -101,7 +101,7 @@ class minerHelper {
    *
    * @return int
    */
-  public static function miner_hashrate_step($step = 600) {
+  public static function miner_hashrate_step($step = 300) {
     return $step;
   }
 
@@ -311,7 +311,7 @@ AND workerid IN (SELECT id FROM workers WHERE algo=:algo AND id = :worker_id AND
       // If we have redis connection try to load old cached data
       if (!empty($redis) && is_object($redis)) {
         // Cache for 1hour (just in case)
-        $redis->set('users_worker_hashrate_' . $miner_address . '_' . $worker_id . '_' . $step, json_encode($data), 3600);
+        $redis->set('users_worker_hashrate_' . $miner_address . '_' . $worker_id . '_' . $step, json_encode($data), 3600 * 24);
         print '<!–- worker_users_hashrate ' . $miner_address . '_' . $worker_id . '_' . $step . ' - return from mysql/redis –>';
         return $data;
       }
