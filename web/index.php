@@ -24,7 +24,7 @@ $data['miner_address'] = $wallet;
 $data['coin_id'] = $coin_id;
 
 // Get the total pool hashrate
-$total_pool_hashrate = minerHelper::getPoolHashrateStats($conn, minerHelper::miner_getAlgos()[$data['coin_id']], 300, $redis);
+$total_pool_hashrate = minerHelper::getPoolHashrateStats($conn, minerHelper::miner_getAlgos()[$data['coin_id']], 600, $redis);
 
 // Get the current page
 $page = $_GET['page'] ?? "index";

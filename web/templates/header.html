@@ -49,6 +49,6 @@
     {% endfor %}
 
     {% if wallet %}
-        <div class="button download" data-link="#"><span><label>Your hashrate (5min / 24h): </label> {{ showFriendlyHash(hashrate_user_5_min.hashrate)|default(0) }} / {{ showFriendlyHash(hashrate_user_24_hours.hashrate)|default(0) }}</span></div>
+        <div class="button download" data-link="#"><span><label>Your hashrate (30min / 24h): </label> {{ showFriendlyHash(hashrate_user_30_min.hashrate)|default(0) }} / {{ showFriendlyHash(hashrate_user_24_hours.hashrate)|default(0) }}</span></div>
     {% endif %}
 </div>

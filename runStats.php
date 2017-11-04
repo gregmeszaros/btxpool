@@ -57,7 +57,7 @@ function updatePoolHashrate($db) {
     // Add stats entry if we have at least 10 entries from each active miner (when block is found the shares are reset causing stats issues)
     $active_miners = minerHelper::countMiners($db, $algo_key)['total_count'];
 
-    if ($tt_share_check['total_share_count'] > ($active_miners * 10)) {
+    if ($tt_share_check['total_share_count'] > ($active_miners * 15)) {
 
       $pool_rate = minerHelper::getPoolHashrate($db, $algo);
 
@@ -72,52 +72,9 @@ function updatePoolHashrate($db) {
         $stmt->execute([':userid' => $user_hash_data['userid'], ':time' => $t, ':hashrate' => $user_hash_data['hashrate'], ':hashrate_bad' => 0, ':algo' => $algo]);
       }
 
-
       // @TODO -> Store pool and user earnings too??
 
       print minerHelper::Itoa2($pool_rate['hashrate']) . 'h/s' . "\n";
-
-      /**
-       * dborun("DELETE FROM stratums WHERE time < $t");
-       * dborun("DELETE FROM workers WHERE pid NOT IN (SELECT pid FROM stratums)");
-       *
-       * // todo: cleanup could be done once per day or week...
-       * dborun("DELETE FROM hashstats WHERE IFNULL(hashrate,0) = 0 AND IFNULL(earnings,0) = 0");
-       *
-       * //////////////////////////////////////////////////////////////////////////////////////////////////////
-       * // long term stats
-       *
-       * $tm = floor(time()/60/60)*60*60;
-       * foreach(yaamp_get_algos() as $algo) {
-       * $pool_rate = yaamp_pool_rate($algo);
-       *
-       * $stats = getdbosql('db_hashstats', "time=$tm and algo=:algo", [':algo'=>$algo]);
-       * if(!$stats) {
-       * $stats = new db_hashstats;
-       * $stats->time = $tm;
-       * $stats->hashrate = $pool_rate;
-       * $stats->algo = $algo;
-       * $stats->earnings = null;
-       * }
-       * else {
-       * $percent = 1;
-       * $stats->hashrate = round(($stats->hashrate*(100-$percent) + $pool_rate*$percent) / 100);
-       * }
-       *
-       * $earnings = bitcoinvaluetoa(dboscalar(
-       * "SELECT SUM(amount*price) FROM blocks WHERE algo=:algo AND time>$tm AND category!='orphan'",
-       * [':algo'=>$algo]
-       * ));
-       *
-       * if (bitcoinvaluetoa($stats->earnings) != $earnings) {
-       * debuglog("$algo earnings: $earnings BTC");
-       * $stats->earnings = $earnings;
-       * }
-       *
-       * if (floatval($earnings) || $stats->hashrate)
-       * $stats->save();
-       * }
-       */
 
       print 'Done stats calc' . "\n";
     } else {
@@ -132,7 +89,7 @@ function updatePoolHashrate($db) {
  * @param $db
  */
 function updateEarnings($db) {
-  print "version: 1.5" . "\n";
+  print "version: 1.6" . "\n";
 
   // Get all new blocks
   $stmt = $db->prepare("SELECT * FROM blocks WHERE category = :category ORDER by time");

@@ -101,7 +101,7 @@ class minerHelper {
    *
    * @return int
    */
-  public static function miner_hashrate_step($step = 300) {
+  public static function miner_hashrate_step($step = 600) {
     return $step;
   }
 
@@ -268,35 +268,6 @@ class minerHelper {
   }
 
   /**
-   * Last beat / not yet cached
-   * @param $db
-   * @param $coin_id
-   * @param $version
-   * @param $miner_address
-   * @return mixed
-   */
-  public static function getHashrate($db, $coin_id, $version, $worker_id, $miner_address) {
-    $algo = self::miner_getAlgos()[$coin_id];
-    $target = self::miner_hashrate_constant($algo);
-    $interval = self::miner_hashrate_step();
-    $delay = time()-$interval;
-
-    $stmt = $db->prepare("SELECT sum(difficulty) * :target / :interval / 1000 AS hashrate FROM shares WHERE valid AND time > :delay
-AND workerid IN (SELECT id FROM workers WHERE algo=:algo AND id = :worker_id AND version=:version AND name = :miner_address)");
-    $stmt->execute([
-      ':target' => $target,
-      ':interval' => $interval,
-      ':delay' => $delay,
-      ':algo' => $algo,
-      ':worker_id' => $worker_id,
-      ':version' => $version,
-      'miner_address' => $miner_address
-    ]);
-    return $stmt->fetch(PDO::FETCH_ASSOC);
-
-  }
-
-  /**
    * Stats for user and worker
    * Cached for 5 minutes
    * @param $db
@@ -311,18 +282,59 @@ AND workerid IN (SELECT id FROM workers WHERE algo=:algo AND id = :worker_id AND
     $interval = self::miner_hashrate_step($step);
     $delay = time()-$interval;
 
-    $stmt = $db->prepare("SELECT sum(difficulty) * :target / :interval / 1000 AS hashrate FROM shares WHERE valid AND time > :delay
+    $check_shares = $db->prepare("SELECT count(*) AS total_share_count FROM shares WHERE valid = 1 AND coinid = :coin_id");
+    $check_shares->execute([':coin_id' => $coin_id]);
+
+    // How many shares are submitted
+    $tt_share_check = $check_shares->fetch(PDO::FETCH_ASSOC);
+
+    // Add stats entry if we have at least 10 entries from each active miner (when block is found the shares are reset causing stats issues)
+    $active_miners = self::countMiners($db, $coin_id)['total_count'];
+
+    if ($tt_share_check['total_share_count'] > ($active_miners * 15)) {
+
+      $stmt = $db->prepare("SELECT sum(difficulty) * :target / :interval / 1000 AS hashrate FROM shares WHERE valid AND time > :delay
 AND workerid IN (SELECT id FROM workers WHERE algo=:algo AND id = :worker_id AND version=:version AND name = :miner_address)");
-    $stmt->execute([
-      ':target' => $target,
-      ':interval' => $interval,
-      ':delay' => $delay,
-      ':algo' => $algo,
-      ':worker_id' => $worker_id,
-      ':version' => $version,
-      'miner_address' => $miner_address
-    ]);
-    return $stmt->fetch(PDO::FETCH_ASSOC);
+      $stmt->execute([
+        ':target' => $target,
+        ':interval' => $interval,
+        ':delay' => $delay,
+        ':algo' => $algo,
+        ':worker_id' => $worker_id,
+        ':version' => $version,
+        'miner_address' => $miner_address
+      ]);
+
+      $data = [];
+      $data = $stmt->fetch(PDO::FETCH_ASSOC);
+
+      // If we have redis connection try to load old cached data
+      if (!empty($redis) && is_object($redis)) {
+        // Cache for 1hour (just in case)
+        $redis->set('users_worker_hashrate_' . $miner_address . '_' . $worker_id . '_' . $step, json_encode($data), 3600);
+        print '<!–- worker_users_hashrate ' . $miner_address . '_' . $worker_id . '_' . $step . ' - return from mysql/redis –>';
+        return $data;
+      }
+
+      print '<!–- worker_users_hashrate ' . $miner_address . '_' . $worker_id . '_' . $step . ' - return from mysql –>';
+      return $data;
+
+    }
+
+    // If we have redis connection try to load old cached data
+    if (!empty($redis) && is_object($redis)) {
+      $data = [];
+
+      // Return cached data or cache a new stat info
+      $worker_hashrate = json_decode($redis->get('users_worker_hashrate_' . $miner_address . '_' . $worker_id . '_' . $step), TRUE);
+
+      // We have the data cached
+      if (!empty($worker_hashrate)) {
+        $data = $worker_hashrate;
+        print '<!–- worker_users_hashrate ' . $miner_address . '_' . $worker_id . '_' . $step . ' - return from redis –>';
+        return $data;
+      }
+    }
 
   }
 
@@ -684,7 +696,7 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
    */
   public static function _templateVariables($db, $route = null, $data = FALSE, $redis = FALSE) {
 
-    $hashrates_5_min = minerHelper::getUserPoolHashrateStats($db, minerHelper::miner_getAlgos()[$data['coin_id']], 300, $redis);
+    $hashrates_30_min = minerHelper::getUserPoolHashrateStats($db, minerHelper::miner_getAlgos()[$data['coin_id']], 1800, $redis);
     $hashrates_3_hours = minerHelper::getUserPoolHashrateStats($db, minerHelper::miner_getAlgos()[$data['coin_id']], 60 * 60 * 3, $redis);
     $hashrates_24_hours = minerHelper::getUserPoolHashrateStats($db, minerHelper::miner_getAlgos()[$data['coin_id']], 60 * 60 * 24, $redis);
 
@@ -694,8 +706,8 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
       $user = self::getAccount($db, null, $data['miner_address']);
 
       // User specific hashrate
-      if (!empty($hashrates_5_min[$user['id']])) {
-        $hashrate_user_5_min = $hashrates_5_min[$user['id']];
+      if (!empty($hashrates_30_min[$user['id']])) {
+        $hashrate_user_30_min = $hashrates_30_min[$user['id']];
       }
 
       // User specific hashrate
@@ -713,12 +725,11 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
           // Get workers for miner address
           $workers = self::getWorkers($db, $data['miner_address']);
           foreach ($workers as $key => $worker) {
-            $hashrate = self::getHashrate($db, $data['coin_id'], $worker['version'], $worker['id'], $worker['name']);
-            $hashrate_15_mins = self::getHashrateStats($db, $data['coin_id'], $worker['version'], $worker['id'], $worker['name'], 900, $redis);
+            $worker_hashrate = self::getHashrateStats($db, $data['coin_id'], $worker['version'], $worker['id'], $worker['name'],300, $redis);
+            $worker_hashrate_15_mins = self::getHashrateStats($db, $data['coin_id'], $worker['version'], $worker['id'], $worker['name'], 900, $redis);
             $workers[$key]['worker'] = $worker['worker'];
-            $workers[$key]['hashrate'] = self::Itoa2($hashrate['hashrate']) . 'h/s';
-            $workers[$key]['hashrate_15_mins'] = self::Itoa2($hashrate_15_mins['hashrate']) . 'h/s';
-            $workers[$key]['hashrate'] = self::Itoa2($hashrate['hashrate']) . 'h/s';
+            $workers[$key]['hashrate'] = self::Itoa2($worker_hashrate['hashrate']) . 'h/s';
+            $workers[$key]['hashrate_15_mins'] = self::Itoa2($worker_hashrate_15_mins['hashrate']) . 'h/s';
           }
 
           $immature_balance = self::getImmatureBalance($db, $data['coin_id'], $user['id']);
@@ -753,7 +764,7 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
           'earnings_last_30_days' => $earnings_last_30_days ?? FALSE,
           'payouts' => $payouts ?? [],
           'total_paid' => $total_paid ?? FALSE,
-          'hashrate_user_5_min' => $hashrate_user_5_min ?? FALSE,
+          'hashrate_user_30_min' => $hashrate_user_30_min ?? FALSE,
           'hashrate_user_24_hours' => $hashrate_user_24_hours ?? FALSE,
           'load_charts' => TRUE
         ];
@@ -764,9 +775,9 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
           'miners' => minerHelper::getMiners($db, $data['coin_id']),
           'total_count_miners' => self::countMiners($db, $data['coin_id']) ?? FALSE,
           'total_count_workers' => self::countWorkers($db, $data['coin_id']) ?? FALSE,
-          'hahsrates_5_min' => $hashrates_5_min,
+          'hahsrates_30_min' => $hashrates_30_min,
           'hashrates_3_hours' => $hashrates_3_hours,
-          'hashrate_user_5_min' => $hashrate_user_5_min ?? FALSE,
+          'hashrate_user_30_min' => $hashrate_user_30_min ?? FALSE,
           'hashrate_user_24_hours' => $hashrate_user_24_hours ?? FALSE,
           'load_miner_charts' => TRUE
         ];
@@ -778,7 +789,7 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
         return [
           'blocks' => $blocks,
           'last_found' => self::lastFoundBlockTime($blocks[0]['time']),
-          'hashrate_user_5_min' => $hashrate_user_5_min ?? FALSE,
+          'hashrate_user_30_min' => $hashrate_user_30_min ?? FALSE,
           'hashrate_user_24_hours' => $hashrate_user_24_hours ?? FALSE,
           'load_blocks_charts' => TRUE
         ];
@@ -795,7 +806,7 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
           'block_reward_after_fee' => self::takePoolFee($block_reward['amount'], self::miner_getAlgos()[$data['coin_id']]),
           'pool_fee_amount' => $block_reward['amount'] - self::takePoolFee($block_reward['amount'], self::miner_getAlgos()[$data['coin_id']]),
           'pool_fee_percent' => self::getPoolFee()[self::miner_getAlgos()[$data['coin_id']]],
-          'hashrate_user_5_min' => $hashrate_user_5_min ?? FALSE,
+          'hashrate_user_30_min' => $hashrate_user_30_min ?? FALSE,
           'hashrate_user_24_hours' => $hashrate_user_24_hours ?? FALSE
         ];
         break;
