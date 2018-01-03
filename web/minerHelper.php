@@ -37,6 +37,13 @@ class minerHelper {
         'template' => 'block-earnings.html.twig',
         'menu_exclude' => TRUE
       ],
+      'pools' => [
+        'id' => 'cubes',
+        'label' => 'Dashboard / minerpool.party',
+        'url' => $base_route . 'pools',
+        'template' => 'pools.html.twig',
+        'menu_exclude' => TRUE
+      ],
       'explorer' => [
         'id' => 'search',
         'label' => 'Blockchain',

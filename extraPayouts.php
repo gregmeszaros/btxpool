@@ -14,7 +14,7 @@ include_once('easybitcoin.php');
 include_once('web/minerHelper.php');
 
 // Send payouts
-sendExtraPayouts($conn, 1425, 0.1);
+sendExtraPayouts($conn, 1425, 0.01);
 
 /**
  * Function to check for users with balances pending to payout

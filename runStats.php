@@ -89,7 +89,7 @@ function updatePoolHashrate($db) {
  * @param $db
  */
 function updateEarnings($db) {
-  print "version: 1.6" . "\n";
+  print "version: 1.7" . "\n";
 
   // Get all new blocks
   $stmt = $db->prepare("SELECT * FROM blocks WHERE category = :category ORDER by time");
@@ -356,4 +356,20 @@ function sendPayouts($db, $coin_id = 1425) {
 
     }
   }
+
+  // Check if we need to process extra payouts!
+  $now = time();
+  $nextFullHour = date("H", $now + (3600 - $now % 3600));
+  $nextFullMin = date("i", $now + (60 - $now % 60));
+
+  $hours_to_process = ['02', '06', '10', '14', '18', '22'];
+  $minutes_to_process = ['30'];
+
+  if (in_array($nextFullHour, $hours_to_process) && in_array($nextFullMin, $minutes_to_process)) {
+    print 'activate extra payouts';
+  }
+  else {
+    print $nextFullHour . ' -- ' . $nextFullMin . "\n";
+  }
+
 }
