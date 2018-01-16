@@ -130,7 +130,7 @@ class minerHelper {
   public static function miner_getMinPayouts() {
     // return key / value pairs (algo, min_payout amount)
     return [
-      'bitcore' => 0.5
+      'bitcore' => 0.25
     ];
   }
 
