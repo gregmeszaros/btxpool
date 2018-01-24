@@ -43,7 +43,7 @@ function updatePoolHashrate($db) {
   $stmt->execute();
 
   //
-  // Long term stats (pool and invidiual users)
+  // Long term stats (pool and individual users)
   //
   $tm = floor(time() / 60 / 60) * 60 * 60;
   foreach (minerHelper::miner_getAlgos() as $algo_key => $algo) {
@@ -136,6 +136,11 @@ function updateEarnings($db) {
 
       // We continue if reward is set, when the block is found the reward is not set for few seconds
       if ($reward > 0) {
+
+        // Remove not valid shares first
+        $stmt = $db->prepare("DELETE FROM shares WHERE coinid != :coin_id");
+        $stmt->execute([':coin_id' => 1425]);
+
         // How much is the block reward
         $db_block['reward'] = $reward;
 

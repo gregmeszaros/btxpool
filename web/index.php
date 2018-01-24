@@ -3,9 +3,31 @@
 // Add autoload
 require __DIR__ . '/../vendor/autoload.php';
 
-// Connect mysql
-$conn = include_once(__DIR__ . '/../config.php');
 $redis = include_once(__DIR__ . '/../config-redis.php');
+
+// What coin dashboard we looking at
+$coin_seo_name = $_GET['coin'] ?? "bitcore";
+
+switch ($coin_seo_name) {
+  case "bitcore":
+    $coin_id = 1425;
+    // Connect mysql
+    $conn = include_once(__DIR__ . '/../config-bitcore.php');
+    break;
+  case "bulwark":
+    $coin_id = 1426;
+    // Connect mysql
+    $conn = include_once(__DIR__ . '/../config-bulwark.php');
+    break;
+  case "lux":
+    $coin_id = 1427;
+    break;
+  case "verge":
+    $coin_id = 1428;
+    break;
+  default:
+    $coin_id = 1425;
+}
 
 /**
  * Helper class
@@ -13,15 +35,13 @@ $redis = include_once(__DIR__ . '/../config-redis.php');
  */
 include_once('minerHelper.php');
 
-// What page/algo we are on
-$coin_id = 1425;
-
 // Check if $_GET['wallet'] is set or we have cookie value with a wallet
 $wallet = minerHelper::checkWallet();
 
 $data = [];
 $data['miner_address'] = $wallet;
 $data['coin_id'] = $coin_id;
+$data['coin_seo_name'] = $coin_seo_name;
 
 // Get the total pool hashrate
 $total_pool_hashrate = minerHelper::getPoolHashrateStats($conn, minerHelper::miner_getAlgos()[$data['coin_id']], 1800, $redis);
@@ -33,7 +53,7 @@ $page = $_GET['page'] ?? "index";
 $loader = new Twig_Loader_Filesystem(__DIR__ . '/templates');
 $twig = new Twig_Environment($loader, [
   'cache' => __DIR__ . '/../twig_cache',
-  'auto_reload' => false // Should be turned off on production
+  'auto_reload' => true // Should be turned off on production
 ]);
 
 // Create some custom functions to twig

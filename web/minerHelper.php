@@ -9,14 +9,21 @@
 class minerHelper {
 
   public static function getRoutes() {
-    $base_route = 'index.php?page=';
+    // Check for specific coin first
+    $coin = $_GET['coin'] ?? FALSE;
+    if (!empty($coin)) {
+      $base_route = 'index.php?coin=' . $coin . '&page=';
+    }
+    else {
+      $base_route = 'index.php?page=';
+    }
 
     return [
       'index' => [
         'id' => 'home',
-        'label' => 'Home',
+        'label' => 'omegapool.cc',
         'url' => $base_route . 'index',
-        'template' => 'index.html.twig'
+        'template' => 'pools.html.twig'
       ],
       'miners' => [
         'id' => 'users',
@@ -37,11 +44,11 @@ class minerHelper {
         'template' => 'block-earnings.html.twig',
         'menu_exclude' => TRUE
       ],
-      'pools' => [
-        'id' => 'cubes',
+      'dashboard' => [
+        'id' => 'dashboard',
         'label' => 'Dashboard / minerpool.party',
-        'url' => $base_route . 'pools',
-        'template' => 'pools.html.twig',
+        'url' => $base_route . 'dashboard',
+        'template' => 'index.html.twig',
         'menu_exclude' => TRUE
       ],
       'explorer' => [
@@ -119,7 +126,8 @@ class minerHelper {
   public static function miner_getAlgos() {
     // return key / value pairs (coin ID, algo)
     return [
-      '1425' => 'bitcore'
+      '1425' => 'bitcore',
+      '1426' => 'nist5'
     ];
   }
 
@@ -130,7 +138,8 @@ class minerHelper {
   public static function miner_getMinPayouts() {
     // return key / value pairs (algo, min_payout amount)
     return [
-      'bitcore' => 0.25
+      'bitcore' => 0.25,
+      'nist5' => 5,
     ];
   }
 
@@ -513,7 +522,8 @@ AND workerid IN (SELECT id FROM workers WHERE algo=:algo AND id = :worker_id AND
    */
   public static function getPoolFee($fee = 1.5) {
     return [
-      'bitcore' => 1.5
+      'bitcore' => 1,
+      'nist5' => 0.5
     ];
   }
 
@@ -725,7 +735,7 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
     }
 
     switch ($route) {
-      case 'index':
+      case 'dashboard':
 
         // If we have miner address
         if (!empty($data['miner_address'])) {
@@ -773,6 +783,7 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
           'total_paid' => $total_paid ?? FALSE,
           'hashrate_user_30_min' => $hashrate_user_30_min ?? FALSE,
           'hashrate_user_24_hours' => $hashrate_user_24_hours ?? FALSE,
+          'coin_seo_name' => $data['coin_seo_name'],
           'load_charts' => TRUE
         ];
         break;
@@ -786,6 +797,7 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
           'hashrates_3_hours' => $hashrates_3_hours,
           'hashrate_user_30_min' => $hashrate_user_30_min ?? FALSE,
           'hashrate_user_24_hours' => $hashrate_user_24_hours ?? FALSE,
+          'coin_seo_name' => $data['coin_seo_name'],
           'load_miner_charts' => TRUE
         ];
         break;
@@ -798,6 +810,7 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
           'last_found' => self::lastFoundBlockTime($blocks[0]['time']),
           'hashrate_user_30_min' => $hashrate_user_30_min ?? FALSE,
           'hashrate_user_24_hours' => $hashrate_user_24_hours ?? FALSE,
+          'coin_seo_name' => $data['coin_seo_name'],
           'load_blocks_charts' => TRUE
         ];
         break;
@@ -814,7 +827,8 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
           'pool_fee_amount' => $block_reward['amount'] - self::takePoolFee($block_reward['amount'], self::miner_getAlgos()[$data['coin_id']]),
           'pool_fee_percent' => self::getPoolFee()[self::miner_getAlgos()[$data['coin_id']]],
           'hashrate_user_30_min' => $hashrate_user_30_min ?? FALSE,
-          'hashrate_user_24_hours' => $hashrate_user_24_hours ?? FALSE
+          'hashrate_user_24_hours' => $hashrate_user_24_hours ?? FALSE,
+          'coin_seo_name' => $data['coin_seo_name'],
         ];
         break;
     }

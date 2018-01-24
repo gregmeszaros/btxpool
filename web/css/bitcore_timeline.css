@@ -482,6 +482,13 @@ div.tab button.active {
     background-color: #eeeeee;
 }
 
+.cmc {
+    background-color: white;
+    width: 300px;
+    border: 2px solid #E4E6EB;
+    border-radius: 10px;
+}
+
 /**
  * Responsive tables
  */

@@ -1,5 +1,6 @@
 .idea
-config.php
+config-bitcore.php
+config-bulwark.php
 
 .DS_Store
 /vendor/

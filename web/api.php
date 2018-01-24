@@ -3,9 +3,10 @@
 $callback = $_GET['callback'] ?? FALSE;
 $type = $_GET['type'] ?? FALSE;
 $uid = $_GET['uid'] ?? FALSE;
+$coin = $_GET['coin'] ?? "bitcore";
 
 // Connect mysql
-$conn = include_once(__DIR__ . '/../config.php');
+$conn = include_once(__DIR__ . '/../config-' . $coin . '.php');
 
 /**
  * Convert a multi-dimensional, associative array to CSV data

@@ -14,8 +14,10 @@
 </div>
 
 <div class="intro">
-    <a href='https://www.coingecko.com/en/price_charts/bitcore/btc?id=bitcore' target='_blank'><img alt='bitcore btx btc price' src='https://www.coingecko.com/en/widget_component/ticker/bitcore/btc.jpg'></a>
-    <a href='https://www.coingecko.com/en/price_charts/bitcore/usd?id=bitcore' target='_blank'><img alt='bitcore btx usd price' src='https://www.coingecko.com/en/widget_component/ticker/bitcore/usd.jpg'></a>
+    <div class="minercontent">
+        <script type="text/javascript" src="https://files.coinmarketcap.com/static/widget/currency.js"></script><div class="coinmarketcap-currency-widget cmc" data-currency={{ coin_seo_name }} data-base="USD" data-secondary="BTC" data-ticker="true" data-rank="true" data-marketcap="true" data-volume="true" data-stats="USD" data-statsticker="false"></div>
+
+    </div>
 </div>
 
 <div class="fork-info">Fork based on <a href="http://yiimp.ccminer.org/">YiiMP project</a></div>
@@ -27,13 +29,13 @@
     <script>
       {% if wallet %}
         // Get the user charts if we have active wallet
-        $.getJSON("api.php?type=user-hashrate&uid={{ user.id }}&callback=?", function (json) {
+        $.getJSON("api.php?type=user-hashrate&uid={{ user.id }}&coin={{ coin_seo_name }}&callback=?", function (json) {
           plotLineGraph(json, 'container-user', 'Your total hashrate - Mh/s');
         });
       {% endif %}
 
       // Get total pool hashrate chart
-      $.getJSON("api.php?type=pool-hashrate&callback=?", function (json) {
+      $.getJSON("api.php?type=pool-hashrate&coin={{ coin_seo_name }}&callback=?", function (json) {
         plotLineGraph(json, 'container-pool', 'Pool hashrate - Gh/s');
       });
     </script>
@@ -44,7 +46,7 @@
     <script src="js/custom-charts-pie.js"></script>
     <script>
         // Get workers pie chart
-        $.getJSON("api.php?type=worker-distribution&callback=?", function (json) {
+        $.getJSON("api.php?type=worker-distribution&coin={{ coin_seo_name }}&callback=?", function (json) {
             plotPieGraph(json, 'container-miners-pie', 'Workers distribution');
         });
     </script>
@@ -56,15 +58,12 @@
 
     <script>
       // Get total pool hashrate chart
-      $.getJSON("api.php?type=block-difficulty&callback=?", function (json) {
+      $.getJSON("api.php?type=block-difficulty&coin={{ coin_seo_name }}&callback=?", function (json) {
         console.log(json);
         plotLineGraph(json, 'container-block-diff', 'Block difficulty change');
       });
     </script>
 {% endif %}
-
-<!-- chat js -->
-<script id="cid0020000170260281088" data-cfasync="false" async src="//st.chatango.com/js/gz/emb.js" style="width: 245px;height: 300px;">{"handle":"bitcorepool","arch":"js","styles":{"a":"606060","b":100,"c":"FFFFFF","d":"FFFFFF","k":"606060","l":"606060","m":"606060","n":"FFFFFF","q":"606060","r":100,"pos":"br","cv":1,"cvfg":"ffffff","cvw":200,"cvh":30,"ticker":1,"fwtickm":1}}</script>
 
 </body>
 </html>
