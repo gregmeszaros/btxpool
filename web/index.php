@@ -7,6 +7,7 @@ $redis = include_once(__DIR__ . '/../config-redis.php');
 
 // What coin dashboard we looking at
 $coin_seo_name = $_GET['coin'] ?? FALSE;
+$conn = FALSE;
 
 switch ($coin_seo_name) {
   case "bitcore":
@@ -96,7 +97,7 @@ if (!empty($load_routes[$page]['template'])) {
     'routes' => $load_routes,
     'current_route' => $page,
     'wallet' => $wallet,
-    'total_pool_hashrate' => $total_pool_hashrate
+    'total_pool_hashrate' => $total_pool_hashrate ?? 0
   ];
 
   print $twig->render($load_routes[$page]['template'], array_merge($default_variables, minerHelper::_templateVariables($conn, $page, $data, $redis)));

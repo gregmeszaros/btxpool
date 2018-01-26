@@ -711,11 +711,13 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
    * @param $data
    * @return array
    */
-  public static function _templateVariables($db, $route = null, $data = FALSE, $redis = FALSE) {
+  public static function _templateVariables($db = FALSE, $route = null, $data = FALSE, $redis = FALSE) {
 
-    $hashrates_30_min = minerHelper::getUserPoolHashrateStats($db, minerHelper::miner_getAlgos()[$data['coin_id']], 1800, $redis);
-    $hashrates_3_hours = minerHelper::getUserPoolHashrateStats($db, minerHelper::miner_getAlgos()[$data['coin_id']], 60 * 60 * 3, $redis);
-    $hashrates_24_hours = minerHelper::getUserPoolHashrateStats($db, minerHelper::miner_getAlgos()[$data['coin_id']], 60 * 60 * 24, $redis);
+    if (!empty($db)) {
+      $hashrates_30_min = minerHelper::getUserPoolHashrateStats($db, minerHelper::miner_getAlgos()[$data['coin_id']], 1800, $redis);
+      $hashrates_3_hours = minerHelper::getUserPoolHashrateStats($db, minerHelper::miner_getAlgos()[$data['coin_id']], 60 * 60 * 3, $redis);
+      $hashrates_24_hours = minerHelper::getUserPoolHashrateStats($db, minerHelper::miner_getAlgos()[$data['coin_id']], 60 * 60 * 24, $redis);
+    }
 
     if (!empty($data['miner_address'])) {
 
