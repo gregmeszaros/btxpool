@@ -21,9 +21,11 @@ switch ($coin_seo_name) {
     break;
   case "lux":
     $coin_id = 1427;
+    $conn = include_once(__DIR__ . '/../config-lux.php');
     break;
   case "verge":
     $coin_id = 1428;
+    $conn = include_once(__DIR__ . '/../config-verge.php');
     break;
   default:
     $coin_id = FALSE;
@@ -43,8 +45,11 @@ $data['miner_address'] = $wallet;
 $data['coin_id'] = $coin_id;
 $data['coin_seo_name'] = $coin_seo_name;
 
-// Get the total pool hashrate
-$total_pool_hashrate = minerHelper::getPoolHashrateStats($conn, minerHelper::miner_getAlgos()[$data['coin_id']], 1800, $redis);
+if (!empty($conn)) {
+  // Get the total pool hashrate
+  $total_pool_hashrate = minerHelper::getPoolHashrateStats($conn, minerHelper::miner_getAlgos()[$data['coin_id']], 1800, $redis);
+  // @TODO -> geto total hashrates and miners for all coins? Get it from redis!!
+}
 
 // Get the current page
 $page = $_GET['page'] ?? "index";
