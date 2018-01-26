@@ -6,7 +6,7 @@ require __DIR__ . '/../vendor/autoload.php';
 $redis = include_once(__DIR__ . '/../config-redis.php');
 
 // What coin dashboard we looking at
-$coin_seo_name = $_GET['coin'] ?? "bitcore";
+$coin_seo_name = $_GET['coin'] ?? FALSE;
 
 switch ($coin_seo_name) {
   case "bitcore":
@@ -26,7 +26,7 @@ switch ($coin_seo_name) {
     $coin_id = 1428;
     break;
   default:
-    $coin_id = 1425;
+    $coin_id = FALSE;
 }
 
 /**

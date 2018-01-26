@@ -6,23 +6,23 @@
         <h1 class="header-h1">omegapool.cc - {{ coin_seo_name }} mining pool</h1>
         <div class="minercontent">
             <div class="intro-info">
-                <strong>Miners online / Workers: <span class="label label-btx"> {{ total_count_miners.total_count|default(0) }} / {{ total_count_workers.total_count|default(0) }}</span> </strong>
+                <strong>Miners online / Workers: <span class="label {{ coin_seo_name }}"> {{ total_count_miners.total_count|default(0) }} / {{ total_count_workers.total_count|default(0) }}</span> </strong>
                 <div class="help-text">Total unique miner addresses and workers.</div>
             </div>
             <div class="intro-info">
-                <strong>Min. payout threshold: <span class="label label-btx">{{ min_payout }} BTX</span> </strong>
+                <strong>Min. payout threshold: <span class="label {{ coin_seo_name }}">{{ min_payout }} BTX</span> </strong>
                 <div class="help-text" style="color: red;">Payout for pending balances above 0.01 BTX every 4 hours.</div>
             </div>
             <div class="intro-info">
-                <strong>Pool hashrate: <span class="label label-btx">{{ showFriendlyHash(total_pool_hashrate.hashrate) }}</span> </strong>
+                <strong>Pool hashrate: <span class="label {{ coin_seo_name }}">{{ showFriendlyHash(total_pool_hashrate.hashrate) }}</span> </strong>
                 <div class="help-text">Total current pool hashrate.</div>
             </div>
             <div class="intro-info">
-                <strong>Reward structure: <span class="label label-btx">Proportional</span> </strong>
+                <strong>Reward structure: <span class="label {{ coin_seo_name }}">Proportional</span> </strong>
                 <div class="help-text">Proportional reward based on the number of submitted "valid" shares and difficulty.</div>
             </div>
             <div class="intro-info">
-                <strong>Pool fee: <span class="label label-btx">{{ pool_fee }}%</span> </strong>
+                <strong>Pool fee: <span class="label {{ coin_seo_name }}">{{ pool_fee }}%</span> </strong>
                 <div class="help-text">No transaction fees!</div>
             </div>
         </div>
@@ -57,24 +57,24 @@
             <div class="minercontent">
                 <div class="get-started wallet-info-label">Your wallet address is set to: <strong> {{ wallet }} </strong></div>
                 <div class="intro-info">
-                    <strong>Immature Balance: <span class="label label-btx"> {{ roundSimple(immature_balance.immature_balance)|default(0) }} BTX </span> </strong>
+                    <strong>Immature Balance: <span class="label {{ coin_seo_name }}"> {{ roundSimple(immature_balance.immature_balance)|default(0) }} BTX </span> </strong>
                     <div class="help-text">Earnings awaiting blocks to mature.</div>
                 </div>
 
                 <div class="intro-info">
-                    <strong>Pending Balance: <span class="label label-btx"> {{ roundSimple(pending_balance.pending_balance)|default(0) }} BTX </span> </strong>
+                    <strong>Pending Balance: <span class="label {{ coin_seo_name }}"> {{ roundSimple(pending_balance.pending_balance)|default(0) }} BTX </span> </strong>
                     <div class="help-text">Matured earnings awaiting payout.</div>
                 </div>
 
                 <div class="intro-info">
-                    <strong>Total Paid: <span class="label label-btx">{{ roundSimple(total_paid.total_payout)|default(0) }} BTX</span> </strong>
+                    <strong>Total Paid: <span class="label {{ coin_seo_name }}">{{ roundSimple(total_paid.total_payout)|default(0) }} BTX</span> </strong>
                     <div class="help-text">Total paid to this wallet address.</div>
                 </div>
 
                 <div class="tab">
-                    <button class="tablinks" onclick="openTab(event, 'workers')" id="defaultOpen">Workers ({{ workers_count|default(0) }})</button>
-                    <button class="tablinks" onclick="openTab(event, 'earnings')">Earnings</button>
-                    <button class="tablinks" onclick="openTab(event, 'payouts')">Payouts</button>
+                    <button class="tablinks" onclick="openTab(event, 'workers', '{{ coin_seo_name }}')" id="defaultOpen">Workers ({{ workers_count|default(0) }})</button>
+                    <button class="tablinks" onclick="openTab(event, 'earnings', '{{ coin_seo_name }}')">Earnings</button>
+                    <button class="tablinks" onclick="openTab(event, 'payouts', '{{ coin_seo_name }}')">Payouts</button>
                 </div>
 
                 <div id="workers" class="tabcontent">
