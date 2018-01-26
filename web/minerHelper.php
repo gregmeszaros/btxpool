@@ -128,7 +128,7 @@ class minerHelper {
     return [
       '1425' => 'bitcore',
       '1426' => 'nist5',
-      '1427' => 'phi',
+      '1427' => 'phi'
     ];
   }
 
@@ -525,7 +525,8 @@ AND workerid IN (SELECT id FROM workers WHERE algo=:algo AND id = :worker_id AND
   public static function getPoolFee($fee = 1.5) {
     return [
       'bitcore' => 1,
-      'nist5' => 0.5
+      'nist5' => 0.5,
+      'phi' => 0.5
     ];
   }
 
