@@ -717,23 +717,23 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
       $hashrates_30_min = minerHelper::getUserPoolHashrateStats($db, minerHelper::miner_getAlgos()[$data['coin_id']], 1800, $redis);
       $hashrates_3_hours = minerHelper::getUserPoolHashrateStats($db, minerHelper::miner_getAlgos()[$data['coin_id']], 60 * 60 * 3, $redis);
       $hashrates_24_hours = minerHelper::getUserPoolHashrateStats($db, minerHelper::miner_getAlgos()[$data['coin_id']], 60 * 60 * 24, $redis);
-    }
 
-    if (!empty($data['miner_address'])) {
+      if (!empty($data['miner_address'])) {
 
-      // Load the user (@TODO avoid loading on all pages?)
-      $user = self::getAccount($db, null, $data['miner_address']);
+        // Load the user (@TODO avoid loading on all pages?)
+        $user = self::getAccount($db, null, $data['miner_address']);
 
-      // User specific hashrate
-      if (!empty($hashrates_30_min[$user['id']])) {
-        $hashrate_user_30_min = $hashrates_30_min[$user['id']];
+        // User specific hashrate
+        if (!empty($hashrates_30_min[$user['id']])) {
+          $hashrate_user_30_min = $hashrates_30_min[$user['id']];
+        }
+
+        // User specific hashrate
+        if (!empty($hashrates_24_hours[$user['id']])) {
+          $hashrate_user_24_hours = $hashrates_24_hours[$user['id']];
+        }
+
       }
-
-      // User specific hashrate
-      if (!empty($hashrates_24_hours[$user['id']])) {
-        $hashrate_user_24_hours = $hashrates_24_hours[$user['id']];
-      }
-
     }
 
     switch ($route) {
