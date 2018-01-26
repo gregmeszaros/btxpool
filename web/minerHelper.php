@@ -127,7 +127,8 @@ class minerHelper {
     // return key / value pairs (coin ID, algo)
     return [
       '1425' => 'bitcore',
-      '1426' => 'nist5'
+      '1426' => 'nist5',
+      '1427' => 'phi',
     ];
   }
 
@@ -140,6 +141,7 @@ class minerHelper {
     return [
       'bitcore' => 0.25,
       'nist5' => 5,
+      'phi' => 1
     ];
   }
 
