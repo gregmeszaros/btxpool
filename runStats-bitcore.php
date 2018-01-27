@@ -29,7 +29,7 @@ updatePoolHashrate($conn);
 updateEarnings($conn);
 
 // Send payouts
-sendPayouts($conn);
+sendPayouts($conn, 1425);
 
 function updatePoolHashrate($db) {
   $t = time() - 2 * 60;

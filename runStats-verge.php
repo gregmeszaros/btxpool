@@ -29,7 +29,7 @@ updatePoolHashrate($conn);
 updateEarnings($conn);
 
 // Send payouts
-sendPayouts($conn);
+sendPayouts($conn, 1428);
 
 function updatePoolHashrate($db) {
   $t = time() - 2 * 60;
@@ -139,7 +139,7 @@ function updateEarnings($db) {
 
         // Remove not valid shares first
         $stmt = $db->prepare("DELETE FROM shares WHERE coinid != :coin_id");
-        $stmt->execute([':coin_id' => 1425]);
+        $stmt->execute([':coin_id' => 1428]);
 
         // How much is the block reward
         $db_block['reward'] = $reward;
