@@ -39,7 +39,7 @@ switch ($coin_seo_name) {
 include_once('minerHelper.php');
 
 // Check if $_GET['wallet'] is set or we have cookie value with a wallet
-$wallet = minerHelper::checkWallet();
+$wallet = minerHelper::checkWallet($coin_seo_name);
 
 $data = [];
 $data['miner_address'] = $wallet;
