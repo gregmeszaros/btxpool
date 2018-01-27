@@ -1,7 +1,7 @@
 <?php
 
 // Connect mysql
-$conn = include_once('config.php');
+$conn = include_once('config-lux.php');
 
 // RPC wallet
 include_once('wallet-rpc.php');

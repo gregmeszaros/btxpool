@@ -1,6 +1,8 @@
 .idea
 config-bitcore.php
 config-bulwark.php
+config-lux.php
+config-verge.php
 
 .DS_Store
 /vendor/
