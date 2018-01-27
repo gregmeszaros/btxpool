@@ -740,6 +740,11 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
     }
 
     switch ($route) {
+      case 'index':
+        return [
+          'route' => $route ?? "index",
+        ];
+        break;
       case 'dashboard':
 
         // If we have miner address

@@ -13,12 +13,14 @@
     </div>
 </div>
 
-<div class="intro">
-    <div class="minercontent">
-        <script type="text/javascript" src="https://files.coinmarketcap.com/static/widget/currency.js"></script><div class="coinmarketcap-currency-widget cmc" data-currency={{ coin_seo_name }} data-base="USD" data-secondary="BTC" data-ticker="true" data-rank="true" data-marketcap="true" data-volume="true" data-stats="USD" data-statsticker="false"></div>
+{% if current_route != 'index' %}
+    <div class="intro">
+        <div class="minercontent">
+            <script type="text/javascript" src="https://files.coinmarketcap.com/static/widget/currency.js"></script><div class="coinmarketcap-currency-widget cmc" data-currency={{ coin_seo_name }} data-base="USD" data-secondary="BTC" data-ticker="true" data-rank="true" data-marketcap="true" data-volume="true" data-stats="USD" data-statsticker="false"></div>
 
+        </div>
     </div>
-</div>
+{% endif %}
 
 <div class="fork-info">Fork based on <a href="http://yiimp.ccminer.org/">YiiMP project</a></div>
 
