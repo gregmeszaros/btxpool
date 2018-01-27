@@ -84,13 +84,41 @@ $formatConfirmations = new Twig_SimpleFunction('formatConfirmations', function (
   return minerHelper::formatConfirmations($value);
 });
 
+$formatCoinName = new Twig_SimpleFunction('formatCoinName', function ($coin_seo_name) {
+  if ($coin_seo_name == 'lux') {
+    // Special handling for LUX
+    return 'luxcoin';
+  }
+  return $coin_seo_name;
+});
 
+/**
+ * Return specific coin symbols
+ */
+$getCoinSymbol = new Twig_SimpleFunction('getCoinSymbol', function ($coin_seo_name) {
+  switch ($coin_seo_name) {
+    case 'bitcore':
+      return 'BTX';
+    break;
+    case 'bulwark':
+      return 'BWK';
+    break;
+    case 'lux':
+      return 'LUX';
+    break;
+    case 'verge':
+      return 'XVG';
+    break;
+  }
+});
 
 // Add the functions
 $twig->addFunction($addFriendlyHash);
 $twig->addFunction($addDateTime);
 $twig->addFunction($roundSimple);
 $twig->addFunction($formatConfirmations);
+$twig->addFunction($formatCoinName);
+$twig->addFunction($getCoinSymbol);
 
 // Load available routes
 $load_routes = minerHelper::getRoutes();
