@@ -128,7 +128,8 @@ class minerHelper {
     return [
       '1425' => 'bitcore',
       '1426' => 'nist5',
-      '1427' => 'phi'
+      '1427' => 'phi',
+      '1428' => 'x17'
     ];
   }
 
@@ -140,8 +141,9 @@ class minerHelper {
     // return key / value pairs (algo, min_payout amount)
     return [
       'bitcore' => 0.25,
-      'nist5' => 5,
-      'phi' => 1
+      'nist5' => 1,
+      'phi' => 1,
+      'x17' => 5
     ];
   }
 
@@ -520,13 +522,14 @@ AND workerid IN (SELECT id FROM workers WHERE algo=:algo AND id = :worker_id AND
   /**
    * Define pool fee
    * @param float $fee (percentage)
-   * @return float
+   * @return array
    */
   public static function getPoolFee($fee = 1.5) {
     return [
       'bitcore' => 1,
       'nist5' => 0.5,
-      'phi' => 0.5
+      'phi' => 0.5,
+      'x17' => 0.5
     ];
   }
 
