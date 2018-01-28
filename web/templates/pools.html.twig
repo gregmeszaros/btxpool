@@ -38,7 +38,7 @@
                     </td>
                     <td>nist5</td>
                     <td>{{ total_hashrate_bulwark_gh|default('n/a') }} Gh/s</td>
-                    <td>35 Gh/s</td>
+                    <td>{{ showFriendlyHash(pool_hashrate_bulwark) }}</td>
                     <td>220</td>
                     <td>0.5%</td>
                 </tr>
@@ -49,7 +49,7 @@
                     </td>
                     <td>phi</td>
                     <td>{{ total_hashrate_lux_gh|default('n/a') }} Gh/s</td>
-                    <td>35 Gh/s</td>
+                    <td>{{ showFriendlyHash(pool_hashrate_lux) }}</td>
                     <td>220</td>
                     <td>0.5%</a></td>
                 </tr>
@@ -60,7 +60,7 @@
                     </td>
                     <td>x17</td>
                     <td>n/a</td>
-                    <td>35 Gh/s</td>
+                    <td>{{ showFriendlyHash(pool_hashrate_verge) }}</td>
                     <td>220</td>
                     <td>0.5%</a></td>
                 </tr>
