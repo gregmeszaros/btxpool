@@ -760,7 +760,7 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
       case 'index':
 
           // General coin info
-          $network_info_bitcore = self::getNetworkInfo($1425, $redis);
+          $network_info_bitcore = self::getNetworkInfo(1425, $redis);
 
         return [
           'total_hashrate_bitcore_gh' => $network_info_bitcore['hashrate_gh']
