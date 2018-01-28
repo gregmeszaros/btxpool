@@ -31,6 +31,9 @@ updateEarnings($conn);
 // Send payouts
 sendPayouts($conn, 1425);
 
+// Update overall network hashrates and store in Redis cache
+updateNetworkHashrate($conn);
+
 function updatePoolHashrate($db) {
   $t = time() - 2 * 60;
 
@@ -89,7 +92,7 @@ function updatePoolHashrate($db) {
  * @param $db
  */
 function updateEarnings($db) {
-  print "version: 1.8 - auto extra payouts" . "\n";
+  print "version: 1.9 - network total hashrate" . "\n";
 
   // Get all new blocks
   $stmt = $db->prepare("SELECT * FROM blocks WHERE category = :category ORDER by time");
@@ -453,4 +456,24 @@ function sendExtraPayouts($db, $coin_id = 1425, $extra_payout = FALSE) {
 
     }
   }
+}
+
+/**
+ * Update overall network hashrate for the coin and stores in Redis cache
+ */
+function updateNetworkHashrate($db, $coin_id = 1425) {
+
+  $stmt = $db->prepare("SELECT * FROM coins WHERE id = :coin_id");
+  $stmt->execute([
+    ':coin_id' => $coin_id
+  ]);
+
+  $coin_info = $stmt->fetch(PDO::FETCH_OBJ);
+
+  // New Wallet RPC call
+  $remote_check = new WalletRPC($coin_info);
+
+  $network_hashrate = $remote_check->getmininginfo();
+  print_r($network_hashrate);
+
 }

@@ -32,7 +32,7 @@
 <div id="header">
 
     <a href="index.php?coin={{ coin_seo_name }}&page=dashboard">
-        <img class="logo" src="images/{{ coin_seo_name|default('omegapool') }}.png" alt="{{ coin_seo_name|default('omegapool') }}" height="40" />
+        <img class="logo {{ coin_seo_name|default('omegapool') }}-logo" src="images/{{ coin_seo_name|default('omegapool-header') }}.png" alt="{{ coin_seo_name|default('omegapool') }}" height="40" />
     </a>
 
     {% if current_route != 'index' %}

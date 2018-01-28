@@ -18,6 +18,18 @@ body {
     height: 20px;
 }
 
+.omegapool-logo {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+    padding-left: 10px;
+    padding-right: 10px;
+    background-color: white;
+}
+
 #header {
     display: block;
     position: fixed;
@@ -329,7 +341,7 @@ img.facebook_profile {
 
 /* Label settings per coin */
 .bitcore {
-    background-color: #ff18a2 !important;
+    background-color: #e82b97 !important;
 }
 
 .bulwark {
