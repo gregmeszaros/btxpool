@@ -759,11 +759,13 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
     switch ($route) {
       case 'index':
 
-          // General coin info
-          $network_info_bitcore = self::getNetworkInfo(1425, $redis);
+        // General coin info
+        $network_info_bitcore = self::getNetworkInfo(1425, $redis);
+        $network_info_bulwark = self::getNetworkInfo(1426, $redis);
 
         return [
-          'total_hashrate_bitcore_gh' => $network_info_bitcore['hashrate_gh']
+          'total_hashrate_bitcore_gh' => $network_info_bitcore['hashrate_gh'],
+          'total_hashrate_bulwark_gh' => $network_info_bulwark['hashrate_gh'],
         ];
         break;
       case 'dashboard':
