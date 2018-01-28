@@ -769,6 +769,11 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
         $pool_hashrate_lux = minerHelper::getPoolHashrateStats($db, minerHelper::miner_getAlgos()[1427], 1800, $redis);
         $pool_hashrate_verge = minerHelper::getPoolHashrateStats($db, minerHelper::miner_getAlgos()[1428], 1800, $redis);
 
+        $total_miners_bitcore = self::countMiners($db,1425) ?? 0;
+        $total_miners_bulwark = self::countMiners($db,1426) ?? 0;
+        $total_miners_lux = self::countMiners($db,1427) ?? 0;
+        $total_miners_verge = self::countMiners($db,1428) ?? 0;
+
         return [
           'total_hashrate_bitcore_gh' => $network_info_bitcore['hashrate_gh'],
           'total_hashrate_bulwark_gh' => $network_info_bulwark['hashrate_gh'],
@@ -776,7 +781,12 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
           'pool_hashrate_bitcore' => $pool_hashrate_bitcore['hashrate'],
           'pool_hashrate_bulwark' => $pool_hashrate_bulwark['hashrate'],
           'pool_hashrate_lux' => $pool_hashrate_lux['hashrate'],
-          'pool_hashrate_verge' => $pool_hashrate_verge['hashrate']
+          'pool_hashrate_verge' => $pool_hashrate_verge['hashrate'],
+          'total_miners_bitcore' => $total_miners_bitcore,
+          'total_miners_bulwark' => $total_miners_bulwark,
+          'total_miners_lux' => $total_miners_lux,
+          'total_miners_verge' => $total_miners_verge
+
         ];
         break;
       case 'dashboard':

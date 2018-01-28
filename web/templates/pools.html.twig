@@ -28,7 +28,7 @@
                     <td>TimeTravel10</td>
                     <td>{{ total_hashrate_bitcore_gh|default('n/a') }} Gh/s</td>
                     <td>{{ showFriendlyHash(pool_hashrate_bitcore) }}</td>
-                    <td>220</td>
+                    <td>{{ total_miners_bitcore }}</td>
                     <td>1%</a></td>
                 </tr>
                 <tr>
@@ -39,7 +39,7 @@
                     <td>nist5</td>
                     <td>{{ total_hashrate_bulwark_gh|default('n/a') }} Gh/s</td>
                     <td>{{ showFriendlyHash(pool_hashrate_bulwark) }}</td>
-                    <td>220</td>
+                    <td>{{ total_miners_bulwark }}</td>
                     <td>0.5%</td>
                 </tr>
                 <tr>
@@ -50,7 +50,7 @@
                     <td>phi</td>
                     <td>{{ total_hashrate_lux_gh|default('n/a') }} Gh/s</td>
                     <td>{{ showFriendlyHash(pool_hashrate_lux) }}</td>
-                    <td>220</td>
+                    <td>{{ total_miners_lux }}</td>
                     <td>0.5%</a></td>
                 </tr>
                 <tr>
@@ -61,7 +61,7 @@
                     <td>x17</td>
                     <td>n/a</td>
                     <td>{{ showFriendlyHash(pool_hashrate_verge) }}</td>
-                    <td>220</td>
+                    <td>{{ total_miners_verge }}</td>
                     <td>0.5%</a></td>
                 </tr>
             </table>
