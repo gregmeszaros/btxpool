@@ -32,7 +32,7 @@ updateEarnings($conn);
 sendPayouts($conn, 1425);
 
 // Update overall network hashrates and store in Redis cache
-updateNetworkHashrate($conn);
+updateNetworkHashrate($conn, 1425);
 
 function updatePoolHashrate($db) {
   $t = time() - 2 * 60;
@@ -473,7 +473,15 @@ function updateNetworkHashrate($db, $coin_id = 1425) {
   // New Wallet RPC call
   $remote_check = new WalletRPC($coin_info);
 
-  $network_hashrate = $remote_check->getmininginfo();
-  print_r($network_hashrate);
+  $network_info = $remote_check->getmininginfo();
+  if (!empty($network_info)) {
+    $redis = include_once(__DIR__ . '/config-redis.php');
+
+    $data = [];
+    $data['hashrate_gh'] = $network_info['networkhashps'] / 1000 / 1000 / 1000;
+    $data['difficulty'] = $network_info['difficulty'];
+
+    $redis->set('network_info_' . $coin_id, json_encode($data));
+  }
 
 }

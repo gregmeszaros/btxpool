@@ -288,6 +288,20 @@ class minerHelper {
   }
 
   /**
+   * Get some network information (RPC call to wallet through a cron job and saved to REDIS DB)
+   * @param bool $coin_id
+   * @param bool $redis
+   */
+  public static function getNetworkInfo($coin_id = FALSE, $redis = FALSE) {
+    if (!empty($redis) && is_object($redis)) {
+      $network_info = json_decode($redis->get('network_info_' . $coin_id), TRUE);
+      return $network_info;
+    }
+
+    return [];
+  }
+
+  /**
    * Stats for user and worker
    * Cached for 5 minutes
    * @param $db
@@ -745,6 +759,12 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
     switch ($route) {
       case 'index':
 
+          // General coin info
+          $network_info_bitcore = self::getNetworkInfo($1425, $redis);
+
+        return [
+          'total_hashrate_bitcore_gh' => $network_info_bitcore['hashrate_gh']
+        ];
         break;
       case 'dashboard':
 
