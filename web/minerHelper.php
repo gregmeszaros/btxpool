@@ -764,10 +764,10 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
         $network_info_bulwark = self::getNetworkInfo(1426, $redis);
         $network_info_lux = self::getNetworkInfo(1427, $redis);
 
-        $pool_hashrate_bitcore = minerHelper::getPoolHashrateStats($conn, minerHelper::miner_getAlgos()[1425], 1800, $redis);
-        $pool_hashrate_bulwark = minerHelper::getPoolHashrateStats($conn, minerHelper::miner_getAlgos()[1426], 1800, $redis);
-        $pool_hashrate_lux = minerHelper::getPoolHashrateStats($conn, minerHelper::miner_getAlgos()[1427], 1800, $redis);
-        $pool_hashrate_verge = minerHelper::getPoolHashrateStats($conn, minerHelper::miner_getAlgos()[1428], 1800, $redis);
+        $pool_hashrate_bitcore = minerHelper::getPoolHashrateStats($db, minerHelper::miner_getAlgos()[1425], 1800, $redis);
+        $pool_hashrate_bulwark = minerHelper::getPoolHashrateStats($db, minerHelper::miner_getAlgos()[1426], 1800, $redis);
+        $pool_hashrate_lux = minerHelper::getPoolHashrateStats($db, minerHelper::miner_getAlgos()[1427], 1800, $redis);
+        $pool_hashrate_verge = minerHelper::getPoolHashrateStats($db, minerHelper::miner_getAlgos()[1428], 1800, $redis);
 
         return [
           'total_hashrate_bitcore_gh' => $network_info_bitcore['hashrate_gh'],
