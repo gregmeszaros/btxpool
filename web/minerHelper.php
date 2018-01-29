@@ -764,15 +764,20 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
         $network_info_bulwark = self::getNetworkInfo(1426, $redis);
         $network_info_lux = self::getNetworkInfo(1427, $redis);
 
-        $pool_hashrate_bitcore = minerHelper::getPoolHashrateStats($db, minerHelper::miner_getAlgos()[1425], 1800, $redis);
-        $pool_hashrate_bulwark = minerHelper::getPoolHashrateStats($db, minerHelper::miner_getAlgos()[1426], 1800, $redis);
-        $pool_hashrate_lux = minerHelper::getPoolHashrateStats($db, minerHelper::miner_getAlgos()[1427], 1800, $redis);
-        $pool_hashrate_verge = minerHelper::getPoolHashrateStats($db, minerHelper::miner_getAlgos()[1428], 1800, $redis);
+        $conn_btx = include_once(__DIR__ . '/../config-bitcore.php');
+        $conn_bulwark = include_once(__DIR__ . '/../config-bulwark.php');
+        $conn_lux = include_once(__DIR__ . '/../config-lux.php');
+        $conn_verge = include_once(__DIR__ . '/../config-verge.php');
 
-        $total_miners_bitcore = self::countMiners($db,1425)['total_count'] ?? 0;
-        $total_miners_bulwark = self::countMiners($db,1426)['total_count'] ?? 0;
-        $total_miners_lux = self::countMiners($db,1427)['total_count'] ?? 0;
-        $total_miners_verge = self::countMiners($db,1428)['total_count'] ?? 0;
+        $pool_hashrate_bitcore = minerHelper::getPoolHashrateStats($conn_btx, minerHelper::miner_getAlgos()[1425], 1800, $redis);
+        $pool_hashrate_bulwark = minerHelper::getPoolHashrateStats($conn_bulwark, minerHelper::miner_getAlgos()[1426], 1800, $redis);
+        $pool_hashrate_lux = minerHelper::getPoolHashrateStats($conn_lux, minerHelper::miner_getAlgos()[1427], 1800, $redis);
+        $pool_hashrate_verge = minerHelper::getPoolHashrateStats($conn_verge, minerHelper::miner_getAlgos()[1428], 1800, $redis);
+
+        $total_miners_bitcore = self::countMiners($conn_btx,1425)['total_count'] ?? 0;
+        $total_miners_bulwark = self::countMiners($conn_bulwark,1426)['total_count'] ?? 0;
+        $total_miners_lux = self::countMiners($conn_lux,1427)['total_count'] ?? 0;
+        $total_miners_verge = self::countMiners($conn_verge,1428)['total_count'] ?? 0;
 
         return [
           'total_hashrate_bitcore_gh' => $network_info_bitcore['hashrate_gh'],
