@@ -764,10 +764,10 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
         $network_info_bulwark = self::getNetworkInfo(1426, $redis);
         $network_info_lux = self::getNetworkInfo(1427, $redis);
 
-        $conn_btx = include_once(__DIR__ . '/../config-bitcore.php');
-        $conn_bulwark = include_once(__DIR__ . '/../config-bulwark.php');
-        $conn_lux = include_once(__DIR__ . '/../config-lux.php');
-        $conn_verge = include_once(__DIR__ . '/../config-verge.php');
+        $conn_btx = include(__DIR__ . '/../config-bitcore.php');
+        $conn_bulwark = include(__DIR__ . '/../config-bulwark.php');
+        $conn_lux = include(__DIR__ . '/../config-lux.php');
+        $conn_verge = include(__DIR__ . '/../config-verge.php');
 
         $pool_hashrate_bitcore = minerHelper::getPoolHashrateStats($conn_btx, minerHelper::miner_getAlgos()[1425], 1800, $redis);
         $pool_hashrate_bulwark = minerHelper::getPoolHashrateStats($conn_bulwark, minerHelper::miner_getAlgos()[1426], 1800, $redis);

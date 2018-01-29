@@ -13,20 +13,20 @@ switch ($coin_seo_name) {
   case "bitcore":
     $coin_id = 1425;
     // Connect mysql
-    $conn = include_once(__DIR__ . '/../config-bitcore.php');
+    $conn = include(__DIR__ . '/../config-bitcore.php');
     break;
   case "bulwark":
     $coin_id = 1426;
     // Connect mysql
-    $conn = include_once(__DIR__ . '/../config-bulwark.php');
+    $conn = include(__DIR__ . '/../config-bulwark.php');
     break;
   case "lux":
     $coin_id = 1427;
-    $conn = include_once(__DIR__ . '/../config-lux.php');
+    $conn = include(__DIR__ . '/../config-lux.php');
     break;
   case "verge":
     $coin_id = 1428;
-    $conn = include_once(__DIR__ . '/../config-verge.php');
+    $conn = include(__DIR__ . '/../config-verge.php');
     break;
   default:
     $coin_id = FALSE;
