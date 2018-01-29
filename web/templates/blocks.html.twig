@@ -21,7 +21,7 @@
 
                 {% for block in blocks %}
                     <tr>
-                        <td> See earnings for <a href="index.php?page=block-earnings&id={{ block.id }}" > {{ block.height }} </a></td>
+                        <td> See earnings for <a href="index.php?coin={{ coin_seo_name }}&page=block-earnings&id={{ block.id }}" > {{ block.height }} </a></td>
                         <td> {{ block.amount }} {{ getCoinSymbol(coin_seo_name) }} </td>
                         <td> {{ showDateTime(block.time) }} </td>
                         <td> {{ formatConfirmations(block.confirmations) }} </td>
