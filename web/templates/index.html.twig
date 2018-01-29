@@ -10,8 +10,8 @@
                 <div class="help-text">Total unique miner addresses and workers.</div>
             </div>
             <div class="intro-info">
-                <strong>Min. payout threshold: <span class="label {{ coin_seo_name }}">{{ min_payout }} {{ getCoinSymbol(coin_seo_name) }}</span> </strong>
-                <div class="help-text" style="color: red;">Payout for pending balances above 0.01 {{ getCoinSymbol(coin_seo_name) }} every 4 hours.</div>
+                <strong>Min. payout threshold: <span class="label {{ coin_seo_name }}">{{ min_payout }} {{ getCoinSettings(coin_seo_name).symbol }}</span> </strong>
+                <div class="help-text" style="color: red;">Payout for pending balances above 0.01 {{ getCoinSettings(coin_seo_name).symbol }} every 4 hours.</div>
             </div>
             <div class="intro-info">
                 <strong>Pool hashrate: <span class="label {{ coin_seo_name }}">{{ showFriendlyHash(total_pool_hashrate.hashrate) }}</span> </strong>
@@ -59,17 +59,17 @@
             <div class="minercontent">
                 <div class="get-started wallet-info-label">Your wallet address is set to: <strong>{{ wallet }}</strong></div>
                 <div class="intro-info">
-                    <strong>Immature Balance: <span class="label {{ coin_seo_name }}"> {{ roundSimple(immature_balance.immature_balance)|default(0) }} {{ getCoinSymbol(coin_seo_name) }} </span> </strong>
+                    <strong>Immature Balance: <span class="label {{ coin_seo_name }}"> {{ roundSimple(immature_balance.immature_balance)|default(0) }} {{ getCoinSettings(coin_seo_name).symbol }} </span> </strong>
                     <div class="help-text">Earnings awaiting blocks to mature.</div>
                 </div>
 
                 <div class="intro-info">
-                    <strong>Pending Balance: <span class="label {{ coin_seo_name }}"> {{ roundSimple(pending_balance.pending_balance)|default(0) }} {{ getCoinSymbol(coin_seo_name) }} </span> </strong>
+                    <strong>Pending Balance: <span class="label {{ coin_seo_name }}"> {{ roundSimple(pending_balance.pending_balance)|default(0) }} {{ getCoinSettings(coin_seo_name).symbol }} </span> </strong>
                     <div class="help-text">Matured earnings awaiting payout.</div>
                 </div>
 
                 <div class="intro-info">
-                    <strong>Total Paid: <span class="label {{ coin_seo_name }}">{{ roundSimple(total_paid.total_payout)|default(0) }} {{ getCoinSymbol(coin_seo_name) }} </span> </strong>
+                    <strong>Total Paid: <span class="label {{ coin_seo_name }}">{{ roundSimple(total_paid.total_payout)|default(0) }} {{ getCoinSettings(coin_seo_name).symbol }} </span> </strong>
                     <div class="help-text">Total paid to this wallet address.</div>
                 </div>
 
@@ -103,11 +103,11 @@
                 </div>
 
                 <div id="earnings" class="tabcontent">
-                    <div>Total earnings last 1 hour: {{ roundSimple(earnings_last_hour.total_earnings)|default(0) }} {{ getCoinSymbol(coin_seo_name) }} </div>
-                    <div>Total earnings last 3 hours: {{ roundSimple(earnings_last_3_hours.total_earnings)|default(0) }} {{ getCoinSymbol(coin_seo_name) }} </div>
-                    <div>Total earnings last 24 hours: {{ roundSimple(earnings_last_24_hours.total_earnings)|default(0) }} {{ getCoinSymbol(coin_seo_name) }} </div>
-                    <div>Total earnings last 7 days: {{ roundSimple(earnings_last_7_days.total_earnings)|default(0) }} {{ getCoinSymbol(coin_seo_name) }} </div>
-                    <div>Total earnings last 30 days: {{ roundSimple(earnings_last_30_days.total_earnings)|default(0) }} {{ getCoinSymbol(coin_seo_name) }} </div>
+                    <div>Total earnings last 1 hour: {{ roundSimple(earnings_last_hour.total_earnings)|default(0) }} {{ getCoinSettings(coin_seo_name).symbol }} </div>
+                    <div>Total earnings last 3 hours: {{ roundSimple(earnings_last_3_hours.total_earnings)|default(0) }} {{ getCoinSettings(coin_seo_name).symbol }} </div>
+                    <div>Total earnings last 24 hours: {{ roundSimple(earnings_last_24_hours.total_earnings)|default(0) }} {{ getCoinSettings(coin_seo_name).symbol }} </div>
+                    <div>Total earnings last 7 days: {{ roundSimple(earnings_last_7_days.total_earnings)|default(0) }} {{ getCoinSettings(coin_seo_name).symbol }} </div>
+                    <div>Total earnings last 30 days: {{ roundSimple(earnings_last_30_days.total_earnings)|default(0) }} {{ getCoinSettings(coin_seo_name).symbol }} </div>
                     <div>
                         <strong>
                             <a href="https://whattomine.com/coins/202-btx-timetravel10" target=_blank">Estimate your earnings: WHAT TO MINE</a>
@@ -128,7 +128,7 @@
                                 <td>
                                     <a href="https://chainz.cryptoid.info/btx/tx.dws?{{ payout.tx }}.htm" target="_blank"> {{ payout.tx }} </a>
                                 </td>
-                                <td>{{ roundSimple(payout.amount) }} {{ getCoinSymbol(coin_seo_name) }} </td>
+                                <td>{{ roundSimple(payout.amount) }} {{ getCoinSettings(coin_seo_name).symbol }} </td>
                                 <td>{{ showDateTime(payout.time) }} </td>
                             </tr>
                         {% endfor %}
@@ -152,16 +152,13 @@
             <h2>Instructions - getting started</h2>
 
             <div><strong>Stratum port</strong></div>
-            <div class="get-started">stratum+tcp://bitcorepool.cc:1111</div>
+            <div class="get-started">stratum+tcp://omegapool.cc:{{ getCoinSettings(coin_seo_name).port }}</div>
 
             <div><strong>Nvidia cards using <a href="https://github.com/tpruvot/ccminer/releases" target="_blank">CCMINER</a></strong></div>
-            <div class="get-started">ccminer-x64 -a bitcore -o stratum+tcp://bitcorepool.cc:1111 -u 1NgZ7MjHmVUuuy2Y4UMxDaVm4Me3TcNMpt -p x</div>
-
-            <div><strong>Nvidia cards using SPMOD2</strong></div>
-            <div class="get-started">ccminer -a bitcore -o stratum+tcp://bitcorepool.cc:1111 -u 1NgZ7MjHmVUuuy2Y4UMxDaVm4Me3TcNMpt -p x</div>
+            <div class="get-started">ccminer-x64 -a {{ getCoinSettings(coin_seo_name).algo }} -o stratum+tcp://omegapool.cc:{{ getCoinSettings(coin_seo_name).port }} -u your-{{ coin_seo_name }}-address -p x</div>
 
             <div><strong>AMD cards using <a href="https://github.com/LIMXTEC/BitCore/releases" target="_blank">SGMINER</a></strong></div>
-            <div class="get-started">sgminer.exe --kernel timetravel10 -o stratum+tcp://bitcorepool.cc:1111 -u 1NgZ7MjHmVUuuy2Y4UMxDaVm4Me3TcNMpt -p x -I 19</div>
+            <div class="get-started">sgminer.exe --kernel {{ getCoinSettings(coin_seo_name).algosgminer }} -o stratum+tcp://omegapool.cc:{{ getCoinSettings(coin_seo_name).port }} -u your-{{ coin_seo_name }}-address -p x -I {{ getCoinSettings(coin_seo_name).intensity }}</div>
         </div>
     </div>
 

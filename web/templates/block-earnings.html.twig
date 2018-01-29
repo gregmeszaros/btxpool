@@ -17,7 +17,7 @@
                         <td>
                             <a href="index.php?coin={{ coin_seo_name }}&page=dashboard&wallet={{ block_data.username }}"> {{ block_data.username }} </a>
                         </td>
-                        <td> {{ roundSimple(block_data.amount_earned) }} {{ getCoinSymbol(coin_seo_name) }} </td>
+                        <td> {{ roundSimple(block_data.amount_earned) }} {{ getCoinSettings(coin_seo_name).symbol }} </td>
                         <td> {{ roundSimple(block_data.round_share) }}% </td>
                     </tr>
                 {% endfor %}
@@ -25,9 +25,9 @@
             </table>
 
             <br />
-            <div><strong> Total block reward: {{ block_reward.amount }} {{ getCoinSymbol(coin_seo_name) }} </strong></div>
-            <div><strong> Sum total paid for miners: {{ block_reward_after_fee }} {{ getCoinSymbol(coin_seo_name) }} </strong></div>
-            <div><strong> Pool fee paid: {{ pool_fee_amount }} {{ getCoinSymbol(coin_seo_name) }} ({{ pool_fee_percent }}%) </strong></div>
+            <div><strong> Total block reward: {{ block_reward.amount }} {{ getCoinSettings(coin_seo_name).symbol }} </strong></div>
+            <div><strong> Sum total paid for miners: {{ block_reward_after_fee }} {{ getCoinSettings(coin_seo_name).symbol }} </strong></div>
+            <div><strong> Pool fee paid: {{ pool_fee_amount }} {{ getCoinSettings(coin_seo_name).symbol }} ({{ pool_fee_percent }}%) </strong></div>
 
         </div>
     </div>

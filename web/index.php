@@ -95,20 +95,45 @@ $formatCoinName = new Twig_SimpleFunction('formatCoinName', function ($coin_seo_
 /**
  * Return specific coin symbols
  */
-$getCoinSymbol = new Twig_SimpleFunction('getCoinSymbol', function ($coin_seo_name) {
+$getCoinSettings = new Twig_SimpleFunction('getCoinSettings', function ($coin_seo_name) {
+  $settings = [];
   switch ($coin_seo_name) {
     case 'bitcore':
-      return 'BTX';
-    break;
+      $settings['port'] = 8001;
+      $settings['algo'] = 'bitcore';
+      $settings['algosgminer'] = 'timetravel10';
+      $settings['intensity'] = 23;
+      $settings['example_pass'] = 'x';
+      $settings['symbol'] = 'BTX';
+      return $settings;
+      break;
     case 'bulwark':
-      return 'BWK';
-    break;
+      $settings['port'] = 8002;
+      $settings['algo'] = 'nist5';
+      $settings['algosgminer'] = 'talkcoin-mod';
+      $settings['intensity'] = 25;
+      $settings['example_pass'] = 'x';
+      $settings['symbol'] = 'BWK';
+      return $settings;
+      break;
     case 'lux':
-      return 'LUX';
-    break;
+      $settings['port'] = 8003;
+      $settings['algo'] = 'phi';
+      $settings['algosgminer'] = 'phi';
+      $settings['intensity'] = 21;
+      $settings['example_pass'] = 'x';
+      $settings['symbol'] = 'LUX';
+      return $settings;
+      break;
     case 'verge':
-      return 'XVG';
-    break;
+      $settings['port'] = 8004;
+      $settings['algo'] = 'x17';
+      $settings['algosgminer'] = 'x17';
+      $settings['intensity'] = 21;
+      $settings['example_pass'] = 'x';
+      $settings['symbol'] = 'XVG';
+      return $settings;
+      break;
   }
 });
 
@@ -118,7 +143,7 @@ $twig->addFunction($addDateTime);
 $twig->addFunction($roundSimple);
 $twig->addFunction($formatConfirmations);
 $twig->addFunction($formatCoinName);
-$twig->addFunction($getCoinSymbol);
+$twig->addFunction($getCoinSettings);
 
 // Load available routes
 $load_routes = minerHelper::getRoutes();
