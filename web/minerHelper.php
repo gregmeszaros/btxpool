@@ -463,7 +463,7 @@ AND workerid IN (SELECT id FROM workers WHERE algo=:algo AND id = :worker_id AND
     // If we have redis connection try to load cached data first
     if (!empty($redis) && is_object($redis)) {
       $data = [];
-      $total_users_hashrate = json_decode($redis->get('total_users_hashrate_' . $step), TRUE);
+      $total_users_hashrate = json_decode($redis->get($algo . '_total_users_hashrate_' . $step), TRUE);
 
       // We have the data cached
       if (!empty($total_users_hashrate)) {
@@ -485,7 +485,7 @@ AND workerid IN (SELECT id FROM workers WHERE algo=:algo AND id = :worker_id AND
       $data = array_map('reset', $stmt->fetchAll(PDO::FETCH_GROUP|PDO::FETCH_ASSOC));
 
       // Cache for 5 mins
-      $redis->set('total_users_hashrate_' . $step, json_encode($data), 300);
+      $redis->set($algo . '_total_users_hashrate_' . $step, json_encode($data), 300);
     }
 
     print '<!–- total_users_hashrate ' . $step . ' - return from mysql –>';
