@@ -26,7 +26,7 @@
                         <a href="?page=dashboard&coin=bitcore">Bitcore (BTX)</a>
                     </td>
                     <td>TimeTravel10</td>
-                    <td>{{ total_hashrate_bitcore_gh|default('n/a') }} Gh/s</td>
+                    <td>{{ total_hashrate_bitcore_gh|default('n/a')|round(1) }} Gh/s</td>
                     <td>{{ showFriendlyHash(pool_hashrate_bitcore) }}</td>
                     <td>{{ total_miners_bitcore }}</td>
                     <td>1%</a></td>
@@ -37,7 +37,7 @@
                         <a href="?page=dashboard&coin=bulwark">Bulwark (BWK)</a>
                     </td>
                     <td>nist5</td>
-                    <td>{{ total_hashrate_bulwark_gh|default('n/a') }} Gh/s</td>
+                    <td>{{ total_hashrate_bulwark_gh|default('n/a')|round(1) }} Gh/s</td>
                     <td>{{ showFriendlyHash(pool_hashrate_bulwark) }}</td>
                     <td>{{ total_miners_bulwark }}</td>
                     <td>0.5%</td>
@@ -48,7 +48,7 @@
                         <a href="?page=dashboard&coin=lux">Luxcoin (LUX)</a>
                     </td>
                     <td>phi</td>
-                    <td>{{ total_hashrate_lux_gh|default('n/a') }} Gh/s</td>
+                    <td>{{ total_hashrate_lux_gh|default('n/a')|round(1) }} Gh/s</td>
                     <td>{{ showFriendlyHash(pool_hashrate_lux) }}</td>
                     <td>{{ total_miners_lux }}</td>
                     <td>0.5%</a></td>
