@@ -141,9 +141,9 @@ class minerHelper {
     // return key / value pairs (algo, min_payout amount)
     return [
       'bitcore' => 0.25,
-      'nist5' => 1,
-      'phi' => 1,
-      'x17' => 5
+      'nist5' => 0.1,
+      'phi' => 0.1,
+      'x17' => 1
     ];
   }
 
