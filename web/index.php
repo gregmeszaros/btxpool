@@ -105,6 +105,8 @@ $getCoinSettings = new Twig_SimpleFunction('getCoinSettings', function ($coin_se
       $settings['intensity'] = 23;
       $settings['example_pass'] = 'x';
       $settings['symbol'] = 'BTX';
+      $settings['block_explorer_payout'] = 'https://chainz.cryptoid.info/btx/tx.dws?';
+      $settings['block_explorer_payout_suffix'] = '.htm';
       return $settings;
       break;
     case 'bulwark':
@@ -114,6 +116,8 @@ $getCoinSettings = new Twig_SimpleFunction('getCoinSettings', function ($coin_se
       $settings['intensity'] = 25;
       $settings['example_pass'] = 'x';
       $settings['symbol'] = 'BWK';
+      $settings['block_explorer_payout'] = 'https://chainz.cryptoid.info/btx/tx.dws?';
+      $settings['block_explorer_payout_suffix'] = '.htm';
       return $settings;
       break;
     case 'lux':
@@ -123,6 +127,8 @@ $getCoinSettings = new Twig_SimpleFunction('getCoinSettings', function ($coin_se
       $settings['intensity'] = 21;
       $settings['example_pass'] = 'x';
       $settings['symbol'] = 'LUX';
+      $settings['block_explorer_payout'] = 'https://chainz.cryptoid.info/lux/tx.dws?';
+      $settings['block_explorer_payout_suffix'] = '.htm';
       return $settings;
       break;
     case 'verge':
@@ -132,6 +138,8 @@ $getCoinSettings = new Twig_SimpleFunction('getCoinSettings', function ($coin_se
       $settings['intensity'] = 21;
       $settings['example_pass'] = 'x';
       $settings['symbol'] = 'XVG';
+      $settings['block_explorer_payout'] = 'https://chainz.cryptoid.info/btx/tx.dws?';
+      $settings['block_explorer_payout_suffix'] = '.htm';
       return $settings;
       break;
   }

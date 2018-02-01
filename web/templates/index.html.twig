@@ -126,7 +126,7 @@
                         {% for payout in payouts %}
                             <tr>
                                 <td>
-                                    <a href="https://chainz.cryptoid.info/btx/tx.dws?{{ payout.tx }}.htm" target="_blank"> {{ payout.tx }} </a>
+                                    <a href="{{ getCoinSettings(coin_seo_name).block_explorer_payout }}{{ payout.tx }}{{ getCoinSettings(coin_seo_name).block_explorer_payout_suffix }}" target="_blank"> {{ payout.tx }} </a>
                                 </td>
                                 <td>{{ roundSimple(payout.amount) }} {{ getCoinSettings(coin_seo_name).symbol }} </td>
                                 <td>{{ showDateTime(payout.time) }} </td>
