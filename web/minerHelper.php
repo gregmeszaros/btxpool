@@ -13,6 +13,12 @@ class minerHelper {
     $coin = $_GET['coin'] ?? FALSE;
     if (!empty($coin)) {
       $base_route = 'index.php?coin=' . $coin . '&page=';
+      $main_blockchain_url = [
+        'bitcore' => 'https://chainz.cryptoid.info/btx/',
+        'bulwark' => 'http://explorer.bulwarkcrypto.com/',
+        'lux' => 'https://chainz.cryptoid.info/lux/',
+        'verge' => 'https://verge-blockchain.info/'
+      ];
     }
     else {
       $base_route = 'index.php?page=';
@@ -54,7 +60,7 @@ class minerHelper {
       'explorer' => [
         'id' => 'search',
         'label' => 'Blockchain',
-        'url' => 'https://chainz.cryptoid.info/btx/',
+        'url' => $main_blockchain_url[$coin],
         'target' => '_blank',
         'template' => 'miners.html.twig',
       ],
