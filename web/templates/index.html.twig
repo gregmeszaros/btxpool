@@ -58,6 +58,8 @@
         <div class="intro">
             <div class="minercontent">
                 <div class="get-started wallet-info-label">Your wallet address is set to: <strong>{{ wallet }}</strong></div>
+                <div class="get-started wallet-info-label">API call for your wallet: <strong><a href="api.php?coin={{ coin_seo_name }}&wallet={{ wallet }}" target="_blank">Active workers + wallet monitoring</a></strong></div>
+
                 <div class="intro-info">
                     <strong>Immature Balance: <span class="label {{ coin_seo_name }}"> {{ roundSimple(immature_balance.immature_balance)|default(0) }} {{ getCoinSettings(coin_seo_name).symbol }} </span> </strong>
                     <div class="help-text">Earnings awaiting blocks to mature.</div>

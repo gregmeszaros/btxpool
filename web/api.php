@@ -113,9 +113,16 @@ else {
     $total_paid = minerHelper::getTotalPayout($conn, $user['coinid'], $user['id']);
     $active_workers = count(minerHelper::getWorkers($conn, $wallet));
 
+    $earnings_last_hour = minerHelper::getUserEarnings($conn, $user['coinid'], $user['id'], 60 * 60 * 1);
+    $earnings_last_3_hours = minerHelper::getUserEarnings($conn, $user['coinid'], $user['id'], 60 * 60 * 3);
+    $earnings_last_24_hours = minerHelper::getUserEarnings($conn, $user['coinid'], $user['id'], 60 * 60 * 24);
+
     $data['coin'] = $coin;
     $data['miner_address'] = $user['username'];
     $data['immature_balance'] = minerHelper::roundSimple($immature_balance['immature_balance']);
+    $data['earnings_last_hour'] = minerHelper::roundSimple($earnings_last_hour['total_earnings']);
+    $data['earnings_last_3_hours'] = minerHelper::roundSimple($earnings_last_3_hours['total_earnings']);
+    $data['earnings_last_24_hours'] = minerHelper::roundSimple($earnings_last_24_hours['total_earnings']);
     $data['pending_payout'] = minerHelper::roundSimple($user['balance']);
     $data['total_paid'] = minerHelper::roundSimple($total_paid['total_payout']);
     $data['active_workers'] = $active_workers;
