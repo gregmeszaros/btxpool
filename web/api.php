@@ -4,6 +4,7 @@ $callback = $_GET['callback'] ?? FALSE;
 $type = $_GET['type'] ?? FALSE;
 $uid = $_GET['uid'] ?? FALSE;
 $coin = $_GET['coin'] ?? "bitcore";
+$wallet = $_GET['wallet'] ?? FALSE;
 
 // Connect mysql
 $conn = include_once(__DIR__ . '/../config-' . $coin . '.php');
@@ -95,7 +96,35 @@ if (!empty($callback)) {
 
 // Json API requests
 else {
-  // Header
+
   $data = [];
+
+  // Standard API JSON responses
+  if(!empty($wallet) && !empty($coin)) {
+
+    /**
+     * Helper class
+     * @var minerHelper.php
+     * Include only when we need it
+     */
+    include_once('minerHelper.php');
+    $user = minerHelper::getAccount($conn, null, $wallet);
+    $immature_balance = minerHelper::getImmatureBalance($conn, $user['coinid'], $user['id']);
+    $total_paid = minerHelper::getTotalPayout($conn, $user['coinid'], $user['id']);
+    $active_workers = count(minerHelper::getWorkers($conn, $wallet));
+
+    $data['coin'] = $coin;
+    $data['miner_address'] = $user['username'];
+    $data['immature_balance'] = minerHelper::roundSimple($immature_balance['immature_balance']);
+    $data['pending_payout'] = minerHelper::roundSimple($user['balance']);
+    $data['total_paid'] = minerHelper::roundSimple($total_paid['total_payout']);
+    $data['active_workers'] = $active_workers;
+    $data['request_time'] = time();
+
+  }
+
+  header('Content-type: application/json');
   print json_encode($data);
+  exit();
+
 }
