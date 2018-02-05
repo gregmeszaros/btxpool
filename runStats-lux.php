@@ -478,7 +478,7 @@ function updateNetworkHashrate($db, $coin_id = 1425) {
     $redis = include_once(__DIR__ . '/config-redis.php');
 
     $data = [];
-    $data['hashrate_gh'] = $network_info['netmhashps'] / 1000;
+    $data['hashrate_gh'] = $network_info['networkhashps'] / 1000 / 1000 / 1000;
     $data['difficulty'] = $network_info['difficulty'];
 
     $redis->set('network_info_' . $coin_id, json_encode($data));
