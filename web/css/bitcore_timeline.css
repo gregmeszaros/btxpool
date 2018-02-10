@@ -386,6 +386,13 @@ h2 {
     width: 100%;
 }
 
+.img-banner {
+    max-width: 500px;
+    min-width: 300px;
+    width: 100%;
+    height: auto;
+}
+
 .intro-info {
     margin-left: 10px;
     display: inline-block;

@@ -33,17 +33,6 @@
                 </tr>
                 <tr>
                     <td>
-                        <img class="logo-list" src="images/bulwark.png" alt="bulwark mining" />
-                        <a href="?page=dashboard&coin=bulwark">Bulwark (BWK)</a>
-                    </td>
-                    <td>nist5</td>
-                    <td>{{ total_hashrate_bulwark_gh|default('n/a')|round(1) }} Gh/s</td>
-                    <td>{{ showFriendlyHash(pool_hashrate_bulwark) }}</td>
-                    <td>{{ total_miners_bulwark }}</td>
-                    <td>0.5%</td>
-                </tr>
-                <tr>
-                    <td>
                         <img class="logo-list" src="images/lux.png" alt="lux mining" />
                         <a href="?page=dashboard&coin=lux">Luxcoin (LUX)</a>
                     </td>
@@ -53,19 +42,18 @@
                     <td>{{ total_miners_lux }}</td>
                     <td>0.5%</a></td>
                 </tr>
-                <tr>
-                    <td>
-                        <img class="logo-list" src="images/verge.png" alt="verge mining" />
-                        <a href="?page=dashboard&coin=verge">Verge (XVG)</a>
-                    </td>
-                    <td>x17</td>
-                    <td>n/a</td>
-                    <td>{{ showFriendlyHash(pool_hashrate_verge) }}</td>
-                    <td>{{ total_miners_verge }}</td>
-                    <td>0.5%</a></td>
-                </tr>
             </table>
 
+        </div>
+
+        <div class="minercontent">
+            <h1 class="header-h1">How to monitor your miner earnings, pool profitability or to restart your miner remotely?</h1>
+
+            We suggest to register at <a href="https://ethmonitoring.com" target="_blank">EthMonitoring</a> which allows you to setup miner monitoring with a hashrate reporting from the miner software.
+            <br />The premium service also allows to monitor pool profitability based on your real pool earnings.
+            It's available as a mobile app too or you can control it through a simple web interface.</p>
+
+            <a href="https://ethmonitoring.com/site/premium" target="_blank"><img src="https://ethmonitoring.com/img/monitoring.jpg" class="img-banner"/></a>
         </div>
     </div>
 </div>
