@@ -387,7 +387,10 @@ h2 {
 }
 
 .img-banner {
-    max-width: 500px !important;
+}
+
+.img-banner img {
+    max-width: 500px;
     min-width: 300px;
     width: 100%;
     height: auto;
