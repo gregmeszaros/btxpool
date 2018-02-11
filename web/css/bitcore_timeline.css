@@ -386,13 +386,13 @@ h2 {
     width: 100%;
 }
 
-.img-banner {
+.userImg {
+    width: 100%;
 }
 
-.img-banner img {
-    max-width: 500px;
-    min-width: 300px;
+.imgContainer {
     height: auto;
+    max-width: 500px;
 }
 
 .intro-info {
@@ -568,9 +568,5 @@ table.table { width: 100%; }
     td:nth-child(1) {
         min-width: auto;
         font-size: 0.7em;
-    }
-    .img-banner img {
-        width: 100%;
-        height: auto;
     }
 }
