@@ -513,7 +513,7 @@ AND workerid IN (SELECT id FROM workers WHERE algo=:algo AND id = :worker_id AND
    */
   public static function getPoolFee($fee = 1.5) {
     return [
-      'bitcore' => 1.5
+      'bitcore' => 1.25
     ];
   }
 
