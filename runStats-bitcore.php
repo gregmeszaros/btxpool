@@ -370,7 +370,7 @@ function sendPayouts($db, $coin_id = 1425) {
   $nextFullHour = date("H", $now + (3600 - $now % 3600));
   $nextFullMin = date("i", $now + (60 - $now % 60));
 
-  $hours_to_process = ['01', '03', '05', '07', '09', '11', '13', '15', '17', '19', '21', '23'];
+  $hours_to_process = ['00', '04', '08', '12', '16', '20'];
   $minutes_to_process = ['30'];
 
   if (in_array($nextFullHour, $hours_to_process) && in_array($nextFullMin, $minutes_to_process)) {
