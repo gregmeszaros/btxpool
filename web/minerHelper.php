@@ -17,7 +17,8 @@ class minerHelper {
         'bitcore' => 'https://chainz.cryptoid.info/btx/',
         'bulwark' => 'http://explorer.bulwarkcrypto.com/',
         'lux' => 'https://chainz.cryptoid.info/lux/',
-        'verge' => 'https://verge-blockchain.info/'
+        'verge' => 'https://verge-blockchain.info/',
+        'bitsend' => 'https://chainz.cryptoid.info/bsd/'
       ];
     }
     else {
