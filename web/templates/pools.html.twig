@@ -42,6 +42,17 @@
                     <td>{{ total_miners_lux }}</td>
                     <td>0.5%</a></td>
                 </tr>
+                <tr>
+                    <td>
+                        <img class="logo-list" src="images/bitsend.png" alt="lux mining" />
+                        <a href="?page=dashboard&coin=bitsend">Bitsend (BSD)</a> <strong>Port: 8005</strong>
+                    </td>
+                    <td>xevan</td>
+                    <td>{{ total_hashrate_bitsend_gh|default('n/a')|round(1) }} Gh/s</td>
+                    <td>{{ showFriendlyHash(pool_hashrate_bitsend) }}</td>
+                    <td>{{ total_miners_bitsend }}</td>
+                    <td>1%</a></td>
+                </tr>
             </table>
 
         </div>

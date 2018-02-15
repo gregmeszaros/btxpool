@@ -112,7 +112,7 @@
                     <div>Total earnings last 30 days: {{ roundSimple(earnings_last_30_days.total_earnings)|default(0) }} {{ getCoinSettings(coin_seo_name).symbol }} </div>
                     <div>
                         <strong>
-                            <a href="https://whattomine.com/coins/202-btx-timetravel10" target=_blank">Estimate your earnings: WHAT TO MINE</a>
+                            <a href={{ getCoinSettings(coin_seo_name).whattomine_url }} target=_blank">Estimate your earnings: WHAT TO MINE</a>
                         </strong>
                     </div>
                 </div>

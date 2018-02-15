@@ -3,6 +3,7 @@ config-bitcore.php
 config-bulwark.php
 config-lux.php
 config-verge.php
+config-bitsend.php
 
 .DS_Store
 /vendor/

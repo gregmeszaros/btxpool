@@ -28,6 +28,10 @@ switch ($coin_seo_name) {
     $coin_id = 1428;
     $conn = include(__DIR__ . '/../config-verge.php');
     break;
+  case "bitsend":
+    $coin_id = 1429;
+    $conn = include(__DIR__ . '/../config-bitsend.php');
+    break;
   default:
     $coin_id = FALSE;
 }
@@ -107,6 +111,7 @@ $getCoinSettings = new Twig_SimpleFunction('getCoinSettings', function ($coin_se
       $settings['symbol'] = 'BTX';
       $settings['block_explorer_payout'] = 'https://chainz.cryptoid.info/btx/tx.dws?';
       $settings['block_explorer_payout_suffix'] = '.htm';
+      $settings['whattomine_url'] = 'https://whattomine.com/coins/202-btx-timetravel10';
       return $settings;
       break;
     case 'bulwark':
@@ -118,6 +123,7 @@ $getCoinSettings = new Twig_SimpleFunction('getCoinSettings', function ($coin_se
       $settings['symbol'] = 'BWK';
       $settings['block_explorer_payout'] = 'https://chainz.cryptoid.info/btx/tx.dws?';
       $settings['block_explorer_payout_suffix'] = '.htm';
+      $settings['whattomine_url'] = 'https://whattomine.com/coins/224-bwk-nist5';
       return $settings;
       break;
     case 'lux':
@@ -129,6 +135,7 @@ $getCoinSettings = new Twig_SimpleFunction('getCoinSettings', function ($coin_se
       $settings['symbol'] = 'LUX';
       $settings['block_explorer_payout'] = 'https://chainz.cryptoid.info/lux/tx.dws?';
       $settings['block_explorer_payout_suffix'] = '.htm';
+      $settings['whattomine_url'] = 'https://whattomine.com/coins/212-lux-phi1612';
       return $settings;
       break;
     case 'verge':
@@ -140,6 +147,19 @@ $getCoinSettings = new Twig_SimpleFunction('getCoinSettings', function ($coin_se
       $settings['symbol'] = 'XVG';
       $settings['block_explorer_payout'] = 'https://chainz.cryptoid.info/btx/tx.dws?';
       $settings['block_explorer_payout_suffix'] = '.htm';
+      $settings['whattomine_url'] = 'https://whattomine.com/coins/219-xvg-x17';
+      return $settings;
+      break;
+    case 'bitsend':
+      $settings['port'] = 8005;
+      $settings['algo'] = 'xevan';
+      $settings['algosgminer'] = 'xevan';
+      $settings['intensity'] = 21;
+      $settings['example_pass'] = 'x';
+      $settings['symbol'] = 'BSD';
+      $settings['block_explorer_payout'] = 'https://chainz.cryptoid.info/bsd/tx.dws?';
+      $settings['block_explorer_payout_suffix'] = '.htm';
+      $settings['whattomine_url'] = 'https://whattomine.com/coins/201-bsd-xevan';
       return $settings;
       break;
   }
