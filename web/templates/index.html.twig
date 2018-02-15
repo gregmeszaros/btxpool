@@ -156,11 +156,11 @@
             <div><strong>Stratum port</strong></div>
             <div class="get-started">stratum+tcp://omegapool.cc:{{ getCoinSettings(coin_seo_name).port }}</div>
 
-            <div><strong>Nvidia cards using <a href="https://github.com/tpruvot/ccminer/releases" target="_blank">CCMINER</a></strong></div>
-            <div class="get-started">ccminer-x64 -a {{ getCoinSettings(coin_seo_name).algo }} -o stratum+tcp://omegapool.cc:{{ getCoinSettings(coin_seo_name).port }} -u your-{{ coin_seo_name }}-address -p x</div>
+            <div><strong>Nvidia cards using <a href="{{  getCoinSettings(coin_seo_name).mine_nvidia_download }}" target="_blank">CCMINER</a></strong></div>
+            <div class="get-started">{{ getCoinSettings(coin_seo_name).mine_nvidia }}</div>
 
-            <div><strong>AMD cards using <a href="https://github.com/LIMXTEC/BitCore/releases" target="_blank">SGMINER</a></strong></div>
-            <div class="get-started">sgminer.exe --kernel {{ getCoinSettings(coin_seo_name).algosgminer }} -o stratum+tcp://omegapool.cc:{{ getCoinSettings(coin_seo_name).port }} -u your-{{ coin_seo_name }}-address -p x -I {{ getCoinSettings(coin_seo_name).intensity }}</div>
+            <div><strong>AMD cards using <a href="{{  getCoinSettings(coin_seo_name).mine_amd_download }}" target="_blank">SGMINER</a></strong></div>
+            <div class="get-started">{{ getCoinSettings(coin_seo_name).mine_amd }}</div>
         </div>
     </div>
 

@@ -112,6 +112,10 @@ $getCoinSettings = new Twig_SimpleFunction('getCoinSettings', function ($coin_se
       $settings['block_explorer_payout'] = 'https://chainz.cryptoid.info/btx/tx.dws?';
       $settings['block_explorer_payout_suffix'] = '.htm';
       $settings['whattomine_url'] = 'https://whattomine.com/coins/202-btx-timetravel10';
+      $settings['mine_nvidia_download'] = 'https://github.com/tpruvot/ccminer/releases';
+      $settings['mine_nvidia'] = 'ccminer -a bitcore -o stratum+tcp://omegapool.cc:8001 -u your_bitcore_address -p x';
+      $settings['mine_amd_download'] = 'https://github.com/LIMXTEC/BitCore/releases/download/0.14.1.6/6.Windows_Miner_05-2017.zip';
+      $settings['mine_amd'] = 'sgminer --kernel timetravel10 -o stratum+tcp://omegapool.cc:8001 -u your_bitcore_address -p x -I 23';
       return $settings;
       break;
     case 'bulwark':
@@ -124,6 +128,10 @@ $getCoinSettings = new Twig_SimpleFunction('getCoinSettings', function ($coin_se
       $settings['block_explorer_payout'] = 'https://chainz.cryptoid.info/btx/tx.dws?';
       $settings['block_explorer_payout_suffix'] = '.htm';
       $settings['whattomine_url'] = 'https://whattomine.com/coins/224-bwk-nist5';
+      $settings['mine_nvidia_download'] = '';
+      $settings['mine_nvidia'] = '';
+      $settings['mine_amd_download'] = 'https://github.com/nicehash/sgminer/releases/tag/5.6.1';
+      $settings['mine_amd'] = 'sgminer --kernel talkcoin-mod -o stratum+tcp://omegapool.cc:8002 -u your_bulwark_address -p x -I 21';
       return $settings;
       break;
     case 'lux':
@@ -136,6 +144,10 @@ $getCoinSettings = new Twig_SimpleFunction('getCoinSettings', function ($coin_se
       $settings['block_explorer_payout'] = 'https://chainz.cryptoid.info/lux/tx.dws?';
       $settings['block_explorer_payout_suffix'] = '.htm';
       $settings['whattomine_url'] = 'https://whattomine.com/coins/212-lux-phi1612';
+      $settings['mine_nvidia_download'] = 'https://github.com/anorganix/ccminer-phi/releases';
+      $settings['mine_nvidia'] = 'ccminer -a phi -o stratum+tcp://omegapool.cc:8003 -u your_lux_address -p x';
+      $settings['mine_amd_download'] = 'https://github.com/216k155/sgminer-phi1612-Implemented/releases';
+      $settings['mine_amd'] = 'sgminer --kernel phi -o stratum+tcp://omegapool.cc:8003 -u your_lux_address -p x -I 23';
       return $settings;
       break;
     case 'verge':
@@ -148,6 +160,10 @@ $getCoinSettings = new Twig_SimpleFunction('getCoinSettings', function ($coin_se
       $settings['block_explorer_payout'] = 'https://chainz.cryptoid.info/btx/tx.dws?';
       $settings['block_explorer_payout_suffix'] = '.htm';
       $settings['whattomine_url'] = 'https://whattomine.com/coins/219-xvg-x17';
+      $settings['mine_nvidia_download'] = '';
+      $settings['mine_nvidia'] = '';
+      $settings['mine_amd_download'] = '';
+      $settings['mine_amd'] = '';
       return $settings;
       break;
     case 'bitsend':
@@ -160,6 +176,10 @@ $getCoinSettings = new Twig_SimpleFunction('getCoinSettings', function ($coin_se
       $settings['block_explorer_payout'] = 'https://chainz.cryptoid.info/bsd/tx.dws?';
       $settings['block_explorer_payout_suffix'] = '.htm';
       $settings['whattomine_url'] = 'https://whattomine.com/coins/201-bsd-xevan';
+      $settings['mine_nvidia_download'] = 'https://github.com/krnlx/ccminer-xevan/releases';
+      $settings['mine_nvidia'] = 'ccminer -a xevan -o stratum+tcp://omegapool.cc:8005 -u your_bitsend_address -p x -i 21';
+      $settings['mine_amd_download'] = '';
+      $settings['mine_amd'] = '';
       return $settings;
       break;
   }
