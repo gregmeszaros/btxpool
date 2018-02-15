@@ -778,18 +778,19 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
         $conn_bulwark = include(__DIR__ . '/../config-bulwark.php');
         $conn_lux = include(__DIR__ . '/../config-lux.php');
         $conn_verge = include(__DIR__ . '/../config-verge.php');
+        $conn_bitsend = include(__DIR__ . '/../config-bitsend.php');
 
         $pool_hashrate_bitcore = minerHelper::getPoolHashrateStats($conn_btx, minerHelper::miner_getAlgos()[1425], 1800, $redis);
         $pool_hashrate_bulwark = minerHelper::getPoolHashrateStats($conn_bulwark, minerHelper::miner_getAlgos()[1426], 1800, $redis);
         $pool_hashrate_lux = minerHelper::getPoolHashrateStats($conn_lux, minerHelper::miner_getAlgos()[1427], 1800, $redis);
         $pool_hashrate_verge = minerHelper::getPoolHashrateStats($conn_verge, minerHelper::miner_getAlgos()[1428], 1800, $redis);
-        $pool_hashrate_bitsend = minerHelper::getPoolHashrateStats($conn_verge, minerHelper::miner_getAlgos()[1429], 1800, $redis);
+        $pool_hashrate_bitsend = minerHelper::getPoolHashrateStats($conn_bitsend, minerHelper::miner_getAlgos()[1429], 1800, $redis);
 
         $total_miners_bitcore = self::countMiners($conn_btx,1425)['total_count'] ?? 0;
         $total_miners_bulwark = self::countMiners($conn_bulwark,1426)['total_count'] ?? 0;
         $total_miners_lux = self::countMiners($conn_lux,1427)['total_count'] ?? 0;
         $total_miners_verge = self::countMiners($conn_verge,1428)['total_count'] ?? 0;
-        $total_miners_bitsend = self::countMiners($conn_verge,1429)['total_count'] ?? 0;
+        $total_miners_bitsend = self::countMiners($conn_bitsend,1429)['total_count'] ?? 0;
 
         return [
           'total_hashrate_bitcore_gh' => $network_info_bitcore['hashrate_gh'],
