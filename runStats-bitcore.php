@@ -371,7 +371,7 @@ function sendPayouts($db, $coin_id = 1425) {
   $nextFullMin = date("i", $now + (60 - $now % 60));
 
   $hours_to_process = ['00', '04', '08', '12', '16', '20'];
-  $minutes_to_process = ['30'];
+  $minutes_to_process = ['30', '40'];
 
   if (in_array($nextFullHour, $hours_to_process) && in_array($nextFullMin, $minutes_to_process)) {
     print 'Activate extra payouts' . "\n";
@@ -418,7 +418,7 @@ function sendExtraPayouts($db, $coin_id = 1425, $extra_payout = FALSE) {
   }
 
   // Get the accounts which due payout
-  $stmt = $db->prepare("SELECT * FROM accounts WHERE balance > :min_payout AND coinid = :coin_id ORDER BY balance DESC");
+  $stmt = $db->prepare("SELECT * FROM accounts WHERE balance > :min_payout AND coinid = :coin_id ORDER BY balance DESC LIMIT 0, 200");
   $stmt->execute([
     ':min_payout' => $min_payout,
     ':coin_id' => $coin_id

@@ -34,7 +34,15 @@
             <h3>Announcements</h3>
             <ul class="announcements">
                 <li>
-                    <div>omegapool.cc just launched. First month we have promotional very low mining fees. Please try us and report back any issues found!</div>
+                    <div>
+                        {% if stratum_connections|length > 1 %}
+                            <strong style="color: red;">Please always connect to the port with less active connections!</strong>
+                            {% for port, stratum_connection in stratum_connections %}
+                                <strong><div>Port: {{ port }} <span> - {{ stratum_connection.workers }} workers</span></div></strong>
+                            {% endfor %}
+                        {% endif %}
+                        omegapool.cc just launched. First month we have promotional very low mining fees. Please try us and report back any issues found!
+                    </div>
                 </li>
             </ul>
             <h2>Search Wallet</h2>

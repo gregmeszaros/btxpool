@@ -280,6 +280,16 @@ class minerHelper {
   }
 
   /**
+   * Shows how many users are connected to each port
+   */
+  public static function countStratumConnections($db, $algo = FALSE, $redis = FALSE) {
+    $stmt = $db->prepare("SELECT port, workers FROM stratums ORDER BY workers ASC;");
+    $stmt->execute();
+
+    return array_map('reset', $stmt->fetchAll(PDO::FETCH_GROUP|PDO::FETCH_ASSOC));
+  }
+
+  /**
    * Get the last X number of blocks
    * @param $db
    * @param string $miner_address
@@ -289,7 +299,7 @@ class minerHelper {
 
     // @TODO -> if we have miner address join with earnings!
     // @TODO -> cache the call for 2 mins
-    $stmt = $db->prepare("SELECT * FROM blocks WHERE coin_id = :coin_id ORDER BY height DESC LIMIT 0, 30");
+    $stmt = $db->prepare("SELECT * FROM blocks WHERE coin_id = :coin_id ORDER BY height DESC LIMIT 0, 50");
     $stmt->execute([
       ':coin_id' => $coin_id
     ]);
@@ -859,6 +869,7 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
           'hashrate_user_30_min' => $hashrate_user_30_min ?? FALSE,
           'hashrate_user_24_hours' => $hashrate_user_24_hours ?? FALSE,
           'coin_seo_name' => $data['coin_seo_name'],
+          'stratum_connections' => self::countStratumConnections($db) ?? FALSE,
           'load_charts' => TRUE
         ];
         break;
