@@ -220,7 +220,7 @@ function updateEarnings($db) {
       print 'Confirmations: ' . $block_tx['confirmations'] . "\n";
 
       // Check if the block is confirmed
-      if ($block_tx['confirmations'] > 100) {
+      if ($block_tx['confirmations'] > 250) {
         // mature the block
         $category = 'mature';
 
