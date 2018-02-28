@@ -32,6 +32,10 @@ switch ($coin_seo_name) {
     $coin_id = 1429;
     $conn = include(__DIR__ . '/../config-bitsend.php');
     break;
+  case "raven":
+    $coin_id = 1430;
+    $conn = include(__DIR__ . '/../config-raven.php');
+    break;
   default:
     $coin_id = FALSE;
 }
@@ -178,6 +182,22 @@ $getCoinSettings = new Twig_SimpleFunction('getCoinSettings', function ($coin_se
       $settings['whattomine_url'] = 'https://whattomine.com/coins/201-bsd-xevan';
       $settings['mine_nvidia_download'] = 'https://github.com/krnlx/ccminer-xevan/releases';
       $settings['mine_nvidia'] = 'ccminer -a xevan -o stratum+tcp://omegapool.cc:8005 -u your_bitsend_address -p x -i 21';
+      $settings['mine_amd_download'] = '';
+      $settings['mine_amd'] = '';
+      return $settings;
+      break;
+    case 'raven':
+      $settings['port'] = 8006;
+      $settings['algo'] = 'x16r';
+      $settings['algosgminer'] = 'x16r';
+      $settings['intensity'] = 21;
+      $settings['example_pass'] = 'x';
+      $settings['symbol'] = 'RVN';
+      $settings['block_explorer_payout'] = 'https://chainz.cryptoid.info/bsd/tx.dws?';
+      $settings['block_explorer_payout_suffix'] = '.htm';
+      $settings['whattomine_url'] = 'https://whattomine.com/coins/201-bsd-xevan';
+      $settings['mine_nvidia_download'] = 'https://github.com/krnlx/ccminer-xevan/releases';
+      $settings['mine_nvidia'] = 'ccminer-x64 -a x16r -o stratum+tcp://omegapool.cc:8006 -u your_raven_address -p xx -i 21';
       $settings['mine_amd_download'] = '';
       $settings['mine_amd'] = '';
       return $settings;

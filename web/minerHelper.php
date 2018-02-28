@@ -137,7 +137,8 @@ class minerHelper {
       '1426' => 'nist5',
       '1427' => 'phi',
       '1428' => 'x17',
-      '1429' => 'xevan'
+      '1429' => 'xevan',
+      '1430' => 'x16r'
     ];
   }
 
@@ -152,7 +153,8 @@ class minerHelper {
       'nist5' => 0.1,
       'phi' => 0.1,
       'x17' => 1,
-      'xevan' => 0.1
+      'xevan' => 0.1,
+      'x16r' => 0.1
     ];
   }
 
@@ -563,7 +565,8 @@ AND workerid IN (SELECT id FROM workers WHERE algo=:algo AND id = :worker_id AND
       'nist5' => 0.5,
       'phi' => 0.5,
       'x17' => 0.5,
-      'xevan' => 1
+      'xevan' => 1,
+      'x16r' => 0.5
     ];
   }
 
@@ -784,40 +787,47 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
         $network_info_bulwark = self::getNetworkInfo(1426, $redis);
         $network_info_lux = self::getNetworkInfo(1427, $redis);
         $network_info_bitsend = self::getNetworkInfo(1429, $redis);
+        $network_info_raven = self::getNetworkInfo(1430, $redis);
 
         $conn_btx = include(__DIR__ . '/../config-bitcore.php');
         $conn_bulwark = include(__DIR__ . '/../config-bulwark.php');
         $conn_lux = include(__DIR__ . '/../config-lux.php');
         $conn_verge = include(__DIR__ . '/../config-verge.php');
         $conn_bitsend = include(__DIR__ . '/../config-bitsend.php');
+        $conn_raven = include(__DIR__ . '/../config-raven.php');
 
         $pool_hashrate_bitcore = minerHelper::getPoolHashrateStats($conn_btx, minerHelper::miner_getAlgos()[1425], 1800, $redis);
         $pool_hashrate_bulwark = minerHelper::getPoolHashrateStats($conn_bulwark, minerHelper::miner_getAlgos()[1426], 1800, $redis);
         $pool_hashrate_lux = minerHelper::getPoolHashrateStats($conn_lux, minerHelper::miner_getAlgos()[1427], 1800, $redis);
         $pool_hashrate_verge = minerHelper::getPoolHashrateStats($conn_verge, minerHelper::miner_getAlgos()[1428], 1800, $redis);
         $pool_hashrate_bitsend = minerHelper::getPoolHashrateStats($conn_bitsend, minerHelper::miner_getAlgos()[1429], 1800, $redis);
+        $pool_hashrate_raven = minerHelper::getPoolHashrateStats($conn_raven, minerHelper::miner_getAlgos()[1430], 1800, $redis);
 
         $total_miners_bitcore = self::countMiners($conn_btx,1425)['total_count'] ?? 0;
         $total_miners_bulwark = self::countMiners($conn_bulwark,1426)['total_count'] ?? 0;
         $total_miners_lux = self::countMiners($conn_lux,1427)['total_count'] ?? 0;
         $total_miners_verge = self::countMiners($conn_verge,1428)['total_count'] ?? 0;
         $total_miners_bitsend = self::countMiners($conn_bitsend,1429)['total_count'] ?? 0;
+        $total_miners_raven = self::countMiners($conn_raven,1430)['total_count'] ?? 0;
 
         return [
           'total_hashrate_bitcore_gh' => $network_info_bitcore['hashrate_gh'],
           'total_hashrate_bulwark_gh' => $network_info_bulwark['hashrate_gh'],
           'total_hashrate_lux_gh' => $network_info_lux['hashrate_gh'],
           'total_hashrate_bitsend_gh' => $network_info_bitsend['hashrate_gh'],
+          'total_hashrate_raven_gh' => $network_info_raven['hashrate_gh'],
           'pool_hashrate_bitcore' => $pool_hashrate_bitcore['hashrate'],
           'pool_hashrate_bulwark' => $pool_hashrate_bulwark['hashrate'],
           'pool_hashrate_lux' => $pool_hashrate_lux['hashrate'],
           'pool_hashrate_verge' => $pool_hashrate_verge['hashrate'],
           'pool_hashrate_bitsend' => $pool_hashrate_bitsend['hashrate'],
+          'pool_hashrate_raven' => $pool_hashrate_raven['hashrate'],
           'total_miners_bitcore' => $total_miners_bitcore,
           'total_miners_bulwark' => $total_miners_bulwark,
           'total_miners_lux' => $total_miners_lux,
           'total_miners_verge' => $total_miners_verge,
-          'total_miners_bitsend' => $total_miners_bitsend
+          'total_miners_bitsend' => $total_miners_bitsend,
+          'total_miners_raven' => $total_miners_raven,
         ];
         break;
       case 'dashboard':

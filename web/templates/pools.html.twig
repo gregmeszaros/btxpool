@@ -33,6 +33,17 @@
                 </tr>
                 <tr>
                     <td>
+                        <img class="logo-list" src="images/bulwark.png" alt="bulwark mining" />
+                        <a href="?page=dashboard&coin=bulwark">Bulwark (BWK)</a> <strong>Port: 8002</strong>
+                    </td>
+                    <td>nist5</td>
+                    <td>{{ total_hashrate_bulwark_gh|default('n/a')|round(1) }} Gh/s</td>
+                    <td>{{ showFriendlyHash(pool_hashrate_bulwark) }}</td>
+                    <td>{{ total_miners_bulwark }}</td>
+                    <td>0.5%</a></td>
+                </tr>
+                <tr>
+                    <td>
                         <img class="logo-list" src="images/lux.png" alt="lux mining" />
                         <a href="?page=dashboard&coin=lux">Luxcoin (LUX)</a> <strong>Port: 8003</strong>
                     </td>
@@ -44,7 +55,7 @@
                 </tr>
                 <tr>
                     <td>
-                        <img class="logo-list" src="images/bitsend.png" alt="lux mining" />
+                        <img class="logo-list" src="images/bitsend.png" alt="bitsend mining" />
                         <a href="?page=dashboard&coin=bitsend">Bitsend (BSD)</a> <strong>Port: 8005</strong>
                     </td>
                     <td>xevan</td>
@@ -52,6 +63,17 @@
                     <td>{{ showFriendlyHash(pool_hashrate_bitsend) }}</td>
                     <td>{{ total_miners_bitsend }}</td>
                     <td>1%</a></td>
+                </tr>
+                <tr>
+                    <td>
+                        <img class="logo-list" src="images/raven.png" alt="raven mining" />
+                        <a href="?page=dashboard&coin=raven">Raven (RVN)</a> <strong>Port: 8006</strong>
+                    </td>
+                    <td>x16r</td>
+                    <td>{{ total_hashrate_raven_gh|default('n/a')|round(1) }} Gh/s</td>
+                    <td>{{ showFriendlyHash(pool_hashrate_raven) }}</td>
+                    <td>{{ total_miners_raven }}</td>
+                    <td>0.5%</a></td>
                 </tr>
             </table>
 
