@@ -292,6 +292,34 @@ class minerHelper {
   }
 
   /**
+   * Get total shares submitted for the round
+   * @param $db
+   * @param $algo
+   */
+  public static function sumTotalShares($db, $algo, $user_id = FALSE, $redis = FALSE) {
+
+    if (!empty($user_id)) {
+      $stmt = $db->prepare("SELECT SUM(difficulty) AS total_user_hash FROM shares WHERE valid = :valid AND algo= :algo AND userid = :user_id;");
+      $stmt->execute([
+        ':valid' => 1,
+        ':algo' => $algo,
+        ':user_id' => $user_id
+      ]);
+
+      return $stmt->fetch(PDO::FETCH_ASSOC);
+
+    }
+
+    $stmt = $db->prepare("SELECT SUM(difficulty) AS total_user_hash FROM shares WHERE valid = :valid AND algo= :algo;");
+    $stmt->execute([
+      ':valid' => 1,
+      ':algo' => $algo
+    ]);
+
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+  }
+
+  /**
    * Get the last X number of blocks
    * @param $db
    * @param string $miner_address
@@ -834,6 +862,14 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
 
         // If we have miner address
         if (!empty($data['miner_address'])) {
+
+          $block_rewards = [];
+          $block_rewards[1425] = 3.125;
+          $block_rewards[1426] = 33.33333334;
+          $block_rewards[1427] = 10;
+          $block_rewards[1429] = 5;
+          $block_rewards[1430] = 5000;
+
           // Get workers for miner address
           $workers = self::getWorkers($db, $data['miner_address']);
           foreach ($workers as $key => $worker) {
@@ -844,6 +880,13 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
             $workers[$key]['hashrate_15_mins'] = self::Itoa2($worker_hashrate_15_mins['hashrate']) . 'h/s';
           }
 
+          // Estimated earnings
+          $total_shares = self::sumTotalShares($db, self::miner_getAlgos()[$data['coin_id']]);
+          $total_user_shares = self::sumTotalShares($db, self::miner_getAlgos()[$data['coin_id']], $user['id']);
+          $user_round_share = $total_user_shares['total_user_hash'] / $total_shares['total_user_hash'] * 100;
+          $user_estimated_earning = $block_rewards[$data['coin_id']] / 100 * $user_round_share;
+
+          // Immature balance
           $immature_balance = self::getImmatureBalance($db, $data['coin_id'], $user['id']);
           $pending_balance = self::getPendingBalance($db, $data['coin_id'], $user['id']);
 
@@ -867,6 +910,8 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
           'total_count_workers' => self::countWorkers($db, $data['coin_id']) ?? FALSE,
           'min_payout' => self::miner_getMinPayouts()[self::miner_getAlgos()[$data['coin_id']]],
           'pool_fee' => self::getPoolFee()[self::miner_getAlgos()[$data['coin_id']]],
+          'round_share' => $user_round_share,
+          'estimated_earning' => $user_estimated_earning,
           'immature_balance' => $immature_balance ?? FALSE,
           'pending_balance' => $pending_balance ?? FALSE,
           'earnings_last_hour' => $earnings_last_hour ?? FALSE,

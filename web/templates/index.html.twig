@@ -69,6 +69,11 @@
                 <div class="get-started wallet-info-label">API call for your wallet: <strong><a href="api.php?coin={{ coin_seo_name }}&wallet={{ wallet }}" target="_blank">Active workers + wallet monitoring</a></strong></div>
 
                 <div class="intro-info">
+                    <strong>Round share: <span class="label {{ coin_seo_name }}"> {{ roundSimple(round_share)|default(0) }}% -> {{ estimated_earning }} {{ getCoinSettings(coin_seo_name).symbol }} </span> </strong>
+                    <div class="help-text">Estimated earnings when the pool finds a block.</div>
+                </div>
+
+                <div class="intro-info">
                     <strong>Immature Balance: <span class="label {{ coin_seo_name }}"> {{ roundSimple(immature_balance.immature_balance)|default(0) }} {{ getCoinSettings(coin_seo_name).symbol }} </span> </strong>
                     <div class="help-text">Earnings awaiting blocks to mature.</div>
                 </div>
