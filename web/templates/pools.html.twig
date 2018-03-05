@@ -15,8 +15,8 @@
                 <tr>
                     <th>Coin</th>
                     <th>Algorithm</th>
-                    <th>Network Hashrate</th>
-                    <th>Pool Hashrate</th>
+                    <th>Pool Hashrate / Network Hashrate</th>
+                    <th>Network difficulty</th>
                     <th>Active Miners</th>
                     <th>Pool fee</th>
                 </tr>
@@ -26,8 +26,8 @@
                         <a href="?page=dashboard&coin=bitcore">Bitcore (BTX)</a> <strong>Port: 8001 or 1111</strong>
                     </td>
                     <td>TimeTravel10</td>
-                    <td>{{ total_hashrate_bitcore_gh|default('n/a')|round(1) }} Gh/s</td>
-                    <td>{{ showFriendlyHash(pool_hashrate_bitcore) }}</td>
+                    <td>{{ showFriendlyHash(pool_hashrate_bitcore) }} / {{ total_hashrate_bitcore_gh|default('n/a')|round(1) }} Gh/s</td>
+                    <td>{{ difficulty_bitcore|default('n/a')|round(1)  }}</td>
                     <td>{{ total_miners_bitcore }}</td>
                     <td>1.25%</a></td>
                 </tr>
@@ -37,8 +37,8 @@
                         <a href="?page=dashboard&coin=bulwark">Bulwark (BWK)</a> <strong>Port: 8002</strong>
                     </td>
                     <td>nist5</td>
-                    <td>{{ total_hashrate_bulwark_gh|default('n/a')|round(1) }} Gh/s</td>
-                    <td>{{ showFriendlyHash(pool_hashrate_bulwark) }}</td>
+                    <td>{{ showFriendlyHash(pool_hashrate_bulwark) }} / {{ total_hashrate_bulwark_gh|default('n/a')|round(1) }} Gh/s</td>
+                    <td>{{ difficulty_bulwark|default('n/a')|round(1)  }}</td>
                     <td>{{ total_miners_bulwark }}</td>
                     <td>0.5%</a></td>
                 </tr>
@@ -48,8 +48,8 @@
                         <a href="?page=dashboard&coin=lux">Luxcoin (LUX)</a> <strong>Port: 8003</strong>
                     </td>
                     <td>phi</td>
-                    <td>{{ total_hashrate_lux_gh|default('n/a')|round(1) }} Gh/s</td>
-                    <td>{{ showFriendlyHash(pool_hashrate_lux) }}</td>
+                    <td>{{ showFriendlyHash(pool_hashrate_lux) }} / {{ total_hashrate_lux_gh|default('n/a')|round(1) }} Gh/s</td>
+                    <td>{{ difficulty_lux|default('n/a')|round(1)  }}</td>
                     <td>{{ total_miners_lux }}</td>
                     <td>0.5%</a></td>
                 </tr>
@@ -59,8 +59,8 @@
                         <a href="?page=dashboard&coin=bitsend">Bitsend (BSD)</a> <strong>Port: 8005</strong>
                     </td>
                     <td>xevan</td>
-                    <td>{{ total_hashrate_bitsend_gh|default('n/a')|round(1) }} Gh/s</td>
-                    <td>{{ showFriendlyHash(pool_hashrate_bitsend) }}</td>
+                    <td>{{ showFriendlyHash(pool_hashrate_bitsend) }} / {{ total_hashrate_bitsend_gh|default('n/a')|round(1) }} Gh/s</td>
+                    <td>{{ difficulty_bitsend|default('n/a')|round(1)  }}</td>
                     <td>{{ total_miners_bitsend }}</td>
                     <td>1%</a></td>
                 </tr>
@@ -70,8 +70,8 @@
                         <a href="?page=dashboard&coin=raven">Raven (RVN)</a> <strong>Port: 8006</strong>
                     </td>
                     <td>x16r</td>
-                    <td>{{ total_hashrate_raven_gh|default('n/a')|round(1) }} Gh/s</td>
-                    <td>{{ showFriendlyHash(pool_hashrate_raven) }}</td>
+                    <td>{{ showFriendlyHash(pool_hashrate_raven) }} / {{ total_hashrate_raven_gh|default('n/a')|round(1) }} Gh/s</td>
+                    <td>{{ difficulty_raven|default('n/a')|round(1)  }}</td>
                     <td>{{ total_miners_raven }}</td>
                     <td>0.5%</a></td>
                 </tr>
