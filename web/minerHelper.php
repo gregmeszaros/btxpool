@@ -18,11 +18,15 @@ class minerHelper {
         'bulwark' => 'http://explorer.bulwarkcrypto.com/',
         'lux' => 'https://chainz.cryptoid.info/lux/',
         'verge' => 'https://verge-blockchain.info/',
-        'bitsend' => 'https://chainz.cryptoid.info/bsd/'
+        'bitsend' => 'https://chainz.cryptoid.info/bsd/',
+        'raven' => 'http://threeeyed.info/'
       ];
+
+      $explorer = $main_blockchain_url[$coin];
     }
     else {
       $base_route = 'index.php?page=';
+      $explorer = '';
     }
 
     return [
@@ -61,7 +65,7 @@ class minerHelper {
       'explorer' => [
         'id' => 'search',
         'label' => 'Blockchain',
-        'url' => $main_blockchain_url[$coin],
+        'url' => $explorer,
         'target' => '_blank',
         'template' => 'miners.html.twig',
       ],
@@ -905,7 +909,7 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
           // Payouts
           $payouts = self::getPayouts($db, $data['coin_id'], $user['id']);
           $total_paid = self::getTotalPayout($db, $data['coin_id'], $user['id']);
-
+          
           // Network info
           $network_info = self::getNetworkInfo($data['coin_id'], $redis);
         }
