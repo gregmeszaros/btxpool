@@ -905,6 +905,9 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
           // Payouts
           $payouts = self::getPayouts($db, $data['coin_id'], $user['id']);
           $total_paid = self::getTotalPayout($db, $data['coin_id'], $user['id']);
+
+          // Network info
+          $network_info = self::getNetworkInfo($data['coin_id'], $redis);
         }
 
         return [
@@ -930,6 +933,7 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
           'hashrate_user_24_hours' => $hashrate_user_24_hours ?? FALSE,
           'coin_seo_name' => $data['coin_seo_name'],
           'stratum_connections' => self::countStratumConnections($db) ?? FALSE,
+          'difficulty' => $network_info['difficulty'],
           'load_charts' => TRUE
         ];
         break;

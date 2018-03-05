@@ -18,6 +18,10 @@
                 <div class="help-text">Total current pool hashrate.</div>
             </div>
             <div class="intro-info">
+                <strong>Network Difficulty: <span class="label {{ coin_seo_name }}">{{ difficulty|default('n/a')|round(1)  }}</span> </strong>
+                <div class="help-text">Mining difficulty for the coin.</div>
+            </div>
+            <div class="intro-info">
                 <strong>Reward structure: <span class="label {{ coin_seo_name }}">Proportional</span> </strong>
                 <div class="help-text">Proportional reward based on the number of submitted "valid" shares and difficulty.</div>
             </div>
