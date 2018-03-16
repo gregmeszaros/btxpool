@@ -1,5 +1,54 @@
 {% include 'header.html' %}
 
+<script>
+
+  function populateSelectList(coinData) {
+    console.log(coinData);
+    var options = "";
+    for (var gpu in coinData) {
+      options += '<option value="' + gpu + '">' + coinData[gpu] + '</option>';
+      console.log(gpu);
+      console.log(coinData[gpu]);
+    }
+    return options;
+  }
+
+  function populateEstimates(json_gpus, json_earnings) {
+    console.log(json_earnings);
+    console.log(json_gpus);
+    var coin_select = document.getElementById('coin-select');
+    var coin = coin_select.value;
+    var options_list = populateSelectList(json_gpus[coin]);
+
+    console.log(coin);
+    var html = "";
+    html += '<input type="text" id="' + coin + '-input-estimate" value="30" onkeypress="updateEstimates(\'' + coin + '\', \'' + json_earnings[coin] + '\');" onkeyup="updateEstimates(\'' + coin + '\', \'' + json_earnings[coin] + '\');"> mh/s';
+    html += '<select id="' + coin + '-gpu" form="' + coin + '-cards-list" onchange="updateEstimatesSelect(\'' + coin + '\', \'' + json_earnings[coin] + '\');">' + options_list + '</select>';
+    html += ' will earn you <span id="' + coin + '-output-estimate"></span> ' + coin.toUpperCase();
+    document.getElementById("populate-estimate").innerHTML = html;
+  }
+  // Tracking script for earning estimates
+  function updateEstimates(coin, json_earnings) {
+    console.log(json_earnings);
+    console.log(coin);
+    var user_input = document.getElementById(coin + "-input-estimate");
+    var s = user_input.value;
+
+    // Set the estimated value
+    document.getElementById(coin + "-output-estimate").innerHTML = s * json_earnings;
+  };
+
+  function updateEstimatesSelect(coin, json_earnings) {
+    var user_input = document.getElementById(coin + "-gpu");
+    var s = user_input.value;
+
+    // Set the estimated value
+    document.getElementById(coin + "-output-estimate").innerHTML = s * json_earnings;
+    // Set it for the form field too
+    document.getElementById(coin + "-input-estimate").value = s;
+  };
+</script>
+
 <div id="main">
     <div class="intro">
         <h1 class="header-h1">omegapool.cc - stable and profitable mining pools!</h1>
@@ -9,6 +58,21 @@
                 <strong>
                     omegapool.cc supports POW mining for selection of coins which have active dev teams and we can see them as reliable and trustworthy.
                 </strong>
+            </div>
+
+            <div>
+                <span>
+                    <p>Estimated daily earnings for:</p>
+                    <select id="coin-select" form="select-form-list" onchange="populateEstimates({{ gpus }}, {{ estimated_earnings_coins }});">
+                        <option value="btx">Bitcore (BTX)</option>
+                        <option value="bwk">Bulwark (BWK)</option>
+                        <option value="lux">Luxcoin (LUX)</option>
+                        <option value="bsd">Bitsend (BSD)</option>
+                        <option value="rvn">Raven (RVN)</option>
+                    </select>
+
+                    <span id="populate-estimate"></span>
+                </span>
             </div>
 
             <table class="table">
@@ -26,9 +90,9 @@
                         <a href="?page=dashboard&coin=bitcore">Bitcore (BTX)</a> <strong>Port: 8001 or 1111</strong>
                     </td>
                     <td>TimeTravel10</td>
-                    <td>{{ showFriendlyHash(pool_hashrate_bitcore) }} / {{ total_hashrate_bitcore_gh|default('n/a')|round(1) }} Gh/s</td>
+                    <td><span id="network-hash">{{ showFriendlyHash(pool_hashrate_bitcore) }}</span> / {{ total_hashrate_bitcore_gh|default('n/a')|round(1) }} Gh/s</td>
                     <td>{{ difficulty_bitcore|default('n/a')|round(1)  }}</td>
-                    <td>{{ total_miners_bitcore }}</td>
+                    <td class="total-miners">{{ total_miners_bitcore }}</td>
                     <td>1.25%</a></td>
                 </tr>
                 <tr>
@@ -37,9 +101,9 @@
                         <a href="?page=dashboard&coin=bulwark">Bulwark (BWK)</a> <strong>Port: 8002</strong>
                     </td>
                     <td>nist5</td>
-                    <td>{{ showFriendlyHash(pool_hashrate_bulwark) }} / {{ total_hashrate_bulwark_gh|default('n/a')|round(1) }} Gh/s</td>
+                    <td><span id="network-hash">{{ showFriendlyHash(pool_hashrate_bulwark) }}</span> / {{ total_hashrate_bulwark_gh|default('n/a')|round(1) }} Gh/s</td>
                     <td>{{ difficulty_bulwark|default('n/a')|round(1)  }}</td>
-                    <td>{{ total_miners_bulwark }}</td>
+                    <td class="total-miners">{{ total_miners_bulwark }}</td>
                     <td>0.5%</a></td>
                 </tr>
                 <tr>
@@ -48,9 +112,9 @@
                         <a href="?page=dashboard&coin=lux">Luxcoin (LUX)</a> <strong>Port: 8003</strong>
                     </td>
                     <td>phi</td>
-                    <td>{{ showFriendlyHash(pool_hashrate_lux) }} / {{ total_hashrate_lux_gh|default('n/a')|round(1) }} Gh/s</td>
+                    <td><span id="network-hash">{{ showFriendlyHash(pool_hashrate_lux) }}</span> / {{ total_hashrate_lux_gh|default('n/a')|round(1) }} Gh/s</td>
                     <td>{{ difficulty_lux|default('n/a')|round(1)  }}</td>
-                    <td>{{ total_miners_lux }}</td>
+                    <td class="total-miners">{{ total_miners_lux }}</td>
                     <td>0.5%</a></td>
                 </tr>
                 <tr>
@@ -59,9 +123,9 @@
                         <a href="?page=dashboard&coin=bitsend">Bitsend (BSD)</a> <strong>Port: 8005</strong>
                     </td>
                     <td>xevan</td>
-                    <td>{{ showFriendlyHash(pool_hashrate_bitsend) }} / {{ total_hashrate_bitsend_gh|default('n/a')|round(1) }} Gh/s</td>
+                    <td><span id="network-hash">{{ showFriendlyHash(pool_hashrate_bitsend) }}</span> / {{ total_hashrate_bitsend_gh|default('n/a')|round(1) }} Gh/s</td>
                     <td>{{ difficulty_bitsend|default('n/a')|round(1)  }}</td>
-                    <td>{{ total_miners_bitsend }}</td>
+                    <td class="total-miners">{{ total_miners_bitsend }}</td>
                     <td>1%</a></td>
                 </tr>
                 <tr>
@@ -70,12 +134,41 @@
                         <a href="?page=dashboard&coin=raven">Raven (RVN)</a> <strong>Port: 8006</strong>
                     </td>
                     <td>x16r</td>
-                    <td>{{ showFriendlyHash(pool_hashrate_raven) }} / {{ total_hashrate_raven_gh|default('n/a')|round(1) }} Gh/s</td>
+                    <td><span id="network-hash">{{ showFriendlyHash(pool_hashrate_raven) }}</span> / {{ total_hashrate_raven_gh|default('n/a')|round(1) }} Gh/s</td>
                     <td>{{ difficulty_raven|default('n/a')|round(1)  }}</td>
-                    <td>{{ total_miners_raven }}</td>
+                    <td class="total-miners">{{ total_miners_raven }}</td>
                     <td>0.5%</a></td>
                 </tr>
+                <tr>
+                    <td>
+                        <strong>Summary all coins</strong>
+                    </td>
+                    <td></td>
+                    {% set total_hash = pool_hashrate_bitcore + pool_hashrate_bulwark + pool_hashrate_lux + pool_hashrate_bitsend + pool_hashrate_raven ?? 0 %}
+                    <td id="total-hash-sum">{{ showFriendlyHash(total_hash) }}</td>
+                    <td></td>
+                    <td id="all-miners-count"></td>
+                    <td></a></td>
+                </tr>
+
             </table>
+
+            <script>
+              var sum = 0;
+              // Calculate total miners and total pool hash
+              $(".total-miners").each(function() {
+                var value = $(this).text();
+
+                // Always make sure we have numeric value
+                value = value.replace(/[^0-9\.]+/g, "");
+
+                // Calculate only if the value is number
+                if(!isNaN(value) && value.length != 0) {
+                  sum += parseFloat(value);
+                }
+              });
+              document.getElementById("all-miners-count").innerHTML = sum + " miners";
+            </script>
 
         </div>
 

@@ -865,6 +865,18 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
           'total_miners_verge' => $total_miners_verge,
           'total_miners_bitsend' => $total_miners_bitsend,
           'total_miners_raven' => $total_miners_raven,
+          'gpus' => json_encode(
+            [
+              'btx' => ['30' => 'GTX 1070', '22' => 'GTX 1060'],
+              'lux' => ['24' => 'GTX 1070']
+            ]
+          ),
+          'estimated_earnings_coins' => json_encode(
+            [
+              'btx' => '0.1',
+              'lux' => '1',
+            ]
+          )
         ];
         break;
       case 'dashboard':
