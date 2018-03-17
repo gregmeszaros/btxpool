@@ -355,6 +355,20 @@ class minerHelper {
   }
 
   /**
+   * There is a cron job running which will load estimates for 10mh/s with current difficulty for any coin
+   * With this value we can calculate the earning estimate for the coin
+   * @param bool $redis
+   */
+  public static function getCoinEstimates($redis = FALSE) {
+    if (!empty($redis) && is_object($redis)) {
+      $coin_estimates = json_decode($redis->get('coin_estimates'), TRUE);
+      return $coin_estimates;
+    }
+
+    return ['btx' => 1, 'lux' => 0.1];
+  }
+
+  /**
    * Stats for user and worker
    * Cached for 5 minutes
    * @param $db
@@ -867,16 +881,14 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
           'total_miners_raven' => $total_miners_raven,
           'gpus' => json_encode(
             [
-              'btx' => ['30' => 'GTX 1070', '22' => 'GTX 1060'],
-              'lux' => ['24' => 'GTX 1070']
+              'btx' => [7.5 => 'GTX 1050ti', 13 => 'GTX 1060', 20 => 'GTX 1070', 31 => 'GTX 1080ti', 12 => 'RX 480', 12.5 => 'RX 580'],
+              'bwk' => [7.5 => 'GTX 1050ti', 13 => 'GTX 1060', 20 => 'GTX 1070', 31 => 'GTX 1080ti', 12 => 'RX 480', 12.5 => 'RX 580'],
+              'lux' => [7.5 => 'GTX 1050ti', 13 => 'GTX 1060', 20 => 'GTX 1070', 31 => 'GTX 1080ti', 12 => 'RX 480', 12.5 => 'RX 580'],
+              'bsd' => [7.5 => 'GTX 1050ti', 13 => 'GTX 1060', 20 => 'GTX 1070', 31 => 'GTX 1080ti', 12 => 'RX 480', 12.5 => 'RX 580'],
+              'rvn' => [7.5 => 'GTX 1050ti', 13 => 'GTX 1060', 20 => 'GTX 1070', 31 => 'GTX 1080ti', 12 => 'RX 480', 12.5 => 'RX 580'],
             ]
           ),
-          'estimated_earnings_coins' => json_encode(
-            [
-              'btx' => '0.1',
-              'lux' => '1',
-            ]
-          )
+          'estimated_earnings_coins' => json_encode(minerHelper::getCoinEstimates($redis)),
         ];
         break;
       case 'dashboard':

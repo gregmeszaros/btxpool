@@ -26,6 +26,9 @@
     html += '<select id="' + coin + '-gpu" form="' + coin + '-cards-list" onchange="updateEstimatesSelect(\'' + coin + '\', \'' + json_earnings[coin] + '\');">' + options_list + '</select>';
     html += ' will earn you <span id="' + coin + '-output-estimate"></span> ' + coin.toUpperCase();
     document.getElementById("populate-estimate").innerHTML = html;
+
+    // Trigger change on first load
+    updateEstimatesSelect(coin, json_earnings[coin]);
   }
   // Tracking script for earning estimates
   function updateEstimates(coin, json_earnings) {
