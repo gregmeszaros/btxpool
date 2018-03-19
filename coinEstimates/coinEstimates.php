@@ -62,8 +62,11 @@ foreach ($coins as $coin_id => $coin) {
         print "\n";
         break;
       case 'lux':
-        // Create JSON file for each algo
-        $helper->tableToJSON('https://whattomine.com/coins/212-lux-phi1612?hr=10&d_enabled=true&d=' . $network_info['difficulty'] . '&p=300.0&fee=0.0&cost=0.0&hcost=0.0&commit=Calculate', TRUE, '', NULL, NULL, FALSE, FALSE, FALSE, FALSE, TRUE, NULL, $coin);
+        // Don't calc with POS blocks
+        if ($network_info['difficulty'] > 100) {
+          // Create JSON file for each algo
+          $helper->tableToJSON('https://whattomine.com/coins/212-lux-phi1612?hr=10&d_enabled=true&d=' . $network_info['difficulty'] . '&p=300.0&fee=0.0&cost=0.0&hcost=0.0&commit=Calculate', TRUE, '', NULL, NULL, FALSE, FALSE, FALSE, FALSE, TRUE, NULL, $coin);
+        }
         print "\n";
         break;
       case 'bsd':
