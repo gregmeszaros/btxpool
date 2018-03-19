@@ -12,11 +12,11 @@ $redis = include_once(__DIR__ . '/../config-redis.php');
 $helper = new HTMLTable2JSON();
 
 $coins = [];
-$coins['btx'] = 'bitcore';
-$coins['bwk'] = 'bulwark';
-$coins['lux'] = 'lux';
-$coins['bsd'] = 'bitsend';
-$coins['rvn'] = 'raven';
+$coins['btx'] = '1425';
+$coins['bwk'] = '1426';
+$coins['lux'] = '1427';
+$coins['bsd'] = '1429';
+$coins['rvn'] = '1430';
 
 // Loop coins and prepare the estimates
 foreach ($coins as $coin_id => $coin) {
