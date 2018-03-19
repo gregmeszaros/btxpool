@@ -4,7 +4,9 @@
 
   function populateSelectList(coinData) {
     console.log(coinData);
+    console.log('sss');
     var options = "";
+
     for (var gpu in coinData) {
       options += '<option value="' + gpu + '">' + coinData[gpu] + '</option>';
       console.log(gpu);
@@ -22,7 +24,7 @@
 
     console.log(coin);
     var html = "";
-    html += '<input type="text" id="' + coin + '-input-estimate" value="30" onkeypress="updateEstimates(\'' + coin + '\', \'' + json_earnings[coin] + '\');" onkeyup="updateEstimates(\'' + coin + '\', \'' + json_earnings[coin] + '\');"> mh/s';
+    html += '<input type="text" id="' + coin + '-input-estimate" value="30" onkeypress="updateEstimates(\'' + coin + '\', \'' + json_earnings[coin] + '\');" onkeyup="updateEstimates(\'' + coin + '\', \'' + json_earnings[coin] + '\');"> mh/s ';
     html += '<select id="' + coin + '-gpu" form="' + coin + '-cards-list" onchange="updateEstimatesSelect(\'' + coin + '\', \'' + json_earnings[coin] + '\');">' + options_list + '</select>';
     html += ' will earn you <span id="' + coin + '-output-estimate"></span> ' + coin.toUpperCase();
     document.getElementById("populate-estimate").innerHTML = html;
@@ -38,7 +40,7 @@
     var s = user_input.value;
 
     // Set the estimated value
-    document.getElementById(coin + "-output-estimate").innerHTML = s * json_earnings;
+    document.getElementById(coin + "-output-estimate").innerHTML = s * json_earnings / 10;
   };
 
   function updateEstimatesSelect(coin, json_earnings) {
@@ -46,7 +48,7 @@
     var s = user_input.value;
 
     // Set the estimated value
-    document.getElementById(coin + "-output-estimate").innerHTML = s * json_earnings;
+    document.getElementById(coin + "-output-estimate").innerHTML = s * json_earnings / 10;
     // Set it for the form field too
     document.getElementById(coin + "-input-estimate").value = s;
   };
@@ -67,6 +69,7 @@
                 <span>
                     <p>Estimated daily earnings for:</p>
                     <select id="coin-select" form="select-form-list" onchange="populateEstimates({{ gpus }}, {{ estimated_earnings_coins }});">
+                        <option value="" selected disabled hidden>Select a coin ...</option>
                         <option value="btx">Bitcore (BTX)</option>
                         <option value="bwk">Bulwark (BWK)</option>
                         <option value="lux">Luxcoin (LUX)</option>

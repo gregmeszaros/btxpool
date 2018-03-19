@@ -86,15 +86,14 @@ foreach ($coins as $coin_id => $coin) {
   }
   else {
     // Read JSON file
-    $json = file_get_contents(__DIR__  . '/' . $coin . '.json');
+    $json = file_get_contents(__DIR__  . '/json/' . $coin . '.json');
 
     // Decode JSON
     $json_data = json_decode($json,TRUE);
-    $data[$coin_id] = $json_data['Est. Rewards'][1]['cell_text'];
+    $data[$coin_id] = str_replace(',', '', $json_data['Est. Rewards'][1]['cell_text']);
   }
 }
 
-print_r($data); die();
 // Store the values we need
 $redis->set('coin_estimates', json_encode($data));
 

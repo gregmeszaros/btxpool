@@ -881,11 +881,11 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
           'total_miners_raven' => $total_miners_raven,
           'gpus' => json_encode(
             [
-              'btx' => [7.5 => 'GTX 1050ti', 13 => 'GTX 1060', 20 => 'GTX 1070', 31 => 'GTX 1080ti', 12 => 'RX 480', 12.5 => 'RX 580'],
-              'bwk' => [7.5 => 'GTX 1050ti', 13 => 'GTX 1060', 20 => 'GTX 1070', 31 => 'GTX 1080ti', 12 => 'RX 480', 12.5 => 'RX 580'],
-              'lux' => [7.5 => 'GTX 1050ti', 13 => 'GTX 1060', 20 => 'GTX 1070', 31 => 'GTX 1080ti', 12 => 'RX 480', 12.5 => 'RX 580'],
-              'bsd' => [7.5 => 'GTX 1050ti', 13 => 'GTX 1060', 20 => 'GTX 1070', 31 => 'GTX 1080ti', 12 => 'RX 480', 12.5 => 'RX 580'],
-              'rvn' => [7.5 => 'GTX 1050ti', 13 => 'GTX 1060', 20 => 'GTX 1070', 31 => 'GTX 1080ti', 12 => 'RX 480', 12.5 => 'RX 580'],
+              'btx' => ['7.5' => 'GTX 1050ti', '13.0' => 'GTX 1060', '20.0' => 'GTX 1070', '31.0' => 'GTX 1080ti', '12.0' => 'RX 480', '12.5' => 'RX 580'],
+              'bwk' => ['16.0' => 'GTX 1050ti', '32.0' => 'GTX 1060', '47.0' => 'GTX 1070', '80.0' => 'GTX 1080ti', '20.0' => 'RX 480', '22.0' => 'RX 580'],
+              'lux' => ['6.0' => 'GTX 1050ti', '12.0' => 'GTX 1060', '19.0' => 'GTX 1070', '34.0' => 'GTX 1080ti', '15.0' => 'RX 480', '15.5' => 'RX 580'],
+              'bsd' => ['1.2' => 'GTX 1050ti', '2.3' => 'GTX 1060', '3.2' => 'GTX 1070', '5.4' => 'GTX 1080ti'],
+              'rvn' => ['4.2' => 'GTX 1050ti', '7.0' => 'GTX 1060', '8.5' => 'GTX 1070', '16.0' => 'GTX 1080ti', '5.0' => 'RX 480', '5.2' => 'RX 580'],
             ]
           ),
           'estimated_earnings_coins' => json_encode(minerHelper::getCoinEstimates($redis)),

@@ -9,3 +9,5 @@ config-raven.php
 .DS_Store
 /vendor/
 /twig_cache
+
+/coinEstimates/json/*.json

@@ -317,7 +317,7 @@ class HTMLTable2JSON {
       if ($fileName) {
         $outfile = $fileName . '.json';
       }
-			if (false == ($out_handle = fopen($outfile, 'w')))
+			if (false == ($out_handle = fopen(__DIR__ . '/../json/' . $outfile, 'w')))
 				die('Failed to create output file.');
 		}
 
