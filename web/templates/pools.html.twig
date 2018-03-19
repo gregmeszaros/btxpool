@@ -3,26 +3,20 @@
 <script>
 
   function populateSelectList(coinData) {
-    console.log(coinData);
-    console.log('sss');
     var options = "";
 
     for (var gpu in coinData) {
       options += '<option value="' + gpu + '">' + coinData[gpu] + '</option>';
-      console.log(gpu);
-      console.log(coinData[gpu]);
     }
     return options;
   }
 
   function populateEstimates(json_gpus, json_earnings) {
     console.log(json_earnings);
-    console.log(json_gpus);
     var coin_select = document.getElementById('coin-select');
     var coin = coin_select.value;
     var options_list = populateSelectList(json_gpus[coin]);
 
-    console.log(coin);
     var html = "";
     html += '<input type="text" id="' + coin + '-input-estimate" value="30" onkeypress="updateEstimates(\'' + coin + '\', \'' + json_earnings[coin] + '\');" onkeyup="updateEstimates(\'' + coin + '\', \'' + json_earnings[coin] + '\');"> mh/s ';
     html += '<select id="' + coin + '-gpu" form="' + coin + '-cards-list" onchange="updateEstimatesSelect(\'' + coin + '\', \'' + json_earnings[coin] + '\');">' + options_list + '</select>';
@@ -34,8 +28,6 @@
   }
   // Tracking script for earning estimates
   function updateEstimates(coin, json_earnings) {
-    console.log(json_earnings);
-    console.log(coin);
     var user_input = document.getElementById(coin + "-input-estimate");
     var s = user_input.value;
 

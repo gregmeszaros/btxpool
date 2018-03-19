@@ -48,7 +48,7 @@ foreach ($coins as $coin_id => $coin) {
   }
   else {
     // Get network difficulty
-    $network_info = minerHelper::getNetworkInfo($coin_id, $redis);
+    $network_info = minerHelper::getNetworkInfo($coin, $redis);
 
     switch ($coin_id) {
       case 'btx':
