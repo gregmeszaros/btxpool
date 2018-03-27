@@ -898,7 +898,7 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
 
           $block_rewards = [];
           $block_rewards[1425] = 3.125;
-          $block_rewards[1426] = 33.33333334;
+          $block_rewards[1426] = 21.875;
           $block_rewards[1427] = 10;
           $block_rewards[1429] = 5;
           $block_rewards[1430] = 5000;
