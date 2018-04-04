@@ -9,6 +9,7 @@
         }
     ],
     "require": {
-        "twig/twig": "~2.0"
+        "twig/twig": "~2.0",
+        "radyakaze/phptelebot": "^1.3"
     }
 }

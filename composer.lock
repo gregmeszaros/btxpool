@@ -4,8 +4,49 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "601325ba20b2f4948e3816c2d8eadb84",
+    "content-hash": "1a04069afb4657f5b7e72304c30aa44c",
     "packages": [
+        {
+            "name": "radyakaze/phptelebot",
+            "version": "v1.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/radyakaze/phptelebot.git",
+                "reference": "37b5553af02bc04a4fdf9eefec2e61e52e9e5a1d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/radyakaze/phptelebot/zipball/37b5553af02bc04a4fdf9eefec2e61e52e9e5a1d",
+                "reference": "37b5553af02bc04a4fdf9eefec2e61e52e9e5a1d",
+                "shasum": ""
+            },
+            "require": {
+                "ext-curl": "*",
+                "php": ">=5.4"
+            },
+            "type": "framework",
+            "autoload": {
+                "files": [
+                    "src/PHPTelebot.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-3.0"
+            ],
+            "authors": [
+                {
+                    "name": "Radya",
+                    "email": "radya@gmx.com"
+                }
+            ],
+            "description": "Telegram bot framework written in PHP.",
+            "keywords": [
+                "bot",
+                "telegram"
+            ],
+            "time": "2016-11-29T03:50:53+00:00"
+        },
         {
             "name": "symfony/polyfill-mbstring",
             "version": "v1.5.0",
