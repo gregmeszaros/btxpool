@@ -578,3 +578,12 @@ table.table { width: 100%; }
         font-size: 0.7em;
     }
 }
+
+    td.custom-twitter {
+        min-width: 300px;
+    }
+
+    td.custom-ethmonitor {
+        min-width: 60%;
+        vertical-align: top;
+    }

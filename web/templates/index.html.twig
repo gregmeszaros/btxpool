@@ -35,20 +35,14 @@
     <div class="intro">
 
         <div class="minercontent">
-            <h3>Announcements</h3>
-            <ul class="announcements">
-                <li>
-                    <div>
-                        {% if stratum_connections|length > 1 %}
-                            <strong style="color: red;">Please always connect to the port with less active connections!</strong>
-                            {% for port, stratum_connection in stratum_connections %}
-                                <strong><div>Port: {{ port }} <span> - {{ stratum_connection.workers }} workers</span></div></strong>
-                            {% endfor %}
-                        {% endif %}
-                        omegapool.cc just launched. First month we have promotional very low mining fees. Please try us and report back any issues found!
-                    </div>
-                </li>
-            </ul>
+            <div>
+                {% if stratum_connections|length > 1 %}
+                    <strong style="color: red;">Please always connect to the port with less active connections!</strong>
+                    {% for port, stratum_connection in stratum_connections %}
+                        <strong><div>Port: {{ port }} <span> - {{ stratum_connection.workers }} workers</span></div></strong>
+                    {% endfor %}
+                {% endif %}
+            </div>
             <h2>Search Wallet</h2>
             <form name="wallet-check" action="index.php" class="wallet-input">
                 <input type="hidden" name="coin" value={{ coin_seo_name }} />

@@ -57,22 +57,6 @@
                 </strong>
             </div>
 
-            <div>
-                <span>
-                    <p>Estimated daily earnings for:</p>
-                    <select id="coin-select" form="select-form-list" onchange="populateEstimates({{ gpus }}, {{ estimated_earnings_coins }});">
-                        <option value="" selected disabled hidden>Select a coin ...</option>
-                        <option value="btx">Bitcore (BTX)</option>
-                        <option value="bwk">Bulwark (BWK)</option>
-                        <option value="lux">Luxcoin (LUX)</option>
-                        <option value="bsd">Bitsend (BSD)</option>
-                        <option value="rvn">Raven (RVN)</option>
-                    </select>
-
-                    <span id="populate-estimate"></span>
-                </span>
-            </div>
-
             <table class="table">
                 <tr>
                     <th>Coin</th>
@@ -171,17 +155,45 @@
         </div>
 
         <div class="minercontent">
-            <h1 class="header-h1">How to monitor your miner earnings, pool profitability or to restart your miner remotely?</h1>
+            <span>
+                <strong>Estimated daily earnings for:</strong>
+                <select id="coin-select" form="select-form-list" onchange="populateEstimates({{ gpus }}, {{ estimated_earnings_coins }});">
+                    <option value="" selected disabled hidden>Select a coin ...</option>
+                    <option value="btx">Bitcore (BTX)</option>
+                    <option value="bwk">Bulwark (BWK)</option>
+                    <option value="lux">Luxcoin (LUX)</option>
+                    <option value="bsd">Bitsend (BSD)</option>
+                    <option value="rvn">Raven (RVN)</option>
+                </select>
 
-            We suggest to register at <a href="https://ethmonitoring.com" target="_blank">EthMonitoring</a> which allows you to setup miner monitoring with a hashrate reporting from the miner software.
-            <br />The premium service also allows to monitor pool profitability based on your real pool earnings.
-            It's available as a mobile app too or you can control it through a simple web interface.</p>
-            <strong>Use promo code "omegapool" for the premium service and receive 5% discount.</strong><br />
-            <div class="imgContainer">
-                <a href="https://ethmonitoring.com/site/premium" target="_blank"><img src="images/ethmonitoring.jpg" class="userImg" /></a>
-            </div>
+                <span id="populate-estimate"></span>
+            </span>
+        </div>
 
-            <p><iframe width="300" height="300" src="https://www.youtube.com/embed/c6ZP6hqbTsQ" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe></p>
+        <div class="minercontent">
+
+            <table class="table">
+                <tr>
+                    <td class="custom-twitter">
+                        <a class="twitter-timeline" data-tweet-limit="3" href="https://twitter.com/OmegaPoolMining?ref_src=twsrc%5Etfw">Tweets by OmegaPoolMining</a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+                    </td>
+                    <td class="custom-ethmonitor">
+                        <h1 class="header-h1">How to monitor your miner earnings, pool profitability or to restart your miner remotely?</h1>
+
+                        We suggest to register at <a href="https://ethmonitoring.com" target="_blank">EthMonitoring</a> which allows you to setup miner monitoring with a hashrate reporting from the miner software.
+                        <br />The premium service also allows to monitor pool profitability based on your real pool earnings.
+                        It's available as a mobile app too or you can control it through a simple web interface.</p>
+                                    <strong>Use promo code "omegapool" for the premium service and receive 5% discount.</strong><br />
+                        <div class="imgContainer">
+                            <a href="https://ethmonitoring.com/site/premium" target="_blank"><img src="images/ethmonitoring.jpg" class="userImg" /></a>
+                        </div>
+
+                        <p><iframe width="300" height="300" src="https://www.youtube.com/embed/c6ZP6hqbTsQ" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe></p>
+
+                    </td>
+                </tr>
+            </table>
+
         </div>
     </div>
 </div>
