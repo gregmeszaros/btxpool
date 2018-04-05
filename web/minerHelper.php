@@ -15,11 +15,11 @@ class minerHelper {
       $base_route = 'index.php?coin=' . $coin . '&page=';
       $main_blockchain_url = [
         'bitcore' => 'https://chainz.cryptoid.info/btx/',
-        'bulwark' => 'http://explorer.bulwarkcrypto.com/',
+        'bulwark' => 'https://altmix.org/coins/10-Bulwark/explorer/',
         'lux' => 'https://chainz.cryptoid.info/lux/',
         'verge' => 'https://verge-blockchain.info/',
         'bitsend' => 'https://chainz.cryptoid.info/bsd/',
-        'raven' => 'http://threeeyed.info/'
+        'raven' => 'http://explorer.threeeyed.info/'
       ];
 
       $explorer = $main_blockchain_url[$coin];

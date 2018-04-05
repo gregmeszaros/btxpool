@@ -130,14 +130,14 @@ $getCoinSettings = new Twig_SimpleFunction('getCoinSettings', function ($coin_se
       $settings['intensity'] = 25;
       $settings['example_pass'] = 'x';
       $settings['symbol'] = 'BWK';
-      $settings['block_explorer_payout'] = 'https://chainz.cryptoid.info/btx/tx.dws?';
-      $settings['block_explorer_payout_suffix'] = '.htm';
+      $settings['block_explorer_payout'] = 'https://altmix.org/coins/10-Bulwark/explorer/transaction/';
+      $settings['block_explorer_payout_suffix'] = '';
       $settings['crypto_url'] = 'https://crypt0.zone/calculator/details/BWK';
       $settings['whattomine_url'] = 'https://whattomine.com/coins/224-bwk-nist5';
-      $settings['mine_nvidia_download'] = '';
-      $settings['mine_nvidia'] = '';
+      $settings['mine_nvidia_download'] = 'https://github.com/palginpav/ccminer/releases/tag/1.1-nist5';
+      $settings['mine_nvidia'] = 'ccminer -a nist5 -o stratum+tcp://omegapool.cc:8002 -u your_bwk_address.rig_name -p x';
       $settings['mine_amd_download'] = 'https://github.com/nicehash/sgminer/releases/tag/5.6.1';
-      $settings['mine_amd'] = 'sgminer --kernel talkcoin-mod -o stratum+tcp://omegapool.cc:8002 -u your_bulwark_address -p x -I 21';
+      $settings['mine_amd'] = 'sgminer --kernel talkcoin-mod -o stratum+tcp://omegapool.cc:8002 -u your_bulwark_address.rig_name -p x -I 21';
       return $settings;
       break;
     case 'lux':
@@ -197,14 +197,14 @@ $getCoinSettings = new Twig_SimpleFunction('getCoinSettings', function ($coin_se
       $settings['intensity'] = 21;
       $settings['example_pass'] = 'x';
       $settings['symbol'] = 'RVN';
-      $settings['block_explorer_payout'] = 'https://chainz.cryptoid.info/bsd/tx.dws?';
-      $settings['block_explorer_payout_suffix'] = '.htm';
-      $settings['crypto_url'] = 'https://crypt0.zone/calculator/details/BSD';
-      $settings['whattomine_url'] = 'https://whattomine.com/coins/201-bsd-xevan';
+      $settings['block_explorer_payout'] = 'http://explorer.threeeyed.info/tx/';
+      $settings['block_explorer_payout_suffix'] = '';
+      $settings['crypto_url'] = 'https://crypt0.zone/calculator/details/RVN';
+      $settings['whattomine_url'] = 'https://crypt0.zone/calculator/details/RVN';
       $settings['mine_nvidia_download'] = 'https://github.com/MSFTserver/ccminer/releases/tag/2.2.5-rvn';
-      $settings['mine_nvidia'] = 'ccminer-x64 -a x16r -o stratum+tcp://omegapool.cc:8006 -u your_raven_address -p xx -i 21';
-      $settings['mine_amd_download'] = '';
-      $settings['mine_amd'] = '';
+      $settings['mine_nvidia'] = 'ccminer-x64 -a x16r -o stratum+tcp://omegapool.cc:8006 -u your_raven_address.rig_name -p x -i 21';
+      $settings['mine_amd_download'] = 'https://github.com/aceneun/sgminer-gm-x16r';
+      $settings['mine_amd'] = 'sgminer --kernel x16r -o stratum+tcp://omegapool.cc:8006 -u your_raven_address.rig_name -p x';
       return $settings;
       break;
   }
