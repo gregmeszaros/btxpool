@@ -60,7 +60,7 @@ function updatePoolHashrate($db) {
     // Add stats entry if we have at least 10 entries from each active miner (when block is found the shares are reset causing stats issues)
     $active_miners = minerHelper::countMiners($db, $algo_key)['total_count'];
 
-    if ($tt_share_check['total_share_count'] > ($active_miners * 15)) {
+    if ($tt_share_check['total_share_count'] > ($active_miners * 5)) {
 
       $pool_rate = minerHelper::getPoolHashrate($db, $algo);
 
@@ -371,7 +371,7 @@ function sendPayouts($db, $coin_id = 1425) {
   $nextFullMin = date("i", $now + (60 - $now % 60));
 
   $hours_to_process = ['01', '05', '09', '13', '17', '21'];
-  $minutes_to_process = ['15'];
+  $minutes_to_process = ['16'];
 
   if (in_array($nextFullHour, $hours_to_process) && in_array($nextFullMin, $minutes_to_process)) {
     print 'Activate extra payouts' . "\n";

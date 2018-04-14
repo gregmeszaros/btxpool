@@ -946,10 +946,11 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
           // Payouts
           $payouts = self::getPayouts($db, $data['coin_id'], $user['id']);
           $total_paid = self::getTotalPayout($db, $data['coin_id'], $user['id']);
-          
-          // Network info
-          $network_info = self::getNetworkInfo($data['coin_id'], $redis);
+
         }
+
+        // Network info
+        $network_info = self::getNetworkInfo($data['coin_id'], $redis);
 
         return [
           'workers' => $workers ?? [],

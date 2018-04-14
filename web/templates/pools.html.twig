@@ -127,7 +127,7 @@
                         <a href="?page=dashboard&coin=megacoin">MegaCoin (MEC)</a> <strong>Port: 8007</strong>
                     </td>
                     <td>scrypt (NiceHash friendly)</td>
-                    <td>{{ showFriendlyHash(pool_hashrate_megacoin) }}</span> / {{ showFriendlyHash(total_hashrate_megacoin_gh) }}</td>
+                    <td>{{ showFriendlyHash(pool_hashrate_megacoin) }}</span> / {{ total_hashrate_megacoin_gh|default('n/a')|round(1) }} Gh/s</td>
                     <td>{{ difficulty_megacoin|default('n/a')|round(1)  }}</td>
                     <td class="total-miners">{{ total_miners_megacoin }}</td>
                     <td>1.25%</td>
