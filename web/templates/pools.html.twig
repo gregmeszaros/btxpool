@@ -72,21 +72,21 @@
                         <a href="?page=dashboard&coin=bitcore">Bitcore (BTX)</a> <strong>Port: 8001 or 1111</strong>
                     </td>
                     <td>TimeTravel10</td>
-                    <td><span id="network-hash">{{ showFriendlyHash(pool_hashrate_bitcore) }}</span> / {{ total_hashrate_bitcore_gh|default('n/a')|round(1) }} Gh/s</td>
+                    <td>{{ showFriendlyHash(pool_hashrate_bitcore) }}</span> / {{ total_hashrate_bitcore_gh|default('n/a')|round(1) }} Gh/s</td>
                     <td>{{ difficulty_bitcore|default('n/a')|round(1)  }}</td>
                     <td class="total-miners">{{ total_miners_bitcore }}</td>
-                    <td>1.25%</a></td>
+                    <td>1.25%</td>
                 </tr>
                 <tr>
                     <td>
                         <img class="logo-list" src="images/bulwark.png" alt="bulwark mining" />
                         <a href="?page=dashboard&coin=bulwark">Bulwark (BWK)</a> <strong>Port: 8002</strong>
                     </td>
-                    <td>nist5</td>
-                    <td><span id="network-hash">{{ showFriendlyHash(pool_hashrate_bulwark) }}</span> / {{ total_hashrate_bulwark_gh|default('n/a')|round(1) }} Gh/s</td>
+                    <td>nist5 (NiceHash friendly)</td>
+                    <td>{{ showFriendlyHash(pool_hashrate_bulwark) }}</span> / {{ total_hashrate_bulwark_gh|default('n/a')|round(1) }} Gh/s</td>
                     <td>{{ difficulty_bulwark|default('n/a')|round(1)  }}</td>
                     <td class="total-miners">{{ total_miners_bulwark }}</td>
-                    <td>0.5%</a></td>
+                    <td>0.5%</td>
                 </tr>
                 <tr>
                     <td>
@@ -94,10 +94,10 @@
                         <a href="?page=dashboard&coin=lux">Luxcoin (LUX)</a> <strong>Port: 8003</strong>
                     </td>
                     <td>phi</td>
-                    <td><span id="network-hash">{{ showFriendlyHash(pool_hashrate_lux) }}</span> / {{ total_hashrate_lux_gh|default('n/a')|round(1) }} Gh/s</td>
+                    <td>{{ showFriendlyHash(pool_hashrate_lux) }}</span> / {{ total_hashrate_lux_gh|default('n/a')|round(1) }} Gh/s</td>
                     <td>{{ difficulty_lux|default('n/a')|round(1)  }}</td>
                     <td class="total-miners">{{ total_miners_lux }}</td>
-                    <td>0.5%</a></td>
+                    <td>0.5%</td>
                 </tr>
                 <tr>
                     <td>
@@ -105,10 +105,10 @@
                         <a href="?page=dashboard&coin=bitsend">Bitsend (BSD)</a> <strong>Port: 8005</strong>
                     </td>
                     <td>xevan</td>
-                    <td><span id="network-hash">{{ showFriendlyHash(pool_hashrate_bitsend) }}</span> / {{ total_hashrate_bitsend_gh|default('n/a')|round(1) }} Gh/s</td>
+                    <td>{{ showFriendlyHash(pool_hashrate_bitsend) }}</span> / {{ total_hashrate_bitsend_gh|default('n/a')|round(1) }} Gh/s</td>
                     <td>{{ difficulty_bitsend|default('n/a')|round(1)  }}</td>
                     <td class="total-miners">{{ total_miners_bitsend }}</td>
-                    <td>1%</a></td>
+                    <td>1%</td>
                 </tr>
                 <tr>
                     <td>
@@ -116,10 +116,21 @@
                         <a href="?page=dashboard&coin=raven">Raven (RVN)</a> <strong>Port: 8006</strong>
                     </td>
                     <td>x16r</td>
-                    <td><span id="network-hash">{{ showFriendlyHash(pool_hashrate_raven) }}</span> / {{ total_hashrate_raven_gh|default('n/a')|round(1) }} Gh/s</td>
+                    <td>{{ showFriendlyHash(pool_hashrate_raven) }}</span> / {{ total_hashrate_raven_gh|default('n/a')|round(1) }} Gh/s</td>
                     <td>{{ difficulty_raven|default('n/a')|round(1)  }}</td>
                     <td class="total-miners">{{ total_miners_raven }}</td>
-                    <td>0.5%</a></td>
+                    <td>0.5%</td>
+                </tr>
+                <tr>
+                    <td>
+                        <img class="logo-list" src="images/megacoin.png" alt="megacoin mining" />
+                        <a href="?page=dashboard&coin=megacoin">MegaCoin (MEC)</a> <strong>Port: 8007</strong>
+                    </td>
+                    <td>scrypt (NiceHash friendly)</td>
+                    <td>{{ showFriendlyHash(pool_hashrate_megacoin) }}</span> / {{ showFriendlyHash(total_hashrate_megacoin_gh) }}</td>
+                    <td>{{ difficulty_megacoin|default('n/a')|round(1)  }}</td>
+                    <td class="total-miners">{{ total_miners_megacoin }}</td>
+                    <td>1.25%</td>
                 </tr>
                 <tr>
                     <td>

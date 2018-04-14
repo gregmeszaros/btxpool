@@ -19,7 +19,8 @@ class minerHelper {
         'lux' => 'https://chainz.cryptoid.info/lux/',
         'verge' => 'https://verge-blockchain.info/',
         'bitsend' => 'https://chainz.cryptoid.info/bsd/',
-        'raven' => 'http://explorer.threeeyed.info/'
+        'raven' => 'http://explorer.threeeyed.info/',
+        'megacoin' => 'https://chainz.cryptoid.info/mec/'
       ];
 
       $explorer = $main_blockchain_url[$coin];
@@ -142,7 +143,8 @@ class minerHelper {
       '1427' => 'phi',
       '1428' => 'x17',
       '1429' => 'xevan',
-      '1430' => 'x16r'
+      '1430' => 'x16r',
+      '1431' => 'scrypt'
     ];
   }
 
@@ -158,7 +160,8 @@ class minerHelper {
       'phi' => 0.1,
       'x17' => 1,
       'xevan' => 0.1,
-      'x16r' => 0.1
+      'x16r' => 0.1,
+      'scrypt' => 1
     ];
   }
 
@@ -612,7 +615,8 @@ AND workerid IN (SELECT id FROM workers WHERE algo=:algo AND id = :worker_id AND
       'phi' => 0.5,
       'x17' => 0.5,
       'xevan' => 1,
-      'x16r' => 0.5
+      'x16r' => 0.5,
+      'scrypt' => 1.25
     ];
   }
 
@@ -834,6 +838,7 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
         $network_info_lux = self::getNetworkInfo(1427, $redis);
         $network_info_bitsend = self::getNetworkInfo(1429, $redis);
         $network_info_raven = self::getNetworkInfo(1430, $redis);
+        $network_info_megacoin = self::getNetworkInfo(1431, $redis);
 
         $conn_btx = include(__DIR__ . '/../config-bitcore.php');
         $conn_bulwark = include(__DIR__ . '/../config-bulwark.php');
@@ -841,6 +846,7 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
         $conn_verge = include(__DIR__ . '/../config-verge.php');
         $conn_bitsend = include(__DIR__ . '/../config-bitsend.php');
         $conn_raven = include(__DIR__ . '/../config-raven.php');
+        $conn_megacoin = include(__DIR__ . '/../config-megacoin.php');
 
         $pool_hashrate_bitcore = minerHelper::getPoolHashrateStats($conn_btx, minerHelper::miner_getAlgos()[1425], 1800, $redis);
         $pool_hashrate_bulwark = minerHelper::getPoolHashrateStats($conn_bulwark, minerHelper::miner_getAlgos()[1426], 1800, $redis);
@@ -848,6 +854,7 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
         $pool_hashrate_verge = minerHelper::getPoolHashrateStats($conn_verge, minerHelper::miner_getAlgos()[1428], 1800, $redis);
         $pool_hashrate_bitsend = minerHelper::getPoolHashrateStats($conn_bitsend, minerHelper::miner_getAlgos()[1429], 1800, $redis);
         $pool_hashrate_raven = minerHelper::getPoolHashrateStats($conn_raven, minerHelper::miner_getAlgos()[1430], 1800, $redis);
+        $pool_hashrate_megacoin = minerHelper::getPoolHashrateStats($conn_megacoin, minerHelper::miner_getAlgos()[1431], 1800, $redis);
 
         $total_miners_bitcore = self::countMiners($conn_btx,1425)['total_count'] ?? 0;
         $total_miners_bulwark = self::countMiners($conn_bulwark,1426)['total_count'] ?? 0;
@@ -855,6 +862,7 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
         $total_miners_verge = self::countMiners($conn_verge,1428)['total_count'] ?? 0;
         $total_miners_bitsend = self::countMiners($conn_bitsend,1429)['total_count'] ?? 0;
         $total_miners_raven = self::countMiners($conn_raven,1430)['total_count'] ?? 0;
+        $total_miners_megacoin = self::countMiners($conn_megacoin,1431)['total_count'] ?? 0;
 
         return [
           'total_hashrate_bitcore_gh' => $network_info_bitcore['hashrate_gh'],
@@ -862,23 +870,27 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
           'total_hashrate_lux_gh' => $network_info_lux['hashrate_gh'],
           'total_hashrate_bitsend_gh' => $network_info_bitsend['hashrate_gh'],
           'total_hashrate_raven_gh' => $network_info_raven['hashrate_gh'],
+          'total_hashrate_megacoin_gh' => $network_info_megacoin['hashrate_gh'],
           'difficulty_bitcore' => $network_info_bitcore['difficulty'],
           'difficulty_bulwark' => $network_info_bulwark['difficulty'],
           'difficulty_lux' => $network_info_lux['difficulty'],
           'difficulty_bitsend' => $network_info_bitsend['difficulty'],
           'difficulty_raven' => $network_info_raven['difficulty'],
+          'difficulty_megacoin' => $network_info_megacoin['difficulty'],
           'pool_hashrate_bitcore' => $pool_hashrate_bitcore['hashrate'],
           'pool_hashrate_bulwark' => $pool_hashrate_bulwark['hashrate'],
           'pool_hashrate_lux' => $pool_hashrate_lux['hashrate'],
           'pool_hashrate_verge' => $pool_hashrate_verge['hashrate'],
           'pool_hashrate_bitsend' => $pool_hashrate_bitsend['hashrate'],
           'pool_hashrate_raven' => $pool_hashrate_raven['hashrate'],
+          'pool_hashrate_megacoin' => $pool_hashrate_megacoin['hashrate'],
           'total_miners_bitcore' => $total_miners_bitcore,
           'total_miners_bulwark' => $total_miners_bulwark,
           'total_miners_lux' => $total_miners_lux,
           'total_miners_verge' => $total_miners_verge,
           'total_miners_bitsend' => $total_miners_bitsend,
           'total_miners_raven' => $total_miners_raven,
+          'total_miners_megacoin' => $total_miners_megacoin,
           'gpus' => json_encode(
             [
               'btx' => ['7.5' => 'GTX 1050ti', '13.0' => 'GTX 1060', '20.0' => 'GTX 1070', '31.0' => 'GTX 1080ti', '12.0' => 'RX 480', '12.5' => 'RX 580'],
@@ -902,6 +914,7 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
           $block_rewards[1427] = 10;
           $block_rewards[1429] = 5;
           $block_rewards[1430] = 5000;
+          $block_rewards[1431] = 6.25;
 
           // Get workers for miner address
           $workers = self::getWorkers($db, $data['miner_address']);

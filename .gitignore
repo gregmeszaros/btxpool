@@ -5,9 +5,11 @@ config-lux.php
 config-verge.php
 config-bitsend.php
 config-raven.php
+config-megacoin.php
 
 .DS_Store
 /vendor/
 /twig_cache
 
+/smartwaves
 /coinEstimates/json/*.json

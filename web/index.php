@@ -36,6 +36,10 @@ switch ($coin_seo_name) {
     $coin_id = 1430;
     $conn = include(__DIR__ . '/../config-raven.php');
     break;
+  case "megacoin":
+    $coin_id = 1431;
+    $conn = include(__DIR__ . '/../config-megacoin.php');
+    break;
   default:
     $coin_id = FALSE;
 }
@@ -205,6 +209,23 @@ $getCoinSettings = new Twig_SimpleFunction('getCoinSettings', function ($coin_se
       $settings['mine_nvidia'] = 'ccminer-x64 -a x16r -o stratum+tcp://omegapool.cc:8006 -u your_raven_address.rig_name -p x -i 21';
       $settings['mine_amd_download'] = 'https://github.com/aceneun/sgminer-gm-x16r';
       $settings['mine_amd'] = 'sgminer --kernel x16r -o stratum+tcp://omegapool.cc:8006 -u your_raven_address.rig_name -p x';
+      return $settings;
+      break;
+    case 'megacoin':
+      $settings['port'] = 8007;
+      $settings['algo'] = 'scrypt';
+      $settings['algosgminer'] = 'scrypt';
+      $settings['intensity'] = 21;
+      $settings['example_pass'] = 'x';
+      $settings['symbol'] = 'MEC';
+      $settings['block_explorer_payout'] = 'https://chainz.cryptoid.info/mec/tx.dws?';
+      $settings['block_explorer_payout_suffix'] = '';
+      $settings['crypto_url'] = 'https://whattomine.com/coins/26-mec-scrypt';
+      $settings['whattomine_url'] = 'https://whattomine.com/coins/26-mec-scrypt';
+      $settings['mine_nvidia_download'] = 'https://github.com/tpruvot/ccminer/releases';
+      $settings['mine_nvidia'] = 'ccminer-x64 -a scrypt -o stratum+tcp://omegapool.cc:8007 -u your_megacoin_address.rig_name -p x -i 21';
+      $settings['mine_amd_download'] = 'https://github.com/aceneun/sgminer-gm-x16r';
+      $settings['mine_amd'] = 'sgminer --kernel scrypt -o stratum+tcp://omegapool.cc:8007 -u your_megacoin_address.rig_name -p x';
       return $settings;
       break;
   }
