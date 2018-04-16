@@ -183,9 +183,11 @@ function updateEarnings($db) {
         $stmt = $db->prepare("UPDATE blocks SET category = :category, amount = :amount, txhash = :txhash WHERE id = :block_id");
         $stmt->execute([':category' => 'immature', ':block_id' => $db_block['id'], ':amount' => $db_block['reward'], ':txhash' => $db_block['tx_hash']]);
 
+        $hash_time = time() - 3 * 60;
+
         // Delete shares where we calculated the earnings
-        $stmt = $db->prepare("DELETE FROM shares WHERE algo = :algo AND coinid = :coin_id");
-        $stmt->execute([':algo' => minerHelper::miner_getAlgos()[$db_block['coin_id']], ':coin_id' => $db_block['coin_id']]);
+        $stmt = $db->prepare("DELETE FROM shares WHERE algo = :algo AND coinid = :coin_id AND time < :time_offset");
+        $stmt->execute([':algo' => minerHelper::miner_getAlgos()[$db_block['coin_id']], ':coin_id' => $db_block['coin_id']], ':time_offset' => $hash_time);
       }
     }
     // The cron run every minute if more than 1 block is found every minute causing issue so we break after 1 block
