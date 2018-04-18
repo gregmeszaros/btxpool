@@ -876,6 +876,7 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
           'difficulty_bitcore' => $network_info_bitcore['difficulty'],
           'difficulty_bulwark' => $network_info_bulwark['difficulty'],
           'difficulty_lux' => $network_info_lux['difficulty'],
+          'difficulty_gobyte' => $network_info_gobyte['difficulty'],
           'difficulty_bitsend' => $network_info_bitsend['difficulty'],
           'difficulty_raven' => $network_info_raven['difficulty'],
           'difficulty_megacoin' => $network_info_megacoin['difficulty'],
