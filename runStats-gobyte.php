@@ -1,7 +1,7 @@
 <?php
 
 // Connect mysql
-$conn = include_once('config-verge.php');
+$conn = include_once('config-gobyte.php');
 
 // RPC wallet
 include_once('wallet-rpc.php');
@@ -30,6 +30,9 @@ updateEarnings($conn);
 
 // Send payouts
 sendPayouts($conn, 1428);
+
+// Update overall network hashrates and store in Redis cache
+updateNetworkHashrate($conn, 1428);
 
 function updatePoolHashrate($db) {
   $t = time() - 2 * 60;
@@ -89,7 +92,7 @@ function updatePoolHashrate($db) {
  * @param $db
  */
 function updateEarnings($db) {
-  print "version: 1.8 - auto extra payouts" . "\n";
+  print "version: 1.10 - stats fix" . "\n";
 
   // Get all new blocks
   $stmt = $db->prepare("SELECT * FROM blocks WHERE category = :category ORDER by time");
@@ -180,9 +183,11 @@ function updateEarnings($db) {
         $stmt = $db->prepare("UPDATE blocks SET category = :category, amount = :amount, txhash = :txhash WHERE id = :block_id");
         $stmt->execute([':category' => 'immature', ':block_id' => $db_block['id'], ':amount' => $db_block['reward'], ':txhash' => $db_block['tx_hash']]);
 
+        $hash_time = time() - 3 * 60;
+
         // Delete shares where we calculated the earnings
-        $stmt = $db->prepare("DELETE FROM shares WHERE algo = :algo AND coinid = :coin_id");
-        $stmt->execute([':algo' => minerHelper::miner_getAlgos()[$db_block['coin_id']], ':coin_id' => $db_block['coin_id']]);
+        $stmt = $db->prepare("DELETE FROM shares WHERE algo = :algo AND coinid = :coin_id AND time < :time_offset");
+        $stmt->execute([':algo' => minerHelper::miner_getAlgos()[$db_block['coin_id']], ':coin_id' => $db_block['coin_id'], ':time_offset' => $hash_time]);
       }
     }
     // The cron run every minute if more than 1 block is found every minute causing issue so we break after 1 block
@@ -373,7 +378,7 @@ function sendPayouts($db, $coin_id = 1425) {
   if (in_array($nextFullHour, $hours_to_process) && in_array($nextFullMin, $minutes_to_process)) {
     print 'Activate extra payouts' . "\n";
     // Send extra payouts (above 0.01)
-    sendExtraPayouts($db, $coin_id, 0.1);
+    sendExtraPayouts($db, $coin_id, 0.01);
   }
   else {
     print $nextFullHour . ' -- ' . $nextFullMin . "\n";
@@ -453,4 +458,32 @@ function sendExtraPayouts($db, $coin_id = 1425, $extra_payout = FALSE) {
 
     }
   }
+}
+
+/**
+ * Update overall network hashrate for the coin and stores in Redis cache
+ */
+function updateNetworkHashrate($db, $coin_id = 1425) {
+
+  $stmt = $db->prepare("SELECT * FROM coins WHERE id = :coin_id");
+  $stmt->execute([
+    ':coin_id' => $coin_id
+  ]);
+
+  $coin_info = $stmt->fetch(PDO::FETCH_OBJ);
+
+  // New Wallet RPC call
+  $remote_check = new WalletRPC($coin_info);
+
+  $network_info = $remote_check->getmininginfo();
+  if (!empty($network_info)) {
+    $redis = include_once(__DIR__ . '/config-redis.php');
+
+    $data = [];
+    $data['hashrate_gh'] = $network_info['networkhashps'] / 1000 / 1000 / 1000;
+    $data['difficulty'] = $network_info['difficulty'];
+
+    $redis->set('network_info_' . $coin_id, json_encode($data));
+  }
+
 }

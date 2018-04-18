@@ -101,6 +101,17 @@
                 </tr>
                 <tr>
                     <td>
+                        <img class="logo-list" src="images/gobyte.png" alt="lux mining" />
+                        <a href="?page=dashboard&coin=gobyte">GoByte (GBX)</a> <strong>Port: 8004</strong>
+                    </td>
+                    <td>neoscrypt</td>
+                    <td>{{ showFriendlyHash(pool_hashrate_gobyte) }}</span> / {{ total_hashrate_gobyte_gh|default('n/a')|round(1) }} Gh/s</td>
+                    <td>{{ difficulty_gobyte|default('n/a')|round(1)  }}</td>
+                    <td class="total-miners">{{ total_miners_gobyte }}</td>
+                    <td>1%</td>
+                </tr>
+                <tr>
+                    <td>
                         <img class="logo-list" src="images/bitsend.png" alt="bitsend mining" />
                         <a href="?page=dashboard&coin=bitsend">Bitsend (BSD)</a> <strong>Port: 8005</strong>
                     </td>

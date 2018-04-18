@@ -24,9 +24,9 @@ switch ($coin_seo_name) {
     $coin_id = 1427;
     $conn = include(__DIR__ . '/../config-lux.php');
     break;
-  case "verge":
+  case "gobyte":
     $coin_id = 1428;
-    $conn = include(__DIR__ . '/../config-verge.php');
+    $conn = include(__DIR__ . '/../config-gobyte.php');
     break;
   case "bitsend":
     $coin_id = 1429;
@@ -161,20 +161,21 @@ $getCoinSettings = new Twig_SimpleFunction('getCoinSettings', function ($coin_se
       $settings['mine_amd'] = 'sgminer --kernel phi -o stratum+tcp://omegapool.cc:8003 -u your_lux_address -p x -I 23';
       return $settings;
       break;
-    case 'verge':
+    case 'gobyte':
       $settings['port'] = 8004;
-      $settings['algo'] = 'x17';
-      $settings['algosgminer'] = 'x17';
-      $settings['intensity'] = 21;
+      $settings['algo'] = 'neoscrypt';
+      $settings['algosgminer'] = 'neoscrypt';
+      $settings['intensity'] = 16;
       $settings['example_pass'] = 'x';
-      $settings['symbol'] = 'XVG';
-      $settings['block_explorer_payout'] = 'https://chainz.cryptoid.info/btx/tx.dws?';
-      $settings['block_explorer_payout_suffix'] = '.htm';
-      $settings['whattomine_url'] = 'https://whattomine.com/coins/219-xvg-x17';
-      $settings['mine_nvidia_download'] = '';
-      $settings['mine_nvidia'] = '';
-      $settings['mine_amd_download'] = '';
-      $settings['mine_amd'] = '';
+      $settings['symbol'] = 'GBX';
+      $settings['block_explorer_payout'] = 'https://explorer.gobyte.network/tx/';
+      $settings['block_explorer_payout_suffix'] = '';
+      $settings['crypto_url'] = 'https://crypt0.zone/calculator/details/GBX';
+      $settings['whattomine_url'] = 'https://whattomine.com/coins/225-gbx-neoscrypt';
+      $settings['mine_nvidia_download'] = 'https://github.com/palginpav/ccminer/tags';
+      $settings['mine_nvidia'] = 'ccminer -a neoscrypt -o stratum+tcp://omegapool.cc:8004 -u your_gobyte_address.rig1 -p x -i 16';
+      $settings['mine_amd_download'] = 'https://github.com/216k155/sgminer-phi1612-Implemented/releases';
+      $settings['mine_amd'] = 'sgminer --kernel neoscrypt -o stratum+tcp://omegapool.cc:8004 -u your_gobyte_address.rig1 -p x -I 16';
       return $settings;
       break;
     case 'bitsend':
