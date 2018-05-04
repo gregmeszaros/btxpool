@@ -1,11 +1,5 @@
 .idea
-config-bitcore.php
-config-bulwark.php
-config-lux.php
-config-gobyte.php
-config-bitsend.php
-config-raven.php
-config-megacoin.php
+config-*.php
 
 .DS_Store
 /vendor/

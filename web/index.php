@@ -40,6 +40,10 @@ switch ($coin_seo_name) {
     $coin_id = 1431;
     $conn = include(__DIR__ . '/../config-megacoin.php');
     break;
+  case "phantomx":
+    $coin_id = 1432;
+    $conn = include(__DIR__ . '/../config-phantomx.php');
+    break;
   default:
     $coin_id = FALSE;
 }
@@ -227,6 +231,23 @@ $getCoinSettings = new Twig_SimpleFunction('getCoinSettings', function ($coin_se
       $settings['mine_nvidia'] = 'ccminer-x64 -a scrypt -o stratum+tcp://omegapool.cc:8007 -u your_megacoin_address.rig_name -p x -i 21';
       $settings['mine_amd_download'] = 'https://github.com/aceneun/sgminer-gm-x16r';
       $settings['mine_amd'] = 'sgminer --kernel scrypt -o stratum+tcp://omegapool.cc:8007 -u your_megacoin_address.rig_name -p x';
+      return $settings;
+      break;
+    case 'phantomx':
+      $settings['port'] = 8008;
+      $settings['algo'] = 'x11';
+      $settings['algosgminer'] = 'x11';
+      $settings['intensity'] = 21;
+      $settings['example_pass'] = 'x';
+      $settings['symbol'] = 'PNX';
+      $settings['block_explorer_payout'] = 'https://altmix.org/coins/21-PhaNtomX/explorer/transaction/';
+      $settings['block_explorer_payout_suffix'] = '';
+      $settings['crypto_url'] = '';
+      $settings['whattomine_url'] = '';
+      $settings['mine_nvidia_download'] = 'https://github.com/tpruvot/ccminer/releases';
+      $settings['mine_nvidia'] = 'ccminer-x64 -a x11 -o stratum+tcp://omegapool.cc:8008 -u your_phantomx_address.rig_name -p x -i 21';
+      $settings['mine_amd_download'] = 'https://github.com/aceneun/sgminer-gm-x16r';
+      $settings['mine_amd'] = 'sgminer --kernel x11 -o stratum+tcp://omegapool.cc:8008 -u your_phantomx_address.rig_name -p x';
       return $settings;
       break;
   }
