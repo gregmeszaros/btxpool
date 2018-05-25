@@ -92,6 +92,7 @@ class minerHelper {
    * @return float
    */
   public static function roundSimple($value, $precision = 8) {
+    if ($value < 0) { $value = 0; }
     return round($value, $precision);
   }
 
@@ -172,12 +173,15 @@ class minerHelper {
    * Format block confirmations
    * @param int $confirmations
    */
-  public static function formatConfirmations($confirmations = 0) {
+  public static function formatConfirmations($confirmations = 0, $category = FALSE) {
+    if ($category == 'orphan') {
+      return "<font color='red'>Orphan</font>";
+    }
     if ($confirmations >= 0 && $confirmations < 100) {
-      return "Immature " . "(" . $confirmations . ")";
+      return "<font color='#696969'>Immature " . "(" . $confirmations . ")</font>";
     }
     if ($confirmations > 100) {
-      return "Confirmed " . "(100+)";
+      return "<font color='#228b22'>Confirmed " . "(100+)</font>";
     }
   }
 

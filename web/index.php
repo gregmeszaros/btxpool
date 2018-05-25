@@ -96,8 +96,8 @@ $roundSimple = new Twig_SimpleFunction('roundSimple', function ($value) {
   return minerHelper::roundSimple($value);
 });
 
-$formatConfirmations = new Twig_SimpleFunction('formatConfirmations', function ($value) {
-  return minerHelper::formatConfirmations($value);
+$formatConfirmations = new Twig_SimpleFunction('formatConfirmations', function ($value, $category) {
+  return new Twig_Markup(minerHelper::formatConfirmations($value, $category), 'UTF-8' );
 });
 
 $formatCoinName = new Twig_SimpleFunction('formatCoinName', function ($coin_seo_name) {
