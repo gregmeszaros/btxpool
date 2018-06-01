@@ -8,7 +8,7 @@
 
 class minerHelper {
 
-  public static function getRoutes() {
+  public static function getRoutes($seo_site_name = 'omegapool.cc') {
     // Check for specific coin first
     $coin = $_GET['coin'] ?? FALSE;
     if (!empty($coin)) {
@@ -34,7 +34,7 @@ class minerHelper {
     return [
       'index' => [
         'id' => 'home',
-        'label' => 'omegapool.cc',
+        'label' => $seo_site_name,
         'url' => $base_route . 'index',
         'template' => 'pools.html.twig'
       ],
@@ -910,6 +910,7 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
           'total_miners_raven' => $total_miners_raven,
           'total_miners_megacoin' => $total_miners_megacoin,
           'total_miners_phantomx' => $total_miners_phantomx,
+          'seo_site_name' => $data['seo_site_name'],
           'gpus' => json_encode(
             [
               'btx' => ['7.5' => 'GTX 1050ti', '13.0' => 'GTX 1060', '20.0' => 'GTX 1070', '31.0' => 'GTX 1080ti', '12.0' => 'RX 480', '12.5' => 'RX 580'],
@@ -997,7 +998,8 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
           'coin_seo_name' => $data['coin_seo_name'],
           'stratum_connections' => self::countStratumConnections($db) ?? FALSE,
           'difficulty' => $network_info ? $network_info['difficulty'] : 0,
-          'load_charts' => TRUE
+          'load_charts' => TRUE,
+          'seo_site_name' => $data['seo_site_name']
         ];
         break;
       case 'miners':
@@ -1011,6 +1013,7 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
           'hashrate_user_30_min' => $hashrate_user_30_min ?? FALSE,
           'hashrate_user_24_hours' => $hashrate_user_24_hours ?? FALSE,
           'coin_seo_name' => $data['coin_seo_name'],
+          'seo_site_name' => $data['seo_site_name'],
           'load_miner_charts' => TRUE
         ];
         break;
@@ -1024,6 +1027,7 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
           'hashrate_user_30_min' => $hashrate_user_30_min ?? FALSE,
           'hashrate_user_24_hours' => $hashrate_user_24_hours ?? FALSE,
           'coin_seo_name' => $data['coin_seo_name'],
+          'seo_site_name' => $data['seo_site_name'],
           'load_blocks_charts' => TRUE
         ];
         break;
@@ -1042,6 +1046,7 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
           'hashrate_user_30_min' => $hashrate_user_30_min ?? FALSE,
           'hashrate_user_24_hours' => $hashrate_user_24_hours ?? FALSE,
           'coin_seo_name' => $data['coin_seo_name'],
+          'seo_site_name' => $data['seo_site_name']
         ];
         break;
     }
