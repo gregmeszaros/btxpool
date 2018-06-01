@@ -1,15 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Bitcore (BTX) - Stable and profitable Bitcore mining pool with regular payouts.</title>
+    <title>{{ seo_site_name }} - Stable and profitable mining pools with regular payouts.</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
+    <link rel="shortcut icon" href="favicon.ico" type="image/icon">
+    <link rel="icon" href="favicon.ico" type="image/icon">
+    <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Dosis'>
+
     <!-- Custom CSS -->
-    <link rel="stylesheet" type="text/css" href="css/bitcore_timeline.css" />
+    <link rel="stylesheet" type="text/css" href="css/bitcore_timeline.css">
 
     <!-- fontawesome -->
     <link rel="stylesheet" type="text/css" href="css/fontawesome/css/font-awesome.min.css">
+    <link rel="manifest" href="/manifest.json" />
+
+    <script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" async=""></script>
+    <script>
+      var OneSignal = window.OneSignal || [];
+      OneSignal.push(function() {
+        OneSignal.init({
+          appId: "70cabab3-eb2c-4e66-a34d-e11af5aaf1e2",
+        });
+      });
+    </script>
 
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
@@ -31,24 +46,26 @@
 
 <div id="header">
 
-    <a href="index.php">
-        <img class="logo" src="images/btx.png" alt="BTX" height="40" />
+    <a href="index.php?coin={{ coin_seo_name }}&page=dashboard">
+        <img class="logo {{ coin_seo_name|default('omegapool') }}-logo" src="images/{{ coin_seo_name|default('omegapool-header') }}.png" alt="{{ coin_seo_name|default('omegapool') }}" height="40" />
     </a>
 
-    {% for route in routes %}
-        {% if route.menu_exclude is not defined %}
-            <a href="{{ route.url }}" target="{{ route.target }}">
-                <div class="button mobile">
-                    <i class="fa-icons fa fa-{{ route.id }}" aria-hidden="true"></i>
-                    <span>
-                        <label> {{ route.label }} </label>
-                    </span>
-                </div>
-            </a>
-        {% endif %}
-    {% endfor %}
+    {% if current_route != 'index' %}
+        {% for route in routes %}
+            {% if route.menu_exclude is not defined %}
+                <a href="{{ route.url }}" target="{{ route.target }}">
+                    <div class="button mobile">
+                        <i class="fa-icons fa fa-{{ route.id }}" aria-hidden="true"></i>
+                        <span>
+                            <label> {{ route.label }} </label>
+                        </span>
+                    </div>
+                </a>
+            {% endif %}
+        {% endfor %}
 
-    {% if wallet %}
-        <div class="button download" data-link="#"><span><label>Your hashrate (30min / 24h): </label> {{ showFriendlyHash(hashrate_user_30_min.hashrate)|default(0) }} / {{ showFriendlyHash(hashrate_user_24_hours.hashrate)|default(0) }}</span></div>
+        {% if wallet %}
+            <div class="button download" data-link="#"><span><label>Your hashrate (30min / 24h): </label> {{ showFriendlyHash(hashrate_user_30_min.hashrate)|default(0) }} / {{ showFriendlyHash(hashrate_user_24_hours.hashrate)|default(0) }}</span></div>
+        {% endif %}
     {% endif %}
 </div>

@@ -1,6 +1,9 @@
 .idea
-config.php
+config-*.php
 
 .DS_Store
 /vendor/
 /twig_cache
+
+/smartwaves
+/coinEstimates/json/*.json

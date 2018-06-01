@@ -25,7 +25,7 @@
                 {% for miner in miners %}
                 <tr>
                     <td>
-                        <a href="index.php?page=index&wallet={{ miner.username }}"> {{ miner.username }} </a>
+                        <a href="index.php?coin={{ coin_seo_name }}&page=dashboard&wallet={{ miner.username }}">{{ miner.username }}</a>
                     </td>
                     <td>{{ showFriendlyHash(attribute(hahsrates_30_min, miner.userid).hashrate) }}</td>
                     <td>{{ showFriendlyHash(attribute(hashrates_3_hours, miner.userid).hashrate) }}</td>

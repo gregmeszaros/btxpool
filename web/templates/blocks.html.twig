@@ -21,10 +21,10 @@
 
                 {% for block in blocks %}
                     <tr>
-                        <td> See earnings for <a href="index.php?page=block-earnings&id={{ block.id }}" > {{ block.height }} </a></td>
-                        <td> {{ block.amount }} BTX </td>
+                        <td> See earnings for <a href="index.php?coin={{ coin_seo_name }}&page=block-earnings&id={{ block.id }}" > {{ block.height }} </a></td>
+                        <td> {{ block.amount }} {{ getCoinSettings(coin_seo_name).symbol }} </td>
                         <td> {{ showDateTime(block.time) }} </td>
-                        <td> {{ formatConfirmations(block.confirmations) }} </td>
+                        <td> {{ formatConfirmations(block.confirmations, block.category) }} </td>
                     </tr>
                 {% endfor %}
 

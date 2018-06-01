@@ -1,4 +1,5 @@
 body {
+    font-family: Dosis, sans-serif;
     margin: 0px;
     font-size: 100%;
     background: #EEEEEE;
@@ -10,6 +11,26 @@ body {
     padding-left: 10px;
     float: left;
 }
+
+.logo-list {
+    float: left;
+    padding-right: 3px;
+    width: 20px;
+    height: 20px;
+}
+
+.omegapool-logo {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+    padding-left: 10px;
+    padding-right: 10px;
+    background-color: white;
+}
+
 #header {
     display: block;
     position: fixed;
@@ -319,9 +340,39 @@ img.facebook_profile {
     min-height: 80px;
 }
 
-.label-btx {
-    background-color: #804d7e;
+/* Label settings per coin */
+.bitcore {
+    background-color: #e82b97 !important;
 }
+
+.bulwark {
+    background-color: #058ee6 !important;
+}
+
+.lux {
+    background-color: #40c2dc !important;
+}
+
+.gobyte {
+    background-color: #6492c3 !important;
+}
+
+.bitsend {
+    background-color: #5fb7ff !important;
+}
+
+.raven {
+    background-color: #f05239 !important;
+}
+
+.megacoin {
+    background-color: #ef3436 !important;
+}
+
+.phantomx {
+    background-color: #22b34d !important;
+}
+
 .label {
     display: inline;
     padding: 2px 4px 2px;
@@ -350,6 +401,15 @@ h2 {
 .header-h1 {
     float: left;
     width: 100%;
+}
+
+.userImg {
+    width: 100%;
+}
+
+.imgContainer {
+    height: auto;
+    max-width: 500px;
 }
 
 .intro-info {
@@ -463,11 +523,6 @@ div.tab button:hover {
     background-color: #ddd;
 }
 
-/* Create an active/current tablink class */
-div.tab button.active {
-    background-color: #804d7e;;
-}
-
 /* Style the tab content */
 .tabcontent {
     display: none;
@@ -480,6 +535,13 @@ div.tab button.active {
     padding: 6px 12px;
     border: solid 2px #c9c9c9;
     background-color: #eeeeee;
+}
+
+.cmc {
+    background-color: white;
+    width: 300px;
+    border: 2px solid #E4E6EB;
+    border-radius: 10px;
 }
 
 /**
@@ -504,8 +566,6 @@ table.table { width: 100%; }
         padding: 10px;
         font-size: 2.5vmin;
     }
-
-
     tr {
         display: flex;
         flex-direction: row;
@@ -527,3 +587,12 @@ table.table { width: 100%; }
         font-size: 0.7em;
     }
 }
+
+    td.custom-twitter {
+        min-width: 300px;
+    }
+
+    td.custom-ethmonitor {
+        min-width: 60%;
+        vertical-align: top;
+    }

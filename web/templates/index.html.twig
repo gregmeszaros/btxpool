@@ -3,26 +3,30 @@
 <div id="main">
 
     <div class="intro">
-        <h1 class="header-h1">BTXpool - Bitcore (BTX) mining pool</h1>
+        <h1 class="header-h1">{{ seo_site_name }} - {{ coin_seo_name }} mining pool</h1>
         <div class="minercontent">
             <div class="intro-info">
-                <strong>Miners online / Workers: <span class="label label-btx"> {{ total_count_miners.total_count|default(0) }} / {{ total_count_workers.total_count|default(0) }}</span> </strong>
+                <strong>Miners online / Workers: <span class="label {{ coin_seo_name }}"> {{ total_count_miners.total_count|default(0) }} / {{ total_count_workers.total_count|default(0) }}</span> </strong>
                 <div class="help-text">Total unique miner addresses and workers.</div>
             </div>
             <div class="intro-info">
-                <strong>Min. payout threshold: <span class="label label-btx">{{ min_payout }} BTX</span> </strong>
-                <div class="help-text" style="color: red;">Payout for pending balances above 0.01 BTX every 2 hours.</div>
+                <strong>Min. payout threshold: <span class="label {{ coin_seo_name }}">{{ min_payout }} {{ getCoinSettings(coin_seo_name).symbol }}</span> </strong>
+                <div class="help-text" style="color: red;">Payout for pending balances above 0.01 {{ getCoinSettings(coin_seo_name).symbol }} every 4 hours.</div>
             </div>
             <div class="intro-info">
-                <strong>Pool hashrate: <span class="label label-btx">{{ showFriendlyHash(total_pool_hashrate.hashrate) }}</span> </strong>
+                <strong>Pool hashrate: <span class="label {{ coin_seo_name }}">{{ showFriendlyHash(total_pool_hashrate.hashrate) }}</span> </strong>
                 <div class="help-text">Total current pool hashrate.</div>
             </div>
             <div class="intro-info">
-                <strong>Reward structure: <span class="label label-btx">Proportional</span> </strong>
+                <strong>Network Difficulty: <span class="label {{ coin_seo_name }}">{{ difficulty|default('n/a')|round(1)  }}</span> </strong>
+                <div class="help-text">Mining difficulty for the coin.</div>
+            </div>
+            <div class="intro-info">
+                <strong>Reward structure: <span class="label {{ coin_seo_name }}">Proportional</span> </strong>
                 <div class="help-text">Proportional reward based on the number of submitted "valid" shares and difficulty.</div>
             </div>
             <div class="intro-info">
-                <strong>Pool fee: <span class="label label-btx">{{ pool_fee }}%</span> </strong>
+                <strong>Pool fee: <span class="label {{ coin_seo_name }}">{{ pool_fee }}%</span> </strong>
                 <div class="help-text">No transaction fees!</div>
             </div>
         </div>
@@ -31,17 +35,18 @@
     <div class="intro">
 
         <div class="minercontent">
-            <h3>Announcements</h3>
-            <ul class="announcements">
-                <li>
-                    <div>If you see this message you are on the new server, enjoy the new lowered 1.25% pool fee :)!</div>
-                </li>
-                <li>
-                    <div>We will pay all pending balances every Sunday evening so everyone will have it before the weekly airdrops!</div>
-                </li>
-            </ul>
+            <div>
+                {% if stratum_connections|length > 1 %}
+                    <strong style="color: red;">Please always connect to the port with less active connections!</strong>
+                    {% for port, stratum_connection in stratum_connections %}
+                        <strong><div>Port: {{ port }} <span> - {{ stratum_connection.workers }} workers</span></div></strong>
+                    {% endfor %}
+                {% endif %}
+            </div>
             <h2>Search Wallet</h2>
-            <form name="wallet-check" action="index.php?page=index" class="wallet-input">
+            <form name="wallet-check" action="index.php" class="wallet-input">
+                <input type="hidden" name="coin" value={{ coin_seo_name }} />
+                <input type="hidden" name="page" value="dashboard" />
                 <ul class="input-list wallet-input clearfix">
                     <li class="li-inline">
                         <input placeholder="ie. 1NgZ7MjHmVUuuy2Y4UMxDaVm4Me3TcNMpt" name="wallet" type="text" size="40">
@@ -58,26 +63,33 @@
     {% if wallet %}
         <div class="intro">
             <div class="minercontent">
-                <div class="get-started wallet-info-label">Your wallet address is set to: <strong> {{ wallet }} </strong></div>
+                <div class="get-started wallet-info-label">Your wallet address is set to: <strong>{{ wallet }}</strong></div>
+                <div class="get-started wallet-info-label">API call for your wallet: <strong><a href="api.php?coin={{ coin_seo_name }}&wallet={{ wallet }}" target="_blank">Active workers + wallet monitoring</a></strong></div>
+
                 <div class="intro-info">
-                    <strong>Immature Balance: <span class="label label-btx"> {{ roundSimple(immature_balance.immature_balance)|default(0) }} BTX </span> </strong>
+                    <strong>Round share: <span class="label {{ coin_seo_name }}"> {{ roundSimple(round_share)|default(0) }}% -> {{ estimated_earning }} {{ getCoinSettings(coin_seo_name).symbol }} </span> </strong>
+                    <div class="help-text">Estimated earnings when the pool finds a block.</div>
+                </div>
+
+                <div class="intro-info">
+                    <strong>Immature Balance: <span class="label {{ coin_seo_name }}"> {{ roundSimple(immature_balance.immature_balance)|default(0) }} {{ getCoinSettings(coin_seo_name).symbol }} </span> </strong>
                     <div class="help-text">Earnings awaiting blocks to mature.</div>
                 </div>
 
                 <div class="intro-info">
-                    <strong>Pending Balance: <span class="label label-btx"> {{ roundSimple(pending_balance.pending_balance)|default(0) }} BTX </span> </strong>
+                    <strong>Pending Balance: <span class="label {{ coin_seo_name }}"> {{ roundSimple(pending_balance.pending_balance)|default(0) }} {{ getCoinSettings(coin_seo_name).symbol }} </span> </strong>
                     <div class="help-text">Matured earnings awaiting payout.</div>
                 </div>
 
                 <div class="intro-info">
-                    <strong>Total Paid: <span class="label label-btx">{{ roundSimple(total_paid.total_payout)|default(0) }} BTX</span> </strong>
+                    <strong>Total Paid: <span class="label {{ coin_seo_name }}">{{ roundSimple(total_paid.total_payout)|default(0) }} {{ getCoinSettings(coin_seo_name).symbol }} </span> </strong>
                     <div class="help-text">Total paid to this wallet address.</div>
                 </div>
 
                 <div class="tab">
-                    <button class="tablinks" onclick="openTab(event, 'workers')" id="defaultOpen">Workers ({{ workers_count|default(0) }})</button>
-                    <button class="tablinks" onclick="openTab(event, 'earnings')">Earnings</button>
-                    <button class="tablinks" onclick="openTab(event, 'payouts')">Payouts</button>
+                    <button class="tablinks" onclick="openTab(event, 'workers', '{{ coin_seo_name }}')" id="defaultOpen">Workers ({{ workers_count|default(0) }})</button>
+                    <button class="tablinks" onclick="openTab(event, 'earnings', '{{ coin_seo_name }}')">Earnings</button>
+                    <button class="tablinks" onclick="openTab(event, 'payouts', '{{ coin_seo_name }}')">Payouts</button>
                 </div>
 
                 <div id="workers" class="tabcontent">
@@ -104,15 +116,17 @@
                 </div>
 
                 <div id="earnings" class="tabcontent">
-                    <div>Total earnings last 1 hour: {{ roundSimple(earnings_last_hour.total_earnings)|default(0) }} BTX </div>
-                    <div>Total earnings last 3 hours: {{ roundSimple(earnings_last_3_hours.total_earnings)|default(0) }} BTX </div>
-                    <div>Total earnings last 24 hours: {{ roundSimple(earnings_last_24_hours.total_earnings)|default(0) }} BTX </div>
-                    <div>Total earnings last 7 days: {{ roundSimple(earnings_last_7_days.total_earnings)|default(0) }} BTX </div>
-                    <div>Total earnings last 30 days: {{ roundSimple(earnings_last_30_days.total_earnings)|default(0) }} BTX </div>
+                    <div>Total earnings last 1 hour: {{ roundSimple(earnings_last_hour.total_earnings)|default(0) }} {{ getCoinSettings(coin_seo_name).symbol }} </div>
+                    <div>Total earnings last 3 hours: {{ roundSimple(earnings_last_3_hours.total_earnings)|default(0) }} {{ getCoinSettings(coin_seo_name).symbol }} </div>
+                    <div>Total earnings last 24 hours: {{ roundSimple(earnings_last_24_hours.total_earnings)|default(0) }} {{ getCoinSettings(coin_seo_name).symbol }} </div>
+                    <div>Total earnings last 7 days: {{ roundSimple(earnings_last_7_days.total_earnings)|default(0) }} {{ getCoinSettings(coin_seo_name).symbol }} </div>
+                    <div>Total earnings last 30 days: {{ roundSimple(earnings_last_30_days.total_earnings)|default(0) }} {{ getCoinSettings(coin_seo_name).symbol }} </div>
                     <div>
                         <strong>
-                            <a href="https://whattomine.com/coins/202-btx-timetravel10" target=_blank">Estimate your earnings: WHAT TO MINE</a>
+                            Estimate your earnings:
+                            <a href={{ getCoinSettings(coin_seo_name).crypto_url }} target=_blank">crypt0.zone</a>
                         </strong>
+                            or <a href={{ getCoinSettings(coin_seo_name).whattomine_url }} target=_blank">whattomine</a>
                     </div>
                 </div>
 
@@ -127,9 +141,9 @@
                         {% for payout in payouts %}
                             <tr>
                                 <td>
-                                    <a href="https://chainz.cryptoid.info/btx/tx.dws?{{ payout.tx }}.htm" target="_blank"> {{ payout.tx }} </a>
+                                    <a href="{{ getCoinSettings(coin_seo_name).block_explorer_payout }}{{ payout.tx }}{{ getCoinSettings(coin_seo_name).block_explorer_payout_suffix }}" target="_blank"> {{ payout.tx }} </a>
                                 </td>
-                                <td>{{ roundSimple(payout.amount) }} BTX </td>
+                                <td>{{ roundSimple(payout.amount) }} {{ getCoinSettings(coin_seo_name).symbol }} </td>
                                 <td>{{ showDateTime(payout.time) }} </td>
                             </tr>
                         {% endfor %}
@@ -153,16 +167,13 @@
             <h2>Instructions - getting started</h2>
 
             <div><strong>Stratum port</strong></div>
-            <div class="get-started">stratum+tcp://bitcorepool.cc:1111</div>
+            <div class="get-started">stratum+tcp://{{ seo_site_name }}:{{ getCoinSettings(coin_seo_name).port }}</div>
 
-            <div><strong>Nvidia cards using <a href="https://github.com/tpruvot/ccminer/releases" target="_blank">CCMINER</a></strong></div>
-            <div class="get-started">ccminer-x64 -a bitcore -o stratum+tcp://bitcorepool.cc:1111 -u 1NgZ7MjHmVUuuy2Y4UMxDaVm4Me3TcNMpt -p x</div>
+            <div><strong>Nvidia cards using <a href="{{  getCoinSettings(coin_seo_name).mine_nvidia_download }}" target="_blank">CCMINER</a></strong></div>
+            <div class="get-started">{{ getCoinSettings(coin_seo_name).mine_nvidia }}</div>
 
-            <div><strong>Nvidia cards using SPMOD2</strong></div>
-            <div class="get-started">ccminer -a bitcore -o stratum+tcp://bitcorepool.cc:1111 -u 1NgZ7MjHmVUuuy2Y4UMxDaVm4Me3TcNMpt -p x</div>
-
-            <div><strong>AMD cards using <a href="https://github.com/LIMXTEC/BitCore/releases" target="_blank">SGMINER</a></strong></div>
-            <div class="get-started">sgminer.exe --kernel timetravel10 -o stratum+tcp://bitcorepool.cc:1111 -u 1NgZ7MjHmVUuuy2Y4UMxDaVm4Me3TcNMpt -p x -I 19</div>
+            <div><strong>AMD cards using <a href="{{  getCoinSettings(coin_seo_name).mine_amd_download }}" target="_blank">SGMINER</a></strong></div>
+            <div class="get-started">{{ getCoinSettings(coin_seo_name).mine_amd }}</div>
         </div>
     </div>
 

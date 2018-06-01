@@ -8,15 +8,35 @@
 
 class minerHelper {
 
-  public static function getRoutes() {
-    $base_route = 'index.php?page=';
+  public static function getRoutes($seo_site_name = 'omegapool.cc') {
+    // Check for specific coin first
+    $coin = $_GET['coin'] ?? FALSE;
+    if (!empty($coin)) {
+      $base_route = 'index.php?coin=' . $coin . '&page=';
+      $main_blockchain_url = [
+        'bitcore' => 'https://chainz.cryptoid.info/btx/',
+        'bulwark' => 'https://altmix.org/coins/10-Bulwark/explorer/',
+        'lux' => 'https://chainz.cryptoid.info/lux/',
+        'gobyte' => 'https://explorer.gobyte.network/',
+        'bitsend' => 'https://chainz.cryptoid.info/bsd/',
+        'raven' => 'http://explorer.threeeyed.info/',
+        'megacoin' => 'https://chainz.cryptoid.info/mec/',
+        'phantomx' => 'https://altmix.org/coins/21-PhaNtomX/explorer/'
+      ];
+
+      $explorer = $main_blockchain_url[$coin];
+    }
+    else {
+      $base_route = 'index.php?page=';
+      $explorer = '';
+    }
 
     return [
       'index' => [
         'id' => 'home',
-        'label' => 'Home',
+        'label' => $seo_site_name,
         'url' => $base_route . 'index',
-        'template' => 'index.html.twig'
+        'template' => 'pools.html.twig'
       ],
       'miners' => [
         'id' => 'users',
@@ -37,17 +57,17 @@ class minerHelper {
         'template' => 'block-earnings.html.twig',
         'menu_exclude' => TRUE
       ],
-      'pools' => [
-        'id' => 'cubes',
+      'dashboard' => [
+        'id' => 'dashboard',
         'label' => 'Dashboard / minerpool.party',
-        'url' => $base_route . 'pools',
-        'template' => 'pools.html.twig',
+        'url' => $base_route . 'dashboard',
+        'template' => 'index.html.twig',
         'menu_exclude' => TRUE
       ],
       'explorer' => [
         'id' => 'search',
         'label' => 'Blockchain',
-        'url' => 'https://chainz.cryptoid.info/btx/',
+        'url' => $explorer,
         'target' => '_blank',
         'template' => 'miners.html.twig',
       ],
@@ -72,6 +92,7 @@ class minerHelper {
    * @return float
    */
   public static function roundSimple($value, $precision = 8) {
+    if ($value < 0) { $value = 0; }
     return round($value, $precision);
   }
 
@@ -119,7 +140,14 @@ class minerHelper {
   public static function miner_getAlgos() {
     // return key / value pairs (coin ID, algo)
     return [
-      '1425' => 'bitcore'
+      '1425' => 'bitcore',
+      '1426' => 'nist5',
+      '1427' => 'phi',
+      '1428' => 'neoscrypt',
+      '1429' => 'xevan',
+      '1430' => 'x16r',
+      '1431' => 'scrypt',
+      '1432' => 'x11'
     ];
   }
 
@@ -130,7 +158,14 @@ class minerHelper {
   public static function miner_getMinPayouts() {
     // return key / value pairs (algo, min_payout amount)
     return [
-      'bitcore' => 0.25
+      'bitcore' => 0.25,
+      'nist5' => 0.1,
+      'phi' => 0.1,
+      'neoscrypt' => 0.1,
+      'xevan' => 0.1,
+      'x16r' => 0.1,
+      'scrypt' => 1,
+      'x11' => 1
     ];
   }
 
@@ -138,12 +173,15 @@ class minerHelper {
    * Format block confirmations
    * @param int $confirmations
    */
-  public static function formatConfirmations($confirmations = 0) {
+  public static function formatConfirmations($confirmations = 0, $category = FALSE) {
+    if ($category == 'orphan') {
+      return "<font color='red'>Orphan</font>";
+    }
     if ($confirmations >= 0 && $confirmations < 100) {
-      return "Immature " . "(" . $confirmations . ")";
+      return "<font color='#696969'>Immature " . "(" . $confirmations . ")</font>";
     }
     if ($confirmations > 100) {
-      return "Confirmed " . "(100+)";
+      return "<font color='#228b22'>Confirmed " . "(100+)</font>";
     }
   }
 
@@ -258,6 +296,44 @@ class minerHelper {
   }
 
   /**
+   * Shows how many users are connected to each port
+   */
+  public static function countStratumConnections($db, $algo = FALSE, $redis = FALSE) {
+    $stmt = $db->prepare("SELECT port, workers FROM stratums ORDER BY workers ASC;");
+    $stmt->execute();
+
+    return array_map('reset', $stmt->fetchAll(PDO::FETCH_GROUP|PDO::FETCH_ASSOC));
+  }
+
+  /**
+   * Get total shares submitted for the round
+   * @param $db
+   * @param $algo
+   */
+  public static function sumTotalShares($db, $algo, $user_id = FALSE, $redis = FALSE) {
+
+    if (!empty($user_id)) {
+      $stmt = $db->prepare("SELECT SUM(difficulty) AS total_user_hash FROM shares WHERE valid = :valid AND algo= :algo AND userid = :user_id;");
+      $stmt->execute([
+        ':valid' => 1,
+        ':algo' => $algo,
+        ':user_id' => $user_id
+      ]);
+
+      return $stmt->fetch(PDO::FETCH_ASSOC);
+
+    }
+
+    $stmt = $db->prepare("SELECT SUM(difficulty) AS total_user_hash FROM shares WHERE valid = :valid AND algo= :algo;");
+    $stmt->execute([
+      ':valid' => 1,
+      ':algo' => $algo
+    ]);
+
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+  }
+
+  /**
    * Get the last X number of blocks
    * @param $db
    * @param string $miner_address
@@ -267,11 +343,39 @@ class minerHelper {
 
     // @TODO -> if we have miner address join with earnings!
     // @TODO -> cache the call for 2 mins
-    $stmt = $db->prepare("SELECT * FROM blocks WHERE coin_id = :coin_id ORDER BY height DESC LIMIT 0, 30");
+    $stmt = $db->prepare("SELECT * FROM blocks WHERE coin_id = :coin_id ORDER BY height DESC LIMIT 0, 50");
     $stmt->execute([
       ':coin_id' => $coin_id
     ]);
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
+  }
+
+  /**
+   * Get some network information (RPC call to wallet through a cron job and saved to REDIS DB)
+   * @param bool $coin_id
+   * @param bool $redis
+   */
+  public static function getNetworkInfo($coin_id = FALSE, $redis = FALSE) {
+    if (!empty($redis) && is_object($redis)) {
+      $network_info = json_decode($redis->get('network_info_' . $coin_id), TRUE);
+      return $network_info;
+    }
+
+    return [];
+  }
+
+  /**
+   * There is a cron job running which will load estimates for 10mh/s with current difficulty for any coin
+   * With this value we can calculate the earning estimate for the coin
+   * @param bool $redis
+   */
+  public static function getCoinEstimates($redis = FALSE) {
+    if (!empty($redis) && is_object($redis)) {
+      $coin_estimates = json_decode($redis->get('coin_estimates'), TRUE);
+      return $coin_estimates;
+    }
+
+    return ['btx' => 1, 'lux' => 0.1];
   }
 
   /**
@@ -375,7 +479,7 @@ AND workerid IN (SELECT id FROM workers WHERE algo=:algo AND id = :worker_id AND
     // If we have redis connection try to load cached data first
     if (!empty($redis) && is_object($redis)) {
       $data = [];
-      $total_hashrate = $redis->get('total_pool_hashrate_' . $step);
+      $total_hashrate = $redis->get($algo . '__total_pool_hashrate_' . $step);
 
       // We have the data cached
       if (!empty($total_hashrate)) {
@@ -397,7 +501,7 @@ AND workerid IN (SELECT id FROM workers WHERE algo=:algo AND id = :worker_id AND
       $data = $stmt->fetch(PDO::FETCH_ASSOC);
 
       // Cache for 5 mins
-      $redis->set('total_pool_hashrate_' . $step, $data['hashrate'], 300);
+      $redis->set($algo . '__total_pool_hashrate_' . $step, $data['hashrate'], 300);
     }
 
     print '<!–- total_pool_hashrate - return from mysql –>';
@@ -436,7 +540,7 @@ AND workerid IN (SELECT id FROM workers WHERE algo=:algo AND id = :worker_id AND
     // If we have redis connection try to load cached data first
     if (!empty($redis) && is_object($redis)) {
       $data = [];
-      $total_users_hashrate = json_decode($redis->get('total_users_hashrate_' . $step), TRUE);
+      $total_users_hashrate = json_decode($redis->get($algo . '_total_users_hashrate_' . $step), TRUE);
 
       // We have the data cached
       if (!empty($total_users_hashrate)) {
@@ -458,7 +562,7 @@ AND workerid IN (SELECT id FROM workers WHERE algo=:algo AND id = :worker_id AND
       $data = array_map('reset', $stmt->fetchAll(PDO::FETCH_GROUP|PDO::FETCH_ASSOC));
 
       // Cache for 5 mins
-      $redis->set('total_users_hashrate_' . $step, json_encode($data), 300);
+      $redis->set($algo . '_total_users_hashrate_' . $step, json_encode($data), 300);
     }
 
     print '<!–- total_users_hashrate ' . $step . ' - return from mysql –>';
@@ -489,18 +593,18 @@ AND workerid IN (SELECT id FROM workers WHERE algo=:algo AND id = :worker_id AND
   /**
    * Checks if we have active wallet
    */
-  public static function checkWallet() {
+  public static function checkWallet($coin_seo_name = FALSE) {
 
     // First check if we have something in get
     if (!empty($_GET['wallet'])) {
       // Update cookie
-      setcookie('wallet', $_GET['wallet'], time() + (86400 * 30 * 30), "/"); // 1 month
+      setcookie($coin_seo_name . '__wallet', $_GET['wallet'], time() + (86400 * 30 * 30), "/"); // 1 month
       return $_GET['wallet'];
     }
 
-    if(!empty($_COOKIE['wallet'])) {
+    if(!empty($_COOKIE[$coin_seo_name . '__wallet'])) {
       // We have cookie
-      return $_COOKIE['wallet'];
+      return $_COOKIE[$coin_seo_name . '__wallet'];
     }
 
     return FALSE;
@@ -509,11 +613,18 @@ AND workerid IN (SELECT id FROM workers WHERE algo=:algo AND id = :worker_id AND
   /**
    * Define pool fee
    * @param float $fee (percentage)
-   * @return float
+   * @return array
    */
   public static function getPoolFee($fee = 1.5) {
     return [
-      'bitcore' => 1.25
+      'bitcore' => 1.25,
+      'nist5' => 0.5,
+      'phi' => 0.5,
+      'neoscrypt' => 1,
+      'xevan' => 1,
+      'x16r' => 0.5,
+      'scrypt' => 1.25,
+      'x11' => 1
     ];
   }
 
@@ -701,34 +812,132 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
    * @param $data
    * @return array
    */
-  public static function _templateVariables($db, $route = null, $data = FALSE, $redis = FALSE) {
+  public static function _templateVariables($db = FALSE, $route = null, $data = FALSE, $redis = FALSE) {
 
-    $hashrates_30_min = minerHelper::getUserPoolHashrateStats($db, minerHelper::miner_getAlgos()[$data['coin_id']], 1800, $redis);
-    $hashrates_3_hours = minerHelper::getUserPoolHashrateStats($db, minerHelper::miner_getAlgos()[$data['coin_id']], 60 * 60 * 3, $redis);
-    $hashrates_24_hours = minerHelper::getUserPoolHashrateStats($db, minerHelper::miner_getAlgos()[$data['coin_id']], 60 * 60 * 24, $redis);
+    if (!empty($db)) {
+      $hashrates_30_min = minerHelper::getUserPoolHashrateStats($db, minerHelper::miner_getAlgos()[$data['coin_id']], 1800, $redis);
+      $hashrates_3_hours = minerHelper::getUserPoolHashrateStats($db, minerHelper::miner_getAlgos()[$data['coin_id']], 60 * 60 * 3, $redis);
+      $hashrates_24_hours = minerHelper::getUserPoolHashrateStats($db, minerHelper::miner_getAlgos()[$data['coin_id']], 60 * 60 * 24, $redis);
 
-    if (!empty($data['miner_address'])) {
+      if (!empty($data['miner_address'])) {
 
-      // Load the user (@TODO avoid loading on all pages?)
-      $user = self::getAccount($db, null, $data['miner_address']);
+        // Load the user (@TODO avoid loading on all pages?)
+        $user = self::getAccount($db, null, $data['miner_address']);
 
-      // User specific hashrate
-      if (!empty($hashrates_30_min[$user['id']])) {
-        $hashrate_user_30_min = $hashrates_30_min[$user['id']];
+        // User specific hashrate
+        if (!empty($hashrates_30_min[$user['id']])) {
+          $hashrate_user_30_min = $hashrates_30_min[$user['id']];
+        }
+
+        // User specific hashrate
+        if (!empty($hashrates_24_hours[$user['id']])) {
+          $hashrate_user_24_hours = $hashrates_24_hours[$user['id']];
+        }
+
       }
-
-      // User specific hashrate
-      if (!empty($hashrates_24_hours[$user['id']])) {
-        $hashrate_user_24_hours = $hashrates_24_hours[$user['id']];
-      }
-
     }
 
     switch ($route) {
       case 'index':
 
+        // General coin info
+        $network_info_bitcore = self::getNetworkInfo(1425, $redis);
+        $network_info_bulwark = self::getNetworkInfo(1426, $redis);
+        $network_info_lux = self::getNetworkInfo(1427, $redis);
+        $network_info_gobyte = self::getNetworkInfo(1428, $redis);
+        $network_info_bitsend = self::getNetworkInfo(1429, $redis);
+        $network_info_raven = self::getNetworkInfo(1430, $redis);
+        $network_info_megacoin = self::getNetworkInfo(1431, $redis);
+        $network_info_phantomx = self::getNetworkInfo(1432, $redis);
+
+        $conn_btx = include(__DIR__ . '/../config-bitcore.php');
+        $conn_bulwark = include(__DIR__ . '/../config-bulwark.php');
+        $conn_lux = include(__DIR__ . '/../config-lux.php');
+        $conn_gobyte = include(__DIR__ . '/../config-gobyte.php');
+        $conn_bitsend = include(__DIR__ . '/../config-bitsend.php');
+        $conn_raven = include(__DIR__ . '/../config-raven.php');
+        $conn_megacoin = include(__DIR__ . '/../config-megacoin.php');
+        $conn_phantomx = include(__DIR__ . '/../config-phantomx.php');
+
+        $pool_hashrate_bitcore = minerHelper::getPoolHashrateStats($conn_btx, minerHelper::miner_getAlgos()[1425], 1800, $redis);
+        $pool_hashrate_bulwark = minerHelper::getPoolHashrateStats($conn_bulwark, minerHelper::miner_getAlgos()[1426], 1800, $redis);
+        $pool_hashrate_lux = minerHelper::getPoolHashrateStats($conn_lux, minerHelper::miner_getAlgos()[1427], 1800, $redis);
+        $pool_hashrate_gobyte = minerHelper::getPoolHashrateStats($conn_gobyte, minerHelper::miner_getAlgos()[1428], 1800, $redis);
+        $pool_hashrate_bitsend = minerHelper::getPoolHashrateStats($conn_bitsend, minerHelper::miner_getAlgos()[1429], 1800, $redis);
+        $pool_hashrate_raven = minerHelper::getPoolHashrateStats($conn_raven, minerHelper::miner_getAlgos()[1430], 1800, $redis);
+        $pool_hashrate_megacoin = minerHelper::getPoolHashrateStats($conn_megacoin, minerHelper::miner_getAlgos()[1431], 1800, $redis);
+        $pool_hashrate_phantomx = minerHelper::getPoolHashrateStats($conn_phantomx, minerHelper::miner_getAlgos()[1432], 1800, $redis);
+
+        $total_miners_bitcore = self::countMiners($conn_btx,1425)['total_count'] ?? 0;
+        $total_miners_bulwark = self::countMiners($conn_bulwark,1426)['total_count'] ?? 0;
+        $total_miners_lux = self::countMiners($conn_lux,1427)['total_count'] ?? 0;
+        $total_miners_gobyte = self::countMiners($conn_gobyte,1428)['total_count'] ?? 0;
+        $total_miners_bitsend = self::countMiners($conn_bitsend,1429)['total_count'] ?? 0;
+        $total_miners_raven = self::countMiners($conn_raven,1430)['total_count'] ?? 0;
+        $total_miners_megacoin = self::countMiners($conn_megacoin,1431)['total_count'] ?? 0;
+        $total_miners_phantomx = self::countMiners($conn_phantomx,1432)['total_count'] ?? 0;
+
+        return [
+          'total_hashrate_bitcore_gh' => $network_info_bitcore ? $network_info_bitcore['hashrate_gh'] : 0,
+          'total_hashrate_bulwark_gh' => $network_info_bulwark ? $network_info_bulwark['hashrate_gh'] : 0,
+          'total_hashrate_lux_gh' => $network_info_lux ? $network_info_lux['hashrate_gh'] : 0,
+          'total_hashrate_gobyte_gh' => $network_info_gobyte ? $network_info_gobyte['hashrate_gh'] : 0,
+          'total_hashrate_bitsend_gh' => $network_info_bitsend ? $network_info_bitsend['hashrate_gh'] : 0,
+          'total_hashrate_raven_gh' => $network_info_raven ? $network_info_raven['hashrate_gh'] : 0,
+          'total_hashrate_megacoin_gh' => $network_info_megacoin ? $network_info_megacoin['hashrate_gh'] : 0,
+          'total_hashrate_phantomx_gh' => $network_info_phantomx ? $network_info_phantomx['hashrate_gh'] : 0,
+          'difficulty_bitcore' => $network_info_bitcore ? $network_info_bitcore['difficulty'] : 0,
+          'difficulty_bulwark' => $network_info_bulwark ? $network_info_bulwark['difficulty'] : 0,
+          'difficulty_lux' => $network_info_lux ? $network_info_lux['difficulty'] : 0,
+          'difficulty_gobyte' => $network_info_gobyte ? $network_info_gobyte['difficulty'] : 0,
+          'difficulty_bitsend' => $network_info_bitsend ? $network_info_bitsend['difficulty'] : 0,
+          'difficulty_raven' => $network_info_raven ? $network_info_raven['difficulty'] : 0,
+          'difficulty_megacoin' => $network_info_megacoin ? $network_info_megacoin['difficulty'] : 0,
+          'difficulty_phantomx' => $network_info_phantomx ? $network_info_phantomx['difficulty'] : 0,
+          'pool_hashrate_bitcore' => $pool_hashrate_bitcore ? $pool_hashrate_bitcore['hashrate'] : 0,
+          'pool_hashrate_bulwark' => $pool_hashrate_bulwark ? $pool_hashrate_bulwark['hashrate'] : 0,
+          'pool_hashrate_lux' => $pool_hashrate_lux ? $pool_hashrate_lux['hashrate'] : 0,
+          'pool_hashrate_gobyte' => $pool_hashrate_gobyte ? $pool_hashrate_gobyte['hashrate'] : 0,
+          'pool_hashrate_bitsend' => $pool_hashrate_bitsend ? $pool_hashrate_bitsend['hashrate'] : 0,
+          'pool_hashrate_raven' => $pool_hashrate_raven ? $pool_hashrate_raven['hashrate'] : 0,
+          'pool_hashrate_megacoin' => $pool_hashrate_megacoin ? $pool_hashrate_megacoin['hashrate'] : 0,
+          'pool_hashrate_phantomx' => $pool_hashrate_phantomx ? $pool_hashrate_phantomx['hashrate'] : 0,
+          'total_miners_bitcore' => $total_miners_bitcore,
+          'total_miners_bulwark' => $total_miners_bulwark,
+          'total_miners_lux' => $total_miners_lux,
+          'total_miners_gobyte' => $total_miners_gobyte,
+          'total_miners_bitsend' => $total_miners_bitsend,
+          'total_miners_raven' => $total_miners_raven,
+          'total_miners_megacoin' => $total_miners_megacoin,
+          'total_miners_phantomx' => $total_miners_phantomx,
+          'seo_site_name' => $data['seo_site_name'],
+          'gpus' => json_encode(
+            [
+              'btx' => ['7.5' => 'GTX 1050ti', '13.0' => 'GTX 1060', '20.0' => 'GTX 1070', '31.0' => 'GTX 1080ti', '12.0' => 'RX 480', '12.5' => 'RX 580'],
+              'bwk' => ['16.0' => 'GTX 1050ti', '32.0' => 'GTX 1060', '47.0' => 'GTX 1070', '80.0' => 'GTX 1080ti', '20.0' => 'RX 480', '22.0' => 'RX 580'],
+              'lux' => ['6.0' => 'GTX 1050ti', '12.0' => 'GTX 1060', '19.0' => 'GTX 1070', '34.0' => 'GTX 1080ti', '15.0' => 'RX 480', '15.5' => 'RX 580'],
+              'bsd' => ['1.2' => 'GTX 1050ti', '2.3' => 'GTX 1060', '3.2' => 'GTX 1070', '5.4' => 'GTX 1080ti'],
+              'rvn' => ['4.2' => 'GTX 1050ti', '7.0' => 'GTX 1060', '8.5' => 'GTX 1070', '16.0' => 'GTX 1080ti', '5.0' => 'RX 480', '5.2' => 'RX 580'],
+            ]
+          ),
+          'estimated_earnings_coins' => json_encode(minerHelper::getCoinEstimates($redis)),
+        ];
+        break;
+      case 'dashboard':
+
         // If we have miner address
         if (!empty($data['miner_address'])) {
+
+          $block_rewards = [];
+          $block_rewards[1425] = 3.125;
+          $block_rewards[1426] = 21.875;
+          $block_rewards[1427] = 10;
+          $block_rewards[1428] = 7.5;
+          $block_rewards[1429] = 5;
+          $block_rewards[1430] = 5000;
+          $block_rewards[1431] = 6.25;
+          $block_rewards[1432] = 23;
+
           // Get workers for miner address
           $workers = self::getWorkers($db, $data['miner_address']);
           foreach ($workers as $key => $worker) {
@@ -739,6 +948,13 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
             $workers[$key]['hashrate_15_mins'] = self::Itoa2($worker_hashrate_15_mins['hashrate']) . 'h/s';
           }
 
+          // Estimated earnings
+          $total_shares = self::sumTotalShares($db, self::miner_getAlgos()[$data['coin_id']]);
+          $total_user_shares = self::sumTotalShares($db, self::miner_getAlgos()[$data['coin_id']], $user['id']);
+          $user_round_share = $total_user_shares['total_user_hash'] / $total_shares['total_user_hash'] * 100;
+          $user_estimated_earning = $block_rewards[$data['coin_id']] / 100 * $user_round_share;
+
+          // Immature balance
           $immature_balance = self::getImmatureBalance($db, $data['coin_id'], $user['id']);
           $pending_balance = self::getPendingBalance($db, $data['coin_id'], $user['id']);
 
@@ -752,7 +968,11 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
           // Payouts
           $payouts = self::getPayouts($db, $data['coin_id'], $user['id']);
           $total_paid = self::getTotalPayout($db, $data['coin_id'], $user['id']);
+
         }
+
+        // Network info
+        $network_info = self::getNetworkInfo($data['coin_id'], $redis);
 
         return [
           'workers' => $workers ?? [],
@@ -762,6 +982,8 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
           'total_count_workers' => self::countWorkers($db, $data['coin_id']) ?? FALSE,
           'min_payout' => self::miner_getMinPayouts()[self::miner_getAlgos()[$data['coin_id']]],
           'pool_fee' => self::getPoolFee()[self::miner_getAlgos()[$data['coin_id']]],
+          'round_share' => $user_round_share,
+          'estimated_earning' => $user_estimated_earning,
           'immature_balance' => $immature_balance ?? FALSE,
           'pending_balance' => $pending_balance ?? FALSE,
           'earnings_last_hour' => $earnings_last_hour ?? FALSE,
@@ -773,7 +995,11 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
           'total_paid' => $total_paid ?? FALSE,
           'hashrate_user_30_min' => $hashrate_user_30_min ?? FALSE,
           'hashrate_user_24_hours' => $hashrate_user_24_hours ?? FALSE,
-          'load_charts' => TRUE
+          'coin_seo_name' => $data['coin_seo_name'],
+          'stratum_connections' => self::countStratumConnections($db) ?? FALSE,
+          'difficulty' => $network_info ? $network_info['difficulty'] : 0,
+          'load_charts' => TRUE,
+          'seo_site_name' => $data['seo_site_name']
         ];
         break;
       case 'miners':
@@ -786,6 +1012,8 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
           'hashrates_3_hours' => $hashrates_3_hours,
           'hashrate_user_30_min' => $hashrate_user_30_min ?? FALSE,
           'hashrate_user_24_hours' => $hashrate_user_24_hours ?? FALSE,
+          'coin_seo_name' => $data['coin_seo_name'],
+          'seo_site_name' => $data['seo_site_name'],
           'load_miner_charts' => TRUE
         ];
         break;
@@ -798,6 +1026,8 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
           'last_found' => self::lastFoundBlockTime($blocks[0]['time']),
           'hashrate_user_30_min' => $hashrate_user_30_min ?? FALSE,
           'hashrate_user_24_hours' => $hashrate_user_24_hours ?? FALSE,
+          'coin_seo_name' => $data['coin_seo_name'],
+          'seo_site_name' => $data['seo_site_name'],
           'load_blocks_charts' => TRUE
         ];
         break;
@@ -814,7 +1044,9 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
           'pool_fee_amount' => $block_reward['amount'] - self::takePoolFee($block_reward['amount'], self::miner_getAlgos()[$data['coin_id']]),
           'pool_fee_percent' => self::getPoolFee()[self::miner_getAlgos()[$data['coin_id']]],
           'hashrate_user_30_min' => $hashrate_user_30_min ?? FALSE,
-          'hashrate_user_24_hours' => $hashrate_user_24_hours ?? FALSE
+          'hashrate_user_24_hours' => $hashrate_user_24_hours ?? FALSE,
+          'coin_seo_name' => $data['coin_seo_name'],
+          'seo_site_name' => $data['seo_site_name']
         ];
         break;
     }
