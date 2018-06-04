@@ -373,7 +373,7 @@ function sendPayouts($db, $coin_id = 1425) {
   $nextFullMin = date("i", $now + (60 - $now % 60));
 
   $hours_to_process = ['00', '04', '08', '12', '18', '20'];
-  $minutes_to_process = ['20', '30', '40', '46'];
+  $minutes_to_process = ['20', '30', '40', '58'];
 
   if (in_array($nextFullHour, $hours_to_process) && in_array($nextFullMin, $minutes_to_process)) {
     print 'Activate extra payouts' . "\n";
@@ -462,7 +462,6 @@ function sendExtraPayouts($db, $coin_id = 1425, $extra_payout = FALSE) {
         // Deduct user balance
         $stmt = $db->prepare("UPDATE accounts SET balance = 0 WHERE id = :userid");
         $stmt->execute([
-          ':payout' => $user_account['balance'],
           ':userid' => $user_account['id']
         ]);
       }
