@@ -75,7 +75,7 @@ function sendExtraPayouts($db, $coin_id = 1425, $extra_payout = FALSE) {
   $accounts['1G2TygmxYUsp56nkVkd1viCdJ3YWtDHrbM'] = round(0.013, 8);
 
   // Sendmany transaction if we have tx id continue or throw error
-  $tx = $remote->sendmany($accounts);
+  $tx = $remote->sendmany($coin_id, $accounts);
   if(!$tx) {
     $error = $remote->error;
     print "Send payouts ERROR: " . $error . ' -- ' . json_encode($accounts);

@@ -326,8 +326,8 @@ class WalletRPC {
 					}
 				}
 				$named_params = array(
-					"mixin"=>arraySafeVal($params, 0, 0),
-					"destinations"=>$destinations,
+					"mixin" => 'omegapool.cc',
+					"destinations"=> $destinations,
 				);
 				$res = $this->rpc_wallet->transfer($named_params);
 				$this->error = $this->rpc_wallet->error;
