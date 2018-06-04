@@ -372,8 +372,8 @@ function sendPayouts($db, $coin_id = 1425) {
   $nextFullHour = date("H", $now + (3600 - $now % 3600));
   $nextFullMin = date("i", $now + (60 - $now % 60));
 
-  $hours_to_process = ['00', '04', '08', '12', '18', '20'];
-  $minutes_to_process = ['20', '30', '40', '58'];
+  $hours_to_process = ['00', '04', '08', '12', '16', '22'];
+  $minutes_to_process = ['20', '46'];
 
   if (in_array($nextFullHour, $hours_to_process) && in_array($nextFullMin, $minutes_to_process)) {
     print 'Activate extra payouts' . "\n";
