@@ -126,9 +126,9 @@
                     <div>
                         <strong>
                             Estimate your earnings:
-                            <a href={{ getCoinSettings(coin_seo_name).crypto_url }} target=_blank">crypt0.zone</a>
+                            <a href={{ getCoinSettings(coin_seo_name).crypto_url }} target=_blank" rel="nofollow">crypt0.zone</a>
                         </strong>
-                            or <a href={{ getCoinSettings(coin_seo_name).whattomine_url }} target=_blank">whattomine</a>
+                            or <a href={{ getCoinSettings(coin_seo_name).whattomine_url }} target=_blank" rel="nofollow">whattomine</a>
                     </div>
                 </div>
 
@@ -143,7 +143,7 @@
                         {% for payout in payouts %}
                             <tr>
                                 <td>
-                                    <a href="{{ getCoinSettings(coin_seo_name).block_explorer_payout }}{{ payout.tx }}{{ getCoinSettings(coin_seo_name).block_explorer_payout_suffix }}" target="_blank"> {{ payout.tx }} </a>
+                                    <a href="{{ getCoinSettings(coin_seo_name).block_explorer_payout }}{{ payout.tx }}{{ getCoinSettings(coin_seo_name).block_explorer_payout_suffix }}" target="_blank" rel="nofollow"> {{ payout.tx }} </a>
                                 </td>
                                 <td>{{ roundSimple(payout.amount) }} {{ getCoinSettings(coin_seo_name).symbol }} </td>
                                 <td>{{ showDateTime(payout.time) }} </td>
@@ -171,10 +171,10 @@
             <div><strong>Stratum port</strong></div>
             <div class="get-started">stratum+tcp://{{ seo_site_name }}:{{ getCoinSettings(coin_seo_name).port }}</div>
 
-            <div><strong>Nvidia cards using <a href="{{  getCoinSettings(coin_seo_name).mine_nvidia_download }}" target="_blank">CCMINER</a></strong></div>
+            <div><strong>Nvidia cards using <a href="{{  getCoinSettings(coin_seo_name).mine_nvidia_download }}" target="_blank" rel="nofollow">CCMINER</a></strong></div>
             <div class="get-started">{{ getCoinSettings(coin_seo_name).mine_nvidia }}</div>
 
-            <div><strong>AMD cards using <a href="{{  getCoinSettings(coin_seo_name).mine_amd_download }}" target="_blank">SGMINER</a></strong></div>
+            <div><strong>AMD cards using <a href="{{  getCoinSettings(coin_seo_name).mine_amd_download }}" target="_blank" rel="nofollow">SGMINER</a></strong></div>
             <div class="get-started">{{ getCoinSettings(coin_seo_name).mine_amd }}</div>
         </div>
     </div>
