@@ -99,6 +99,7 @@
                             <th>ID</th>
                             <th>Miner version</th>
                             <th>Hashrate (5min average / 15min average)</th>
+                            <th>Last share</th>
                         </tr>
 
                         {% for worker in workers %}
@@ -106,6 +107,7 @@
                                 <td> {{ worker.worker|default(worker.id) }} </td>
                                 <td> {{ worker.version }} </td>
                                 <td> {{ worker.hashrate }} / {{ worker.hashrate_15_mins }} </td>
+                                <td> {{ worker.last_share }} ago</td>
                             </tr>
                         {% endfor %}
 

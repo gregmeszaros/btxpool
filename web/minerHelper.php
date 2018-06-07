@@ -258,7 +258,7 @@ class minerHelper {
    */
   public static function getWorkers($db, $miner_address = "") {
     if (!empty($miner_address)) {
-      $stmt = $db->prepare("SELECT * FROM workers where name = :miner_address");
+      $stmt = $db->prepare("SELECT w.*, MAX(s.time) as last_share FROM workers w LEFT JOIN shares s ON s.workerid = w.id WHERE w.name = :miner_address GROUP BY w.id");
       $stmt->execute([
         ':miner_address' => $miner_address
       ]);
@@ -944,6 +944,7 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
             $workers[$key]['worker'] = $worker['worker'];
             $workers[$key]['hashrate'] = self::Itoa2($worker_hashrate['hashrate']) . 'h/s';
             $workers[$key]['hashrate_15_mins'] = self::Itoa2($worker_hashrate_15_mins['hashrate']) . 'h/s';
+            $workers[$key]['last_share'] = self::lastFoundBlockTime($worker['last_share']);
           }
 
           // Estimated earnings
