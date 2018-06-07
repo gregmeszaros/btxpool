@@ -17,6 +17,7 @@
                     <th>Block reward</th>
                     <th>Time found</th>
                     <th>Confirmations</th>
+                    <th>Block finder</th>
                 </tr>
 
                 {% for block in blocks %}
@@ -25,6 +26,7 @@
                         <td> {{ block.amount }} {{ getCoinSettings(coin_seo_name).symbol }} </td>
                         <td> {{ showDateTime(block.time) }} </td>
                         <td> {{ formatConfirmations(block.confirmations, block.category) }} </td>
+                        <td><a href="index.php?coin={{ coin_seo_name }}&page=dashboard&wallet={{ block.username }}">{{ block.username }}</a></td>
                     </tr>
                 {% endfor %}
 
