@@ -482,7 +482,6 @@ AND workerid IN (SELECT id FROM workers WHERE algo=:algo AND id = :worker_id AND
       // We have the data cached
       if (!empty($total_hashrate)) {
         $data['hashrate'] = $total_hashrate;
-        print '<!–- total_pool_hashrate - return from redis –>';
         return $data;
       }
     }
@@ -502,7 +501,6 @@ AND workerid IN (SELECT id FROM workers WHERE algo=:algo AND id = :worker_id AND
       $redis->set($algo . '__total_pool_hashrate_' . $step, $data['hashrate'], 300);
     }
 
-    print '<!–- total_pool_hashrate - return from mysql –>';
     // No cache just pure sql
     return $data ?? $stmt->fetch(PDO::FETCH_ASSOC);
   }
