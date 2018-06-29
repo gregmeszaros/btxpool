@@ -19,7 +19,7 @@ class minerHelper {
         'lux' => 'https://chainz.cryptoid.info/lux/',
         'gobyte' => 'https://explorer.gobyte.network/',
         'bitsend' => 'https://chainz.cryptoid.info/bsd/',
-        'raven' => 'http://explorer.threeeyed.info/',
+        'raven' => 'https://ravencoin.network/',
         'megacoin' => 'https://chainz.cryptoid.info/mec/',
         'phantomx' => 'https://altmix.org/coins/21-PhaNtomX/explorer/'
       ];
@@ -927,7 +927,7 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
           $block_rewards = [];
           $block_rewards[1425] = 3.125;
           $block_rewards[1426] = 21.875;
-          $block_rewards[1427] = 10;
+          $block_rewards[1427] = 8;
           $block_rewards[1428] = 7.5;
           $block_rewards[1429] = 5;
           $block_rewards[1430] = 5000;
