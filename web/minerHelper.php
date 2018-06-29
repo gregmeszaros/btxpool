@@ -341,7 +341,7 @@ class minerHelper {
   public static function getBlocks($db, $coin_id, $miner_address = "") {
     // @TODO -> if we have miner address join with earnings!
     // @TODO -> cache the call for 2 mins
-    $stmt = $db->prepare("SELECT b.id, b.coin_id, b.height, b.confirmations, b.time, b.userid, b.amount, b.category, ac.username FROM blocks b INNER JOIN accounts ac ON b.userid = ac.id WHERE b.coin_id = :coin_id ORDER BY b.height DESC LIMIT 0, 50");
+    $stmt = $db->prepare("SELECT b.id, b.coin_id, b.height, b.confirmations, b.time, b.userid, b.amount, b.category, ac.username FROM blocks b INNER JOIN accounts ac ON b.userid = ac.id WHERE b.coin_id = :coin_id ORDER BY b.time DESC LIMIT 0, 50");
     $stmt->execute([
       ':coin_id' => $coin_id
     ]);
