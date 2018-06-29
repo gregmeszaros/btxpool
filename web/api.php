@@ -159,11 +159,11 @@ else {
     $data['lux'] = [
       'symbol' => 'LUX',
       'name' => 'Luxcoin',
-      'algo' => 'phi',
+      'algo' => 'phi2',
       'port' => ['8003'],
       'pool_hashrate' => $pool_hashrate_lux['hashrate'],
       'active_miners' => $total_miners_lux,
-      'fee' => minerHelper::getPoolFee()['phi']
+      'fee' => minerHelper::getPoolFee()['phi2']
     ];
 
     $data['gbx'] = [

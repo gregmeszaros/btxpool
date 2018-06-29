@@ -172,8 +172,8 @@ $getCoinSettings = new Twig_SimpleFunction('getCoinSettings', function ($coin_se
       break;
     case 'lux':
       $settings['port'] = 8003;
-      $settings['algo'] = 'phi';
-      $settings['algosgminer'] = 'phi';
+      $settings['algo'] = 'phi2';
+      $settings['algosgminer'] = 'phi2';
       $settings['intensity'] = 21;
       $settings['example_pass'] = 'x';
       $settings['symbol'] = 'LUX';
@@ -181,10 +181,10 @@ $getCoinSettings = new Twig_SimpleFunction('getCoinSettings', function ($coin_se
       $settings['block_explorer_payout_suffix'] = '.htm';
       $settings['crypto_url'] = 'https://crypt0.zone/calculator/details/LUX';
       $settings['whattomine_url'] = 'https://whattomine.com/coins/212-lux-phi1612';
-      $settings['mine_nvidia_download'] = 'https://github.com/anorganix/ccminer-phi/releases';
-      $settings['mine_nvidia'] = 'ccminer -a phi -o stratum+tcp://' . $seo_site_name . ':8003 -u your_lux_address -p x';
+      $settings['mine_nvidia_download'] = 'https://github.com/tpruvot/ccminer/releases/tag/2.3-tpruvot';
+      $settings['mine_nvidia'] = 'ccminer -a phi2 -o stratum+tcp://' . $seo_site_name . ':8003 -u your_lux_address -p x';
       $settings['mine_amd_download'] = 'https://github.com/216k155/sgminer-phi1612-Implemented/releases';
-      $settings['mine_amd'] = 'sgminer --kernel phi -o stratum+tcp://' . $seo_site_name . ':8003 -u your_lux_address -p x -I 23';
+      $settings['mine_amd'] = 'sgminer --kernel phi2 -o stratum+tcp://' . $seo_site_name . ':8003 -u your_lux_address -p x -I 23';
       return $settings;
       break;
     case 'gobyte':

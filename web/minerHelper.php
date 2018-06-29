@@ -142,7 +142,7 @@ class minerHelper {
     return [
       '1425' => 'bitcore',
       '1426' => 'nist5',
-      '1427' => 'phi',
+      '1427' => 'phi2',
       '1428' => 'neoscrypt',
       '1429' => 'xevan',
       '1430' => 'x16r',
@@ -160,7 +160,7 @@ class minerHelper {
     return [
       'bitcore' => 0.25,
       'nist5' => 0.1,
-      'phi' => 0.1,
+      'phi2' => 0.1,
       'neoscrypt' => 0.1,
       'xevan' => 0.1,
       'x16r' => 0.1,
@@ -615,7 +615,7 @@ AND workerid IN (SELECT id FROM workers WHERE algo=:algo AND id = :worker_id AND
     return [
       'bitcore' => 1.25,
       'nist5' => 0.5,
-      'phi' => 0.5,
+      'phi2' => 0.5,
       'neoscrypt' => 1,
       'xevan' => 1,
       'x16r' => 0.5,
