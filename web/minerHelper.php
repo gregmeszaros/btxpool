@@ -703,6 +703,7 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
     $interval = self::miner_hashrate_step($step);
     $delay = time()-$interval;
 
+    // hint -> ALTER TABLE earnings ADD INDEX earnings_list (userid, coinid, create_time);
     $stmt = $db->prepare("SELECT userid, SUM(amount) AS total_earnings FROM earnings WHERE userid = :userid AND coinid = :coinid AND create_time > :delay");
     $stmt->execute([
       ':userid' => $user_id,
