@@ -620,7 +620,7 @@ AND workerid IN (SELECT id FROM workers WHERE algo=:algo AND id = :worker_id AND
       'xevan' => 1,
       'x16r' => 0.5,
       'scrypt' => 1.25,
-      'lyra2z' => 0.8
+      'lyra2z' => 0.5
     ];
   }
 
@@ -933,7 +933,7 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
           $block_rewards[1429] = 5;
           $block_rewards[1430] = 5000;
           $block_rewards[1431] = 6.25;
-          $block_rewards[1432] = 23;
+          $block_rewards[1432] = 5;
 
           // Get workers for miner address
           $workers = self::getWorkers($db, $data['miner_address']);
