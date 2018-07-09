@@ -69,9 +69,9 @@ switch ($coin_seo_name) {
     $coin_id = 1431;
     $conn = include(__DIR__ . '/../config-megacoin.php');
     break;
-  case "phantomx":
+  case "mano":
     $coin_id = 1432;
-    $conn = include(__DIR__ . '/../config-phantomx.php');
+    $conn = include(__DIR__ . '/../config-mano.php');
     break;
   default:
     $coin_id = FALSE;
@@ -255,21 +255,21 @@ $getCoinSettings = new Twig_SimpleFunction('getCoinSettings', function ($coin_se
       $settings['mine_amd'] = 'sgminer --kernel scrypt -o stratum+tcp://' . $seo_site_name . ':8007 -u your_megacoin_address.rig_name -p x';
       return $settings;
       break;
-    case 'phantomx':
+    case 'mano':
       $settings['port'] = 8008;
-      $settings['algo'] = 'x11';
-      $settings['algosgminer'] = 'x11';
+      $settings['algo'] = 'lyra2z';
+      $settings['algosgminer'] = 'lyra2z';
       $settings['intensity'] = 21;
       $settings['example_pass'] = 'x';
-      $settings['symbol'] = 'PNX';
-      $settings['block_explorer_payout'] = 'https://altmix.org/coins/21-PhaNtomX/explorer/transaction/';
+      $settings['symbol'] = 'MANO';
+      $settings['block_explorer_payout'] = 'https://explorer.manocoin.org/tx/';
       $settings['block_explorer_payout_suffix'] = '';
       $settings['crypto_url'] = '';
       $settings['whattomine_url'] = '';
       $settings['mine_nvidia_download'] = 'https://github.com/tpruvot/ccminer/releases';
-      $settings['mine_nvidia'] = 'ccminer-x64 -a x11 -o stratum+tcp://' . $seo_site_name . ':8008 -u your_phantomx_address.rig_name -p x -i 21';
+      $settings['mine_nvidia'] = 'ccminer-x64 -a lyra2z -o stratum+tcp://' . $seo_site_name . ':8008 -u your_manocoin_address.rig_name -p x -i 21';
       $settings['mine_amd_download'] = 'https://github.com/aceneun/sgminer-gm-x16r';
-      $settings['mine_amd'] = 'sgminer --kernel x11 -o stratum+tcp://' . $seo_site_name . ':8008 -u your_phantomx_address.rig_name -p x';
+      $settings['mine_amd'] = 'sgminer --kernel lyra2z -o stratum+tcp://' . $seo_site_name . ':8008 -u your_manocoin_address.rig_name -p x';
       return $settings;
       break;
   }

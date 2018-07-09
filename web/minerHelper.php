@@ -21,7 +21,7 @@ class minerHelper {
         'bitsend' => 'https://chainz.cryptoid.info/bsd/',
         'raven' => 'https://ravencoin.network/',
         'megacoin' => 'https://chainz.cryptoid.info/mec/',
-        'phantomx' => 'https://altmix.org/coins/21-PhaNtomX/explorer/'
+        'mano' => 'https://explorer.manocoin.org/'
       ];
 
       $explorer = $main_blockchain_url[$coin];
@@ -147,7 +147,7 @@ class minerHelper {
       '1429' => 'xevan',
       '1430' => 'x16r',
       '1431' => 'scrypt',
-      '1432' => 'x11'
+      '1432' => 'lyra2z'
     ];
   }
 
@@ -165,7 +165,7 @@ class minerHelper {
       'xevan' => 0.1,
       'x16r' => 0.1,
       'scrypt' => 1,
-      'x11' => 1
+      'lyra2z' => 0.1
     ];
   }
 
@@ -620,7 +620,7 @@ AND workerid IN (SELECT id FROM workers WHERE algo=:algo AND id = :worker_id AND
       'xevan' => 1,
       'x16r' => 0.5,
       'scrypt' => 1.25,
-      'x11' => 1
+      'lyra2z' => 0.8
     ];
   }
 
@@ -845,7 +845,7 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
         $network_info_bitsend = self::getNetworkInfo(1429, $redis);
         $network_info_raven = self::getNetworkInfo(1430, $redis);
         $network_info_megacoin = self::getNetworkInfo(1431, $redis);
-        $network_info_phantomx = self::getNetworkInfo(1432, $redis);
+        $network_info_mano = self::getNetworkInfo(1432, $redis);
 
         $conn_btx = include(__DIR__ . '/../config-bitcore.php');
         $conn_bulwark = include(__DIR__ . '/../config-bulwark.php');
@@ -854,7 +854,7 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
         $conn_bitsend = include(__DIR__ . '/../config-bitsend.php');
         $conn_raven = include(__DIR__ . '/../config-raven.php');
         $conn_megacoin = include(__DIR__ . '/../config-megacoin.php');
-        $conn_phantomx = include(__DIR__ . '/../config-phantomx.php');
+        $conn_mano = include(__DIR__ . '/../config-mano.php');
 
         $pool_hashrate_bitcore = minerHelper::getPoolHashrateStats($conn_btx, minerHelper::miner_getAlgos()[1425], 1800, $redis);
         $pool_hashrate_bulwark = minerHelper::getPoolHashrateStats($conn_bulwark, minerHelper::miner_getAlgos()[1426], 1800, $redis);
@@ -863,7 +863,7 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
         $pool_hashrate_bitsend = minerHelper::getPoolHashrateStats($conn_bitsend, minerHelper::miner_getAlgos()[1429], 1800, $redis);
         $pool_hashrate_raven = minerHelper::getPoolHashrateStats($conn_raven, minerHelper::miner_getAlgos()[1430], 1800, $redis);
         $pool_hashrate_megacoin = minerHelper::getPoolHashrateStats($conn_megacoin, minerHelper::miner_getAlgos()[1431], 1800, $redis);
-        $pool_hashrate_phantomx = minerHelper::getPoolHashrateStats($conn_phantomx, minerHelper::miner_getAlgos()[1432], 1800, $redis);
+        $pool_hashrate_mano = minerHelper::getPoolHashrateStats($conn_mano, minerHelper::miner_getAlgos()[1432], 1800, $redis);
 
         $total_miners_bitcore = self::countMiners($conn_btx,1425)['total_count'] ?? 0;
         $total_miners_bulwark = self::countMiners($conn_bulwark,1426)['total_count'] ?? 0;
@@ -872,7 +872,7 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
         $total_miners_bitsend = self::countMiners($conn_bitsend,1429)['total_count'] ?? 0;
         $total_miners_raven = self::countMiners($conn_raven,1430)['total_count'] ?? 0;
         $total_miners_megacoin = self::countMiners($conn_megacoin,1431)['total_count'] ?? 0;
-        $total_miners_phantomx = self::countMiners($conn_phantomx,1432)['total_count'] ?? 0;
+        $total_miners_mano = self::countMiners($conn_mano,1432)['total_count'] ?? 0;
 
         return [
           'total_hashrate_bitcore_gh' => $network_info_bitcore ? $network_info_bitcore['hashrate_gh'] : 0,
@@ -882,7 +882,7 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
           'total_hashrate_bitsend_gh' => $network_info_bitsend ? $network_info_bitsend['hashrate_gh'] : 0,
           'total_hashrate_raven_gh' => $network_info_raven ? $network_info_raven['hashrate_gh'] : 0,
           'total_hashrate_megacoin_gh' => $network_info_megacoin ? $network_info_megacoin['hashrate_gh'] : 0,
-          'total_hashrate_phantomx_gh' => $network_info_phantomx ? $network_info_phantomx['hashrate_gh'] : 0,
+          'total_hashrate_mano_gh' => $network_info_mano ? $network_info_mano['hashrate_gh'] : 0,
           'difficulty_bitcore' => $network_info_bitcore ? $network_info_bitcore['difficulty'] : 0,
           'difficulty_bulwark' => $network_info_bulwark ? $network_info_bulwark['difficulty'] : 0,
           'difficulty_lux' => $network_info_lux ? $network_info_lux['difficulty'] : 0,
@@ -890,7 +890,7 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
           'difficulty_bitsend' => $network_info_bitsend ? $network_info_bitsend['difficulty'] : 0,
           'difficulty_raven' => $network_info_raven ? $network_info_raven['difficulty'] : 0,
           'difficulty_megacoin' => $network_info_megacoin ? $network_info_megacoin['difficulty'] : 0,
-          'difficulty_phantomx' => $network_info_phantomx ? $network_info_phantomx['difficulty'] : 0,
+          'difficulty_mano' => $network_info_mano ? $network_info_mano['difficulty'] : 0,
           'pool_hashrate_bitcore' => $pool_hashrate_bitcore ? $pool_hashrate_bitcore['hashrate'] : 0,
           'pool_hashrate_bulwark' => $pool_hashrate_bulwark ? $pool_hashrate_bulwark['hashrate'] : 0,
           'pool_hashrate_lux' => $pool_hashrate_lux ? $pool_hashrate_lux['hashrate'] : 0,
@@ -898,7 +898,7 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
           'pool_hashrate_bitsend' => $pool_hashrate_bitsend ? $pool_hashrate_bitsend['hashrate'] : 0,
           'pool_hashrate_raven' => $pool_hashrate_raven ? $pool_hashrate_raven['hashrate'] : 0,
           'pool_hashrate_megacoin' => $pool_hashrate_megacoin ? $pool_hashrate_megacoin['hashrate'] : 0,
-          'pool_hashrate_phantomx' => $pool_hashrate_phantomx ? $pool_hashrate_phantomx['hashrate'] : 0,
+          'pool_hashrate_mano' => $pool_hashrate_mano ? $pool_hashrate_mano['hashrate'] : 0,
           'total_miners_bitcore' => $total_miners_bitcore,
           'total_miners_bulwark' => $total_miners_bulwark,
           'total_miners_lux' => $total_miners_lux,
@@ -906,7 +906,7 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
           'total_miners_bitsend' => $total_miners_bitsend,
           'total_miners_raven' => $total_miners_raven,
           'total_miners_megacoin' => $total_miners_megacoin,
-          'total_miners_phantomx' => $total_miners_phantomx,
+          'total_miners_mano' => $total_miners_mano,
           'seo_site_name' => $data['seo_site_name'],
           'gpus' => json_encode(
             [

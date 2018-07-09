@@ -60,7 +60,7 @@ function updatePoolHashrate($db) {
     // Add stats entry if we have at least 10 entries from each active miner (when block is found the shares are reset causing stats issues)
     $active_miners = minerHelper::countMiners($db, $algo_key)['total_count'];
 
-    if ($tt_share_check['total_share_count'] > ($active_miners * 15)) {
+    if ($tt_share_check['total_share_count'] > ($active_miners * 7)) {
 
       $pool_rate = minerHelper::getPoolHashrate($db, $algo);
 
@@ -183,9 +183,11 @@ function updateEarnings($db) {
         $stmt = $db->prepare("UPDATE blocks SET category = :category, amount = :amount, txhash = :txhash WHERE id = :block_id");
         $stmt->execute([':category' => 'immature', ':block_id' => $db_block['id'], ':amount' => $db_block['reward'], ':txhash' => $db_block['tx_hash']]);
 
+        $hash_time = time() - 3 * 60;
+
         // Delete shares where we calculated the earnings
-        $stmt = $db->prepare("DELETE FROM shares WHERE algo = :algo AND coinid = :coin_id");
-        $stmt->execute([':algo' => minerHelper::miner_getAlgos()[$db_block['coin_id']], ':coin_id' => $db_block['coin_id']]);
+        $stmt = $db->prepare("DELETE FROM shares WHERE algo = :algo AND coinid = :coin_id AND time < :time_offset");
+        $stmt->execute([':algo' => minerHelper::miner_getAlgos()[$db_block['coin_id']], ':coin_id' => $db_block['coin_id'], ':time_offset' => $hash_time]);
       }
     }
     // The cron run every minute if more than 1 block is found every minute causing issue so we break after 1 block
@@ -418,7 +420,7 @@ function sendExtraPayouts($db, $coin_id = 1425, $extra_payout = FALSE) {
   }
 
   // Get the accounts which due payout
-  $stmt = $db->prepare("SELECT * FROM accounts WHERE balance > :min_payout AND coinid = :coin_id ORDER BY balance DESC");
+  $stmt = $db->prepare("SELECT * FROM accounts WHERE balance > :min_payout AND coinid = :coin_id ORDER BY balance DESC LIMIT 0, 300");
   $stmt->execute([
     ':min_payout' => $min_payout,
     ':coin_id' => $coin_id
@@ -426,36 +428,47 @@ function sendExtraPayouts($db, $coin_id = 1425, $extra_payout = FALSE) {
 
   $balances = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+  $accounts = [];
   foreach ($balances as $user_account) {
-    print 'Send payouts: ' . $user_account['id'] . ' -- ' . $user_account['balance'] . "\n";
-    // Try to clear the balance
-    $tx = $remote->sendtoaddress($user_account['username'], round($user_account['balance'], 8));
+    $accounts[$user_account['username']] = round($user_account['balance'], 8);
+  }
 
-    if(!$tx) {
-      $error = $remote->error;
-      print "Send payouts ERROR: " . $error . ' -- ' . $user_account['username'] . ' -- ' . $user_account['balance'];
-    }
-    else {
-      // Add entry about the transaction
-      $stmt = $db->prepare("INSERT INTO payouts(account_id, time, amount, fee, tx, idcoin) VALUES(:account_id, :time, :amount, :fee, :tx, :idcoin)");
-      $stmt->execute([
-        ':account_id' => $user_account['id'],
-        ':time' => time(),
-        ':amount' => $user_account['balance'],
-        ':fee' => 0,
-        ':tx' => $tx,
-        ':idcoin' => $coin_id
-      ]);
+  // Sendmany transaction if we have tx id continue or throw error
+  $tx = $remote->sendmany('', $accounts, 1, '');
+  if(!$tx) {
+    $error = $remote->error;
+    print "Send payouts ERROR: " . $error . ' -- ' . json_encode($accounts);
+  }
+  else {
+    foreach ($balances as $user_account) {
+      print 'Sent payout for: ' . $user_account['id'] . '-- ' . $user_account['username'] . ' -- ' . $user_account['balance'] . "\n";
 
-      // Deduct user balance
-      $stmt = $db->prepare("UPDATE accounts SET balance = balance - :payout WHERE id = :userid");
-      $stmt->execute([
-        ':payout' => $user_account['balance'],
-        ':userid' => $user_account['id']
-      ]);
+      if(!$tx) {
+        $error = $remote->error;
+        print "Send payouts ERROR: " . $error . ' -- ' . json_encode($accounts);
+      }
+      else {
+        // Add entry about the transaction
+        $stmt = $db->prepare("INSERT INTO payouts(account_id, time, amount, fee, tx, idcoin) VALUES(:account_id, :time, :amount, :fee, :tx, :idcoin)");
+        $stmt->execute([
+          ':account_id' => $user_account['id'],
+          ':time' => time(),
+          ':amount' => $user_account['balance'],
+          ':fee' => 0,
+          ':tx' => $tx,
+          ':idcoin' => $coin_id
+        ]);
 
+        // Deduct user balance
+        $stmt = $db->prepare("UPDATE accounts SET balance = 0 WHERE id = :userid");
+        $stmt->execute([
+          ':userid' => $user_account['id']
+        ]);
+      }
     }
   }
+
+
 }
 
 /**

@@ -60,7 +60,7 @@ function updatePoolHashrate($db) {
     // Add stats entry if we have at least 10 entries from each active miner (when block is found the shares are reset causing stats issues)
     $active_miners = minerHelper::countMiners($db, $algo_key)['total_count'];
 
-    if ($tt_share_check['total_share_count'] > ($active_miners * 15)) {
+    if ($tt_share_check['total_share_count'] > ($active_miners * 7)) {
 
       $pool_rate = minerHelper::getPoolHashrate($db, $algo);
 
@@ -183,9 +183,11 @@ function updateEarnings($db) {
         $stmt = $db->prepare("UPDATE blocks SET category = :category, amount = :amount, txhash = :txhash WHERE id = :block_id");
         $stmt->execute([':category' => 'immature', ':block_id' => $db_block['id'], ':amount' => $db_block['reward'], ':txhash' => $db_block['tx_hash']]);
 
+        $hash_time = time() - 3 * 60;
+
         // Delete shares where we calculated the earnings
-        $stmt = $db->prepare("DELETE FROM shares WHERE algo = :algo AND coinid = :coin_id");
-        $stmt->execute([':algo' => minerHelper::miner_getAlgos()[$db_block['coin_id']], ':coin_id' => $db_block['coin_id']]);
+        $stmt = $db->prepare("DELETE FROM shares WHERE algo = :algo AND coinid = :coin_id AND time < :time_offset");
+        $stmt->execute([':algo' => minerHelper::miner_getAlgos()[$db_block['coin_id']], ':coin_id' => $db_block['coin_id'], ':time_offset' => $hash_time]);
       }
     }
     // The cron run every minute if more than 1 block is found every minute causing issue so we break after 1 block
@@ -371,7 +373,7 @@ function sendPayouts($db, $coin_id = 1425) {
   $nextFullMin = date("i", $now + (60 - $now % 60));
 
   $hours_to_process = ['00', '04', '08', '12', '16', '20'];
-  $minutes_to_process = ['10'];
+  $minutes_to_process = ['10', '34'];
 
   if (in_array($nextFullHour, $hours_to_process) && in_array($nextFullMin, $minutes_to_process)) {
     print 'Activate extra payouts' . "\n";
@@ -418,7 +420,7 @@ function sendExtraPayouts($db, $coin_id = 1425, $extra_payout = FALSE) {
   }
 
   // Get the accounts which due payout
-  $stmt = $db->prepare("SELECT * FROM accounts WHERE balance > :min_payout AND coinid = :coin_id ORDER BY balance DESC");
+  $stmt = $db->prepare("SELECT * FROM accounts WHERE balance > :min_payout AND coinid = :coin_id ORDER BY balance DESC LIMIT 0, 300");
   $stmt->execute([
     ':min_payout' => $min_payout,
     ':coin_id' => $coin_id

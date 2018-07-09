@@ -116,7 +116,7 @@ else {
     $conn_bitsend = include(__DIR__ . '/../config-bitsend.php');
     $conn_raven = include(__DIR__ . '/../config-raven.php');
     $conn_megacoin = include(__DIR__ . '/../config-megacoin.php');
-    $conn_phantomx = include(__DIR__ . '/../config-phantomx.php');
+    $conn_mano = include(__DIR__ . '/../config-mano.php');
 
     $pool_hashrate_bitcore = minerHelper::getPoolHashrateStats($conn_btx, minerHelper::miner_getAlgos()[1425], 1800, $redis);
     $pool_hashrate_bulwark = minerHelper::getPoolHashrateStats($conn_bulwark, minerHelper::miner_getAlgos()[1426], 1800, $redis);
@@ -125,7 +125,7 @@ else {
     $pool_hashrate_bitsend = minerHelper::getPoolHashrateStats($conn_bitsend, minerHelper::miner_getAlgos()[1429], 1800, $redis);
     $pool_hashrate_raven = minerHelper::getPoolHashrateStats($conn_raven, minerHelper::miner_getAlgos()[1430], 1800, $redis);
     $pool_hashrate_megacoin = minerHelper::getPoolHashrateStats($conn_megacoin, minerHelper::miner_getAlgos()[1431], 1800, $redis);
-    $pool_hashrate_phantomx = minerHelper::getPoolHashrateStats($conn_phantomx, minerHelper::miner_getAlgos()[1432], 1800, $redis);
+    $pool_hashrate_mano = minerHelper::getPoolHashrateStats($conn_mano, minerHelper::miner_getAlgos()[1432], 1800, $redis);
 
     $total_miners_bitcore = minerHelper::countMiners($conn_btx,1425)['total_count'] ?? 0;
     $total_miners_bulwark = minerHelper::countMiners($conn_bulwark,1426)['total_count'] ?? 0;
@@ -134,7 +134,7 @@ else {
     $total_miners_bitsend = minerHelper::countMiners($conn_bitsend,1429)['total_count'] ?? 0;
     $total_miners_raven = minerHelper::countMiners($conn_raven,1430)['total_count'] ?? 0;
     $total_miners_megacoin = minerHelper::countMiners($conn_megacoin,1431)['total_count'] ?? 0;
-    $total_miners_phantomx = minerHelper::countMiners($conn_phantomx,1432)['total_count'] ?? 0;
+    $total_miners_mano = minerHelper::countMiners($conn_mano,1432)['total_count'] ?? 0;
 
     $data['btx'] = [
       'symbol' => 'BTX',
@@ -206,14 +206,14 @@ else {
       'fee' => minerHelper::getPoolFee()['scrypt']
     ];
 
-    $data['pnx'] = [
-      'symbol' => 'PNX',
-      'name' => 'PhantomX',
-      'algo' => 'x11',
+    $data['mano'] = [
+      'symbol' => 'MANO',
+      'name' => 'Manocoin',
+      'algo' => 'lyra2z',
       'port' => ['8008'],
-      'pool_hashrate' => $pool_hashrate_phantomx['hashrate'],
-      'active_miners' => $total_miners_phantomx,
-      'fee' => minerHelper::getPoolFee()['x11']
+      'pool_hashrate' => $pool_hashrate_mano['hashrate'],
+      'active_miners' => $total_miners_mano,
+      'fee' => minerHelper::getPoolFee()['lyra2z']
     ];
 
     header('Content-type: application/json');
