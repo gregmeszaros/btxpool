@@ -270,6 +270,18 @@ $getCoinSettings = new Twig_SimpleFunction('getCoinSettings', function ($coin_se
       $settings['mine_nvidia'] = 'ccminer-x64 -a lyra2z -o stratum+tcp://' . $seo_site_name . ':8008 -u your_manocoin_address.rig_name -p x -i 21';
       $settings['mine_amd_download'] = 'https://github.com/aceneun/sgminer-gm-x16r';
       $settings['mine_amd'] = 'sgminer --kernel lyra2z -o stratum+tcp://' . $seo_site_name . ':8008 -u your_manocoin_address.rig_name -p x';
+      $settings['masternodes'] = [
+        [
+          'id' => 1,
+          'name' => 'MANO shared MN (1) - active! No free seats',
+          'status' => 'masternode-active'
+        ],
+        [
+          'id' => 2,
+          'name' => 'MANO masternode MN (2) - raising funds, click for more details',
+          'status' => 'masternode-funds'
+        ]
+      ];
       return $settings;
       break;
   }

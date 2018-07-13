@@ -1,0 +1,37 @@
+{% include 'header.html' %}
+
+<div id="main">
+
+    <div class="intro">
+        <h1 class="header-h1">omegapool.cc shared MANO masternode</h1>
+        <div class="minercontent">
+            <table class="table">
+                <tr>
+                    <th>USER ID</th>
+                    <th>Transaction ID</th>
+                    <th>Amount of Deposited coins</th>
+                    <th>Ownership of Shared MN (%)</th>
+                    <th>SHARED MN Rewards</th>
+                </tr>
+
+
+                {% for masternode_details in masternode_data %}
+                    <tr>
+                        <td>{{ masternode_details.id }}</td>
+                        <td>{{ masternode_details.transactionid }}</td>
+                        <td>{{ masternode_details.depositedmano }}</td>
+                        <td>{{ masternode_details.ownershipofsharedmn }}</td>
+                        <td>{{ masternode_details.netsharedmnrewards }} MANO</td>
+                    </tr>
+                {% endfor %}
+
+            </table>
+
+            <br />
+            <div><strong> Test masternode page! </strong></div>
+
+        </div>
+    </div>
+</div>
+
+{% include 'footer.html' %}

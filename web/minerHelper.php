@@ -57,6 +57,13 @@ class minerHelper {
         'template' => 'block-earnings.html.twig',
         'menu_exclude' => TRUE
       ],
+      'masternode-details' => [
+        'id' => 'sharedmsdetail',
+        'label' => 'Masternode details',
+        'url' => $base_route . 'masternode-details',
+        'template' => 'masternode-details.html.twig',
+        'menu_exclude' => TRUE
+      ],
       'dashboard' => [
         'id' => 'dashboard',
         'label' => 'Dashboard / minerpool.party',
@@ -1047,6 +1054,22 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
           'seo_site_name' => $data['seo_site_name']
         ];
         break;
+      case 'masternode-details':
+
+          // Should use Redis for access and not the API directly
+          include_once(__DIR__ . '/../masternode/masternode.php');
+
+          $coin_id = $_GET['coin'] ?? FALSE;
+          $masternode_id = $_GET['id'] ?? FALSE;
+
+          $masternode_data = masterNode::getMasternodeData($coin_id, $masternode_id);
+
+          // Load last 30 blocks
+          return [
+            'masternode_data' => $masternode_data,
+          ];
+          break;
+
     }
 
     return [];
