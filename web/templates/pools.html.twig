@@ -1,51 +1,5 @@
 {% include 'header.html' %}
 
-<script>
-
-  function populateSelectList(coinData) {
-    var options = "";
-
-    for (var gpu in coinData) {
-      options += '<option value="' + gpu + '">' + coinData[gpu] + '</option>';
-    }
-    return options;
-  }
-
-  function populateEstimates(json_gpus, json_earnings) {
-    console.log(json_earnings);
-    var coin_select = document.getElementById('coin-select');
-    var coin = coin_select.value;
-    var options_list = populateSelectList(json_gpus[coin]);
-
-    var html = "";
-    html += '<input type="text" id="' + coin + '-input-estimate" value="30" onkeypress="updateEstimates(\'' + coin + '\', \'' + json_earnings[coin] + '\');" onkeyup="updateEstimates(\'' + coin + '\', \'' + json_earnings[coin] + '\');"> mh/s ';
-    html += '<select id="' + coin + '-gpu" form="' + coin + '-cards-list" onchange="updateEstimatesSelect(\'' + coin + '\', \'' + json_earnings[coin] + '\');">' + options_list + '</select>';
-    html += ' will earn you <span id="' + coin + '-output-estimate"></span> ' + coin.toUpperCase();
-    document.getElementById("populate-estimate").innerHTML = html;
-
-    // Trigger change on first load
-    updateEstimatesSelect(coin, json_earnings[coin]);
-  }
-  // Tracking script for earning estimates
-  function updateEstimates(coin, json_earnings) {
-    var user_input = document.getElementById(coin + "-input-estimate");
-    var s = user_input.value;
-
-    // Set the estimated value
-    document.getElementById(coin + "-output-estimate").innerHTML = s * json_earnings / 10;
-  };
-
-  function updateEstimatesSelect(coin, json_earnings) {
-    var user_input = document.getElementById(coin + "-gpu");
-    var s = user_input.value;
-
-    // Set the estimated value
-    document.getElementById(coin + "-output-estimate").innerHTML = s * json_earnings / 10;
-    // Set it for the form field too
-    document.getElementById(coin + "-input-estimate").value = s;
-  };
-</script>
-
 <div id="main">
     <div class="intro">
         <h1 class="header-h1">{{ seo_site_name }} - stable and profitable mining pools!</h1>
@@ -79,17 +33,6 @@
                 </tr>
                 <tr>
                     <td>
-                        <img class="logo-list" src="images/bulwark.png" alt="bulwark mining" />
-                        <a href="?page=dashboard&coin=bulwark">Bulwark (BWK)</a> <strong>Port: 8002</strong>
-                    </td>
-                    <td>nist5 (NiceHash friendly)</td>
-                    <td>{{ showFriendlyHash(pool_hashrate_bulwark) }}</span> / {{ total_hashrate_bulwark_gh|default('n/a')|round(1) }} Gh/s</td>
-                    <td>{{ difficulty_bulwark|default('n/a')|round(1)  }}</td>
-                    <td class="total-miners">{{ total_miners_bulwark }}</td>
-                    <td>0.5%</td>
-                </tr>
-                <tr>
-                    <td>
                         <img class="logo-list" src="images/lux.png" alt="lux mining" />
                         <a href="?page=dashboard&coin=lux">Luxcoin (LUX)</a> <strong>Port: 8003</strong>
                     </td>
@@ -98,17 +41,6 @@
                     <td>{{ difficulty_lux|default('n/a')|round(1)  }}</td>
                     <td class="total-miners">{{ total_miners_lux }}</td>
                     <td>0.5%</td>
-                </tr>
-                <tr>
-                    <td>
-                        <img class="logo-list" src="images/gobyte.png" alt="gobyte mining" />
-                        <a href="?page=dashboard&coin=gobyte">GoByte (GBX)</a> <strong>Port: 8004</strong>
-                    </td>
-                    <td>neoscrypt</td>
-                    <td>{{ showFriendlyHash(pool_hashrate_gobyte) }}</span> / {{ total_hashrate_gobyte_gh|default('n/a')|round(1) }} Gh/s</td>
-                    <td>{{ difficulty_gobyte|default('n/a')|round(1)  }}</td>
-                    <td class="total-miners">{{ total_miners_gobyte }}</td>
-                    <td>1%</td>
                 </tr>
                 <tr>
                     <td>
@@ -134,32 +66,10 @@
                 </tr>
                 <tr>
                     <td>
-                        <img class="logo-list" src="images/megacoin.png" alt="megacoin mining" />
-                        <a href="?page=dashboard&coin=megacoin">MegaCoin (MEC)</a> <strong>Port: 8007</strong>
-                    </td>
-                    <td>scrypt (NiceHash friendly)</td>
-                    <td>{{ showFriendlyHash(pool_hashrate_megacoin) }}</span> / {{ total_hashrate_megacoin_gh|default('n/a')|round(1) }} Gh/s</td>
-                    <td>{{ difficulty_megacoin|default('n/a')|round(1)  }}</td>
-                    <td class="total-miners">{{ total_miners_megacoin }}</td>
-                    <td>1.25%</td>
-                </tr>
-                <tr>
-                    <td>
-                        <img class="logo-list" src="images/mano.png" alt="mano coin mining" />
-                        <a href="?page=dashboard&coin=mano">MANOcoin (MANO)</a> <strong>Port: 8008</strong>
-                    </td>
-                    <td>lyra2z</td>
-                    <td>{{ showFriendlyHash(pool_hashrate_mano) }}</span> / {{ total_hashrate_mano_gh|default('n/a')|round(1) }} Gh/s</td>
-                    <td>{{ difficulty_mano|default('n/a')|round(1)  }}</td>
-                    <td class="total-miners">{{ total_miners_mano }}</td>
-                    <td>0.5%</td>
-                </tr>
-                <tr>
-                    <td>
                         <strong>Summary all coins</strong>
                     </td>
                     <td></td>
-                    {% set total_hash = pool_hashrate_bitcore + pool_hashrate_bulwark + pool_hashrate_lux + pool_hashrate_bitsend + pool_hashrate_raven ?? 0 %}
+                    {% set total_hash = pool_hashrate_bitcore + pool_hashrate_lux + pool_hashrate_bitsend + pool_hashrate_raven ?? 0 %}
                     <td id="total-hash-sum">{{ showFriendlyHash(total_hash) }}</td>
                     <td></td>
                     <td id="all-miners-count"></td>
@@ -185,22 +95,6 @@
               document.getElementById("all-miners-count").innerHTML = sum + " miners";
             </script>
 
-        </div>
-
-        <div class="minercontent">
-            <span>
-                <strong>Estimated daily earnings for:</strong>
-                <select id="coin-select" form="select-form-list" onchange="populateEstimates({{ gpus }}, {{ estimated_earnings_coins }});">
-                    <option value="" selected disabled hidden>Select a coin ...</option>
-                    <option value="btx">Bitcore (BTX)</option>
-                    <option value="bwk">Bulwark (BWK)</option>
-                    <option value="lux">Luxcoin (LUX)</option>
-                    <option value="bsd">Bitsend (BSD)</option>
-                    <option value="rvn">Raven (RVN)</option>
-                </select>
-
-                <span id="populate-estimate"></span>
-            </span>
         </div>
 
         <div class="minercontent">

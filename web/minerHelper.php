@@ -15,13 +15,9 @@ class minerHelper {
       $base_route = 'index.php?coin=' . $coin . '&page=';
       $main_blockchain_url = [
         'bitcore' => 'https://chainz.cryptoid.info/btx/',
-        'bulwark' => 'https://altmix.org/coins/10-Bulwark/explorer/',
         'lux' => 'https://chainz.cryptoid.info/lux/',
-        'gobyte' => 'https://explorer.gobyte.network/',
         'bitsend' => 'https://chainz.cryptoid.info/bsd/',
         'raven' => 'https://ravencoin.network/',
-        'megacoin' => 'https://chainz.cryptoid.info/mec/',
-        'mano' => 'https://explorer.manocoin.org/'
       ];
 
       $explorer = $main_blockchain_url[$coin];
@@ -839,74 +835,42 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
 
         // General coin info
         $network_info_bitcore = self::getNetworkInfo(1425, $redis);
-        $network_info_bulwark = self::getNetworkInfo(1426, $redis);
         $network_info_lux = self::getNetworkInfo(1427, $redis);
-        $network_info_gobyte = self::getNetworkInfo(1428, $redis);
         $network_info_bitsend = self::getNetworkInfo(1429, $redis);
         $network_info_raven = self::getNetworkInfo(1430, $redis);
-        $network_info_megacoin = self::getNetworkInfo(1431, $redis);
-        $network_info_mano = self::getNetworkInfo(1432, $redis);
 
         $conn_btx = include(__DIR__ . '/../config-bitcore.php');
-        $conn_bulwark = include(__DIR__ . '/../config-bulwark.php');
         $conn_lux = include(__DIR__ . '/../config-lux.php');
-        $conn_gobyte = include(__DIR__ . '/../config-gobyte.php');
         $conn_bitsend = include(__DIR__ . '/../config-bitsend.php');
         $conn_raven = include(__DIR__ . '/../config-raven.php');
-        $conn_megacoin = include(__DIR__ . '/../config-megacoin.php');
-        $conn_mano = include(__DIR__ . '/../config-mano.php');
 
         $pool_hashrate_bitcore = minerHelper::getPoolHashrateStats($conn_btx, minerHelper::miner_getAlgos()[1425], 1800, $redis);
-        $pool_hashrate_bulwark = minerHelper::getPoolHashrateStats($conn_bulwark, minerHelper::miner_getAlgos()[1426], 1800, $redis);
         $pool_hashrate_lux = minerHelper::getPoolHashrateStats($conn_lux, minerHelper::miner_getAlgos()[1427], 1800, $redis);
-        $pool_hashrate_gobyte = minerHelper::getPoolHashrateStats($conn_gobyte, minerHelper::miner_getAlgos()[1428], 1800, $redis);
         $pool_hashrate_bitsend = minerHelper::getPoolHashrateStats($conn_bitsend, minerHelper::miner_getAlgos()[1429], 1800, $redis);
         $pool_hashrate_raven = minerHelper::getPoolHashrateStats($conn_raven, minerHelper::miner_getAlgos()[1430], 1800, $redis);
-        $pool_hashrate_megacoin = minerHelper::getPoolHashrateStats($conn_megacoin, minerHelper::miner_getAlgos()[1431], 1800, $redis);
-        $pool_hashrate_mano = minerHelper::getPoolHashrateStats($conn_mano, minerHelper::miner_getAlgos()[1432], 1800, $redis);
 
         $total_miners_bitcore = self::countMiners($conn_btx,1425)['total_count'] ?? 0;
-        $total_miners_bulwark = self::countMiners($conn_bulwark,1426)['total_count'] ?? 0;
         $total_miners_lux = self::countMiners($conn_lux,1427)['total_count'] ?? 0;
-        $total_miners_gobyte = self::countMiners($conn_gobyte,1428)['total_count'] ?? 0;
         $total_miners_bitsend = self::countMiners($conn_bitsend,1429)['total_count'] ?? 0;
         $total_miners_raven = self::countMiners($conn_raven,1430)['total_count'] ?? 0;
-        $total_miners_megacoin = self::countMiners($conn_megacoin,1431)['total_count'] ?? 0;
-        $total_miners_mano = self::countMiners($conn_mano,1432)['total_count'] ?? 0;
 
         return [
           'total_hashrate_bitcore_gh' => $network_info_bitcore ? $network_info_bitcore['hashrate_gh'] : 0,
-          'total_hashrate_bulwark_gh' => $network_info_bulwark ? $network_info_bulwark['hashrate_gh'] : 0,
           'total_hashrate_lux_gh' => $network_info_lux ? $network_info_lux['hashrate_gh'] : 0,
-          'total_hashrate_gobyte_gh' => $network_info_gobyte ? $network_info_gobyte['hashrate_gh'] : 0,
           'total_hashrate_bitsend_gh' => $network_info_bitsend ? $network_info_bitsend['hashrate_gh'] : 0,
           'total_hashrate_raven_gh' => $network_info_raven ? $network_info_raven['hashrate_gh'] : 0,
-          'total_hashrate_megacoin_gh' => $network_info_megacoin ? $network_info_megacoin['hashrate_gh'] : 0,
-          'total_hashrate_mano_gh' => $network_info_mano ? $network_info_mano['hashrate_gh'] : 0,
           'difficulty_bitcore' => $network_info_bitcore ? $network_info_bitcore['difficulty'] : 0,
-          'difficulty_bulwark' => $network_info_bulwark ? $network_info_bulwark['difficulty'] : 0,
           'difficulty_lux' => $network_info_lux ? $network_info_lux['difficulty'] : 0,
-          'difficulty_gobyte' => $network_info_gobyte ? $network_info_gobyte['difficulty'] : 0,
           'difficulty_bitsend' => $network_info_bitsend ? $network_info_bitsend['difficulty'] : 0,
           'difficulty_raven' => $network_info_raven ? $network_info_raven['difficulty'] : 0,
-          'difficulty_megacoin' => $network_info_megacoin ? $network_info_megacoin['difficulty'] : 0,
-          'difficulty_mano' => $network_info_mano ? $network_info_mano['difficulty'] : 0,
           'pool_hashrate_bitcore' => $pool_hashrate_bitcore ? $pool_hashrate_bitcore['hashrate'] : 0,
-          'pool_hashrate_bulwark' => $pool_hashrate_bulwark ? $pool_hashrate_bulwark['hashrate'] : 0,
           'pool_hashrate_lux' => $pool_hashrate_lux ? $pool_hashrate_lux['hashrate'] : 0,
-          'pool_hashrate_gobyte' => $pool_hashrate_gobyte ? $pool_hashrate_gobyte['hashrate'] : 0,
           'pool_hashrate_bitsend' => $pool_hashrate_bitsend ? $pool_hashrate_bitsend['hashrate'] : 0,
           'pool_hashrate_raven' => $pool_hashrate_raven ? $pool_hashrate_raven['hashrate'] : 0,
-          'pool_hashrate_megacoin' => $pool_hashrate_megacoin ? $pool_hashrate_megacoin['hashrate'] : 0,
-          'pool_hashrate_mano' => $pool_hashrate_mano ? $pool_hashrate_mano['hashrate'] : 0,
           'total_miners_bitcore' => $total_miners_bitcore,
-          'total_miners_bulwark' => $total_miners_bulwark,
           'total_miners_lux' => $total_miners_lux,
-          'total_miners_gobyte' => $total_miners_gobyte,
           'total_miners_bitsend' => $total_miners_bitsend,
           'total_miners_raven' => $total_miners_raven,
-          'total_miners_megacoin' => $total_miners_megacoin,
-          'total_miners_mano' => $total_miners_mano,
           'seo_site_name' => $data['seo_site_name'],
           'gpus' => json_encode(
             [

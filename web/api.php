@@ -110,31 +110,19 @@ else {
     $data = [];
 
     $conn_btx = include(__DIR__ . '/../config-bitcore.php');
-    $conn_bulwark = include(__DIR__ . '/../config-bulwark.php');
     $conn_lux = include(__DIR__ . '/../config-lux.php');
-    $conn_gobyte = include(__DIR__ . '/../config-gobyte.php');
     $conn_bitsend = include(__DIR__ . '/../config-bitsend.php');
     $conn_raven = include(__DIR__ . '/../config-raven.php');
-    $conn_megacoin = include(__DIR__ . '/../config-megacoin.php');
-    $conn_mano = include(__DIR__ . '/../config-mano.php');
 
     $pool_hashrate_bitcore = minerHelper::getPoolHashrateStats($conn_btx, minerHelper::miner_getAlgos()[1425], 1800, $redis);
-    $pool_hashrate_bulwark = minerHelper::getPoolHashrateStats($conn_bulwark, minerHelper::miner_getAlgos()[1426], 1800, $redis);
     $pool_hashrate_lux = minerHelper::getPoolHashrateStats($conn_lux, minerHelper::miner_getAlgos()[1427], 1800, $redis);
-    $pool_hashrate_gobyte = minerHelper::getPoolHashrateStats($conn_gobyte, minerHelper::miner_getAlgos()[1428], 1800, $redis);
     $pool_hashrate_bitsend = minerHelper::getPoolHashrateStats($conn_bitsend, minerHelper::miner_getAlgos()[1429], 1800, $redis);
     $pool_hashrate_raven = minerHelper::getPoolHashrateStats($conn_raven, minerHelper::miner_getAlgos()[1430], 1800, $redis);
-    $pool_hashrate_megacoin = minerHelper::getPoolHashrateStats($conn_megacoin, minerHelper::miner_getAlgos()[1431], 1800, $redis);
-    $pool_hashrate_mano = minerHelper::getPoolHashrateStats($conn_mano, minerHelper::miner_getAlgos()[1432], 1800, $redis);
 
     $total_miners_bitcore = minerHelper::countMiners($conn_btx,1425)['total_count'] ?? 0;
-    $total_miners_bulwark = minerHelper::countMiners($conn_bulwark,1426)['total_count'] ?? 0;
     $total_miners_lux = minerHelper::countMiners($conn_lux,1427)['total_count'] ?? 0;
-    $total_miners_gobyte = minerHelper::countMiners($conn_gobyte,1428)['total_count'] ?? 0;
     $total_miners_bitsend = minerHelper::countMiners($conn_bitsend,1429)['total_count'] ?? 0;
     $total_miners_raven = minerHelper::countMiners($conn_raven,1430)['total_count'] ?? 0;
-    $total_miners_megacoin = minerHelper::countMiners($conn_megacoin,1431)['total_count'] ?? 0;
-    $total_miners_mano = minerHelper::countMiners($conn_mano,1432)['total_count'] ?? 0;
 
     $data['btx'] = [
       'symbol' => 'BTX',
@@ -146,16 +134,6 @@ else {
       'fee' => minerHelper::getPoolFee()['bitcore']
     ];
 
-    $data['bwk'] = [
-      'symbol' => 'BWK',
-      'name' => 'Bulwark',
-      'algo' => 'nist5',
-      'port' => ['8002'],
-      'pool_hashrate' => $pool_hashrate_bulwark['hashrate'],
-      'active_miners' => $total_miners_bulwark,
-      'fee' => minerHelper::getPoolFee()['nist5']
-    ];
-
     $data['lux'] = [
       'symbol' => 'LUX',
       'name' => 'Luxcoin',
@@ -164,16 +142,6 @@ else {
       'pool_hashrate' => $pool_hashrate_lux['hashrate'],
       'active_miners' => $total_miners_lux,
       'fee' => minerHelper::getPoolFee()['phi2']
-    ];
-
-    $data['gbx'] = [
-      'symbol' => 'GBX',
-      'name' => 'GoByte',
-      'algo' => 'neoscrypt',
-      'port' => ['8004'],
-      'pool_hashrate' => $pool_hashrate_gobyte['hashrate'],
-      'active_miners' => $total_miners_gobyte,
-      'fee' => minerHelper::getPoolFee()['neoscrypt']
     ];
 
     $data['bsd'] = [
@@ -194,26 +162,6 @@ else {
       'pool_hashrate' => $pool_hashrate_raven['hashrate'],
       'active_miners' => $total_miners_raven,
       'fee' => minerHelper::getPoolFee()['x16r']
-    ];
-
-    $data['mec'] = [
-      'symbol' => 'MEC',
-      'name' => 'Megacoin',
-      'algo' => 'scrypt',
-      'port' => ['8007'],
-      'pool_hashrate' => $pool_hashrate_megacoin['hashrate'],
-      'active_miners' => $total_miners_megacoin,
-      'fee' => minerHelper::getPoolFee()['scrypt']
-    ];
-
-    $data['mano'] = [
-      'symbol' => 'MANO',
-      'name' => 'Manocoin',
-      'algo' => 'lyra2z',
-      'port' => ['8008'],
-      'pool_hashrate' => $pool_hashrate_mano['hashrate'],
-      'active_miners' => $total_miners_mano,
-      'fee' => minerHelper::getPoolFee()['lyra2z']
     ];
 
     header('Content-type: application/json');
