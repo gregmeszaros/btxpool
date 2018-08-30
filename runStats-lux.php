@@ -341,41 +341,32 @@ function sendPayouts($db, $coin_id = 1425) {
     $accounts[$user_account['username']] = round($user_account['balance'], 8);
   }
 
-  // Sendmany transaction if we have tx id continue or throw error
-  $tx = $remote->sendmany('', $accounts, 1, '');
-  if(!$tx) {
-    $error = $remote->error;
-    print "Send payouts ERROR: " . $error . ' -- ' . json_encode($accounts);
-  }
-  else {
-    foreach ($balances as $user_account) {
-      print 'Sent payout for: ' . $user_account['id'] . '-- ' . $user_account['username'] . ' -- ' . $user_account['balance'] . "\n";
+  // Only if we have anyone to pay
+  if (count($accounts) > 1) {
+    // Sendmany transaction if we have tx id continue or throw error
+    $tx = $remote->sendmany('', $accounts, 1, '');
+    if (!$tx) {
+      $error = $remote->error;
+      print "Send payouts ERROR: " . $error . ' -- ' . json_encode($accounts);
+    } else {
+      foreach ($balances as $user_account) {
+        print 'Sent payout for: ' . $user_account['id'] . '-- ' . $user_account['username'] . ' -- ' . $user_account['balance'] . "\n";
 
-      if(!$tx) {
-        $error = $remote->error;
-        print "Send payouts ERROR: " . $error . ' -- ' . json_encode($accounts);
-      }
-      else {
-        // Add entry about the transaction
-        $stmt = $db->prepare("INSERT INTO payouts(account_id, time, amount, fee, tx, idcoin) VALUES(:account_id, :time, :amount, :fee, :tx, :idcoin)");
-        $stmt->execute([
-          ':account_id' => $user_account['id'],
-          ':time' => time(),
-          ':amount' => $user_account['balance'],
-          ':fee' => 0,
-          ':tx' => $tx,
-          ':idcoin' => $coin_id
-        ]);
+        if (!$tx) {
+          $error = $remote->error;
+          print "Send payouts ERROR: " . $error . ' -- ' . json_encode($accounts);
+        } else {
+          // Add entry about the transaction
+          $stmt = $db->prepare("INSERT INTO payouts(account_id, time, amount, fee, tx, idcoin) VALUES(:account_id, :time, :amount, :fee, :tx, :idcoin)");
+          $stmt->execute([':account_id' => $user_account['id'], ':time' => time(), ':amount' => $user_account['balance'], ':fee' => 0, ':tx' => $tx, ':idcoin' => $coin_id]);
 
-        // Deduct user balance
-        $stmt = $db->prepare("UPDATE accounts SET balance = 0 WHERE id = :userid");
-        $stmt->execute([
-          ':userid' => $user_account['id']
-        ]);
+          // Deduct user balance
+          $stmt = $db->prepare("UPDATE accounts SET balance = 0 WHERE id = :userid");
+          $stmt->execute([':userid' => $user_account['id']]);
+        }
       }
     }
   }
-
   // Check if we need to process extra payouts!
   $now = time();
   $nextFullHour = date("H", $now + (3600 - $now % 3600));
