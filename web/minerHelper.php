@@ -18,6 +18,7 @@ class minerHelper {
         'lux' => 'https://chainz.cryptoid.info/lux/',
         'bitsend' => 'https://chainz.cryptoid.info/bsd/',
         'raven' => 'https://ravencoin.network/',
+        'votecoin' => 'https://explorer.votecoin.site'
       ];
 
       $explorer = $main_blockchain_url[$coin];
@@ -143,7 +144,8 @@ class minerHelper {
       '1429' => 'xevan',
       '1430' => 'x16r',
       '1431' => 'scrypt',
-      '1432' => 'lyra2z'
+      '1432' => 'lyra2z',
+      'votecoin' => 'equihash'
     ];
   }
 
@@ -294,11 +296,21 @@ class minerHelper {
   /**
    * Shows how many users are connected to each port
    */
-  public static function countStratumConnections($db, $algo = FALSE, $redis = FALSE) {
-    $stmt = $db->prepare("SELECT port, workers FROM stratums ORDER BY workers ASC;");
-    $stmt->execute();
+  public static function countStratumConnections($db, $algo = FALSE) {
 
-    return array_map('reset', $stmt->fetchAll(PDO::FETCH_GROUP|PDO::FETCH_ASSOC));
+    if ($algo == 'votecoin') {
+      $is_yiimp = FALSE;
+    }
+
+    if ($is_yiimp === TRUE) {
+      $stmt = $db->prepare("SELECT port, workers FROM stratums ORDER BY workers ASC;");
+      $stmt->execute();
+
+      return array_map('reset', $stmt->fetchAll(PDO::FETCH_GROUP|PDO::FETCH_ASSOC));
+    }
+
+    return [];
+
   }
 
   /**
@@ -342,6 +354,44 @@ class minerHelper {
       ':coin_id' => $coin_id
     ]);
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
+  }
+
+  /**
+   * Get pool stats (type = equihash)
+   * @param $db
+   * @param $coin_id
+   * @return mixed
+   */
+  public static function getPoolStatsEquihash($db, $coin_id) {
+    $stmt = $db->prepare("SELECT * FROM stats WHERE coin = :coin_id");
+    $stmt->execute([
+      ':coin_id' => $coin_id,
+    ]);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+  }
+
+  /**
+   * Set pool stats (type = equihash)
+   * @param $db
+   * @param $coin_id
+   * @return mixed
+   */
+  public static function setPoolStatsEquihash($db, $data) {
+    $stmt = $db->prepare("UPDATE stats SET 
+      networkSolsString = :networkSolsString,
+      poolSolsString = :poolSolsString,
+      networkDiff = :networkDiff,
+      minerCount = :minerCount
+      WHERE coin = :coin_id AND id = :id");
+
+    return $stmt->execute([
+      ':networkSolsString' => $data['networkSolsString'],
+      ':poolSolsString' => $data['poolSolsString'],
+      ':networkDiff' => $data['networkDiff'],
+      ':minerCount' => $data['minerCount'],
+      ':coin_id' => $data['coin_id'],
+      ':id' => $data['id']
+    ]);
   }
 
   /**
@@ -833,16 +883,20 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
     switch ($route) {
       case 'index':
 
-        // General coin info
+        $conn_btx = include(__DIR__ . '/../config-bitcore.php');
+        $conn_lux = include(__DIR__ . '/../config-lux.php');
+        $conn_bitsend = include(__DIR__ . '/../config-bitsend.php');
+        $conn_raven = include(__DIR__ . '/../config-raven.php');
+        $conn_votecoin = include(__DIR__ . '/../config-votecoin.php');
+
+        // General coin info - (Yiimp pools)
         $network_info_bitcore = self::getNetworkInfo(1425, $redis);
         $network_info_lux = self::getNetworkInfo(1427, $redis);
         $network_info_bitsend = self::getNetworkInfo(1429, $redis);
         $network_info_raven = self::getNetworkInfo(1430, $redis);
 
-        $conn_btx = include(__DIR__ . '/../config-bitcore.php');
-        $conn_lux = include(__DIR__ . '/../config-lux.php');
-        $conn_bitsend = include(__DIR__ . '/../config-bitsend.php');
-        $conn_raven = include(__DIR__ . '/../config-raven.php');
+        // General coin info - (Equihash pools)
+        $poolStatsVotecoin = self::getPoolStatsEquihash($conn_votecoin, 'votecoin');
 
         $pool_hashrate_bitcore = minerHelper::getPoolHashrateStats($conn_btx, minerHelper::miner_getAlgos()[1425], 1800, $redis);
         $pool_hashrate_lux = minerHelper::getPoolHashrateStats($conn_lux, minerHelper::miner_getAlgos()[1427], 1800, $redis);
@@ -859,18 +913,22 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
           'total_hashrate_lux_gh' => $network_info_lux ? $network_info_lux['hashrate_gh'] : 0,
           'total_hashrate_bitsend_gh' => $network_info_bitsend ? $network_info_bitsend['hashrate_gh'] : 0,
           'total_hashrate_raven_gh' => $network_info_raven ? $network_info_raven['hashrate_gh'] : 0,
+          'total_hashrate_votecoin_gh' => $poolStatsVotecoin ? $poolStatsVotecoin[0]['networkSolsString'] : 0,
           'difficulty_bitcore' => $network_info_bitcore ? $network_info_bitcore['difficulty'] : 0,
           'difficulty_lux' => $network_info_lux ? $network_info_lux['difficulty'] : 0,
           'difficulty_bitsend' => $network_info_bitsend ? $network_info_bitsend['difficulty'] : 0,
           'difficulty_raven' => $network_info_raven ? $network_info_raven['difficulty'] : 0,
+          'difficulty_votecoin' => $poolStatsVotecoin ? $poolStatsVotecoin[0]['networkDiff'] : 0,
           'pool_hashrate_bitcore' => $pool_hashrate_bitcore ? $pool_hashrate_bitcore['hashrate'] : 0,
           'pool_hashrate_lux' => $pool_hashrate_lux ? $pool_hashrate_lux['hashrate'] : 0,
           'pool_hashrate_bitsend' => $pool_hashrate_bitsend ? $pool_hashrate_bitsend['hashrate'] : 0,
           'pool_hashrate_raven' => $pool_hashrate_raven ? $pool_hashrate_raven['hashrate'] : 0,
+          'pool_hashrate_votecoin' => $poolStatsVotecoin ? $poolStatsVotecoin[0]['poolSolsString'] : 0,
           'total_miners_bitcore' => $total_miners_bitcore,
           'total_miners_lux' => $total_miners_lux,
           'total_miners_bitsend' => $total_miners_bitsend,
           'total_miners_raven' => $total_miners_raven,
+          'total_miners_votecoin' => $poolStatsVotecoin ? $poolStatsVotecoin[0]['minerCount'] : 0,
           'seo_site_name' => $data['seo_site_name'],
           'gpus' => json_encode(
             [
@@ -935,7 +993,6 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
 
         // Network info
         $network_info = self::getNetworkInfo($data['coin_id'], $redis);
-
         return [
           'workers' => $workers ?? [],
           'workers_count' => !empty($workers) ? count($workers) : 0,
@@ -958,7 +1015,7 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
           'hashrate_user_30_min' => $hashrate_user_30_min ?? FALSE,
           'hashrate_user_24_hours' => $hashrate_user_24_hours ?? FALSE,
           'coin_seo_name' => $data['coin_seo_name'],
-          'stratum_connections' => self::countStratumConnections($db) ?? FALSE,
+          'stratum_connections' => self::countStratumConnections($db, $data['coin_id']) ?? FALSE,
           'difficulty' => $network_info ? $network_info['difficulty'] : 0,
           'load_charts' => TRUE,
           'seo_site_name' => $data['seo_site_name']

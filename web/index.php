@@ -56,6 +56,10 @@ switch ($coin_seo_name) {
     $coin_id = 1430;
     $conn = include(__DIR__ . '/../config-raven.php');
     break;
+  case "votecoin":
+    $coin_id = "votecoin";
+    $conn = include(__DIR__ . '/../config-votecoin.php');
+    break;
   default:
     $coin_id = FALSE;
 }
@@ -78,7 +82,7 @@ $data['seo_site_name'] = $seo_site_name;
 if (!empty($conn)) {
   // Get the total pool hashrate
   $total_pool_hashrate = minerHelper::getPoolHashrateStats($conn, minerHelper::miner_getAlgos()[$data['coin_id']], 1800, $redis);
-  // @TODO -> geto total hashrates and miners for all coins? Get it from redis!!
+  // @TODO -> get total hashrates and miners for all coins? Get it from redis!!
 }
 
 // Prepare twig
