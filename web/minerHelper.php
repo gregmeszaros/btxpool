@@ -163,7 +163,8 @@ class minerHelper {
       'xevan' => 0.1,
       'x16r' => 0.1,
       'scrypt' => 1,
-      'lyra2z' => 0.1
+      'lyra2z' => 0.1,
+      'equihash' => 0.1
     ];
   }
 
@@ -235,6 +236,29 @@ class minerHelper {
   }
 
   /**
+   * Get all accounts
+   * @param $db
+   */
+  public static function getAccounts($db, $coin_id) {
+    $stmt = $db->prepare("SELECT username, coinid FROM accounts WHERE coinid = :coin_id");
+    $stmt->execute([
+      ':coin_id' => $coin_id,
+    ]);
+    return $stmt->fetchAll(PDO::FETCH_GROUP|PDO::FETCH_ASSOC);
+  }
+
+  /**
+   * Add new account data
+   * @param $db
+   * @param $data
+   * @return mixed
+   */
+  public static function addAccount($db, $data) {
+    $stmt = $db->prepare("INSERT INTO accounts(username, coinid) VALUES(:username, :coin_id)");
+    return $stmt->execute([':username' => $data['username'], ':coin_id' => $data['coin_id']]);
+  }
+
+  /**
    * Load list of miners (cache the query for 1 minute)
    * @param $db
    * @param $coin_id
@@ -271,12 +295,17 @@ class minerHelper {
    * @param $coin_id
    */
   public static function countMiners($db, $coin_id, $redis = FALSE) {
-    $stmt = $db->prepare("SELECT COUNT(DISTINCT(ac.id)) AS total_count FROM accounts ac INNER JOIN workers w ON ac.id = w.userid WHERE ac.coinid = :coin_id;");
-    $stmt->execute([
-      ':coin_id' => $coin_id
-    ]);
 
-    return $stmt->fetch(PDO::FETCH_ASSOC);
+    if (self::poolType($coin_id) == 'yiimp') {
+      $stmt = $db->prepare("SELECT COUNT(DISTINCT(ac.id)) AS total_count FROM accounts ac INNER JOIN workers w ON ac.id = w.userid WHERE ac.coinid = :coin_id;");
+      $stmt->execute([':coin_id' => $coin_id]);
+
+      return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+    else {
+      $read_data = minerHelper::getPoolStatsEquihash($db, $coin_id);
+      return ['total_count' => $read_data[0]['minerCount']];
+    }
   }
 
   /**
@@ -285,12 +314,15 @@ class minerHelper {
    * @param $coin_id
    */
   public static function countWorkers($db, $coin_id, $redis = FALSE) {
-    $stmt = $db->prepare("SELECT COUNT(w.id) as total_count FROM accounts ac INNER JOIN workers w ON ac.id = w.userid WHERE ac.coinid = :coin_id;");
-    $stmt->execute([
-      ':coin_id' => $coin_id
-    ]);
+    if (self::poolType($coin_id) == 'yiimp') {
+      $stmt = $db->prepare("SELECT COUNT(w.id) as total_count FROM accounts ac INNER JOIN workers w ON ac.id = w.userid WHERE ac.coinid = :coin_id;");
+      $stmt->execute([':coin_id' => $coin_id]);
 
-    return $stmt->fetch(PDO::FETCH_ASSOC);
+      return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+    else {
+      return ['total_count' => 22];
+    }
   }
 
   /**
@@ -298,11 +330,7 @@ class minerHelper {
    */
   public static function countStratumConnections($db, $algo = FALSE) {
 
-    if ($algo == 'votecoin') {
-      $is_yiimp = FALSE;
-    }
-
-    if ($is_yiimp === TRUE) {
+    if (self::poolType($algo) == 'yiimp') {
       $stmt = $db->prepare("SELECT port, workers FROM stratums ORDER BY workers ASC;");
       $stmt->execute();
 
@@ -311,6 +339,24 @@ class minerHelper {
 
     return [];
 
+  }
+
+  /**
+   * Check for pool type
+   * @param bool $algo
+   * @return string
+   */
+  public static function poolType($algo = FALSE) {
+    // Default pool implementation
+    $pool_type = 'yiimp';
+
+    if ($algo == 'votecoin') {
+      $pool_type = 's-nomp';
+    }
+    else {
+      $pool_type = 'yiimp';
+    }
+    return $pool_type;
   }
 
   /**
@@ -377,8 +423,9 @@ class minerHelper {
    * @return mixed
    */
   public static function setPoolStatsEquihash($db, $data) {
-    $stmt = $db->prepare("UPDATE stats SET 
+    $stmt = $db->prepare("UPDATE stats SET
       networkSolsString = :networkSolsString,
+      poolHashRate = :poolHashRate,
       poolSolsString = :poolSolsString,
       networkDiff = :networkDiff,
       minerCount = :minerCount
@@ -386,6 +433,7 @@ class minerHelper {
 
     return $stmt->execute([
       ':networkSolsString' => $data['networkSolsString'],
+      ':poolHashRate' => $data['poolHashRate'],
       ':poolSolsString' => $data['poolSolsString'],
       ':networkDiff' => $data['networkDiff'],
       ':minerCount' => $data['minerCount'],
@@ -666,7 +714,8 @@ AND workerid IN (SELECT id FROM workers WHERE algo=:algo AND id = :worker_id AND
       'xevan' => 1,
       'x16r' => 0.5,
       'scrypt' => 1.25,
-      'lyra2z' => 0.5
+      'lyra2z' => 0.5,
+      'equihash' => 1
     ];
   }
 
