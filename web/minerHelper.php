@@ -240,7 +240,7 @@ class minerHelper {
    * @param $db
    */
   public static function getAccounts($db, $coin_id) {
-    $stmt = $db->prepare("SELECT username, coinid FROM accounts WHERE coinid = :coin_id");
+    $stmt = $db->prepare("SELECT username, id, coinid FROM accounts WHERE coinid = :coin_id");
     $stmt->execute([
       ':coin_id' => $coin_id,
     ]);

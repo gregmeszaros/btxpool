@@ -93,7 +93,11 @@ function updateWorkers($db, $coin_id, $workers) {
   foreach ($workers as $worker => $worker_data) {
     $username = explode('.', $worker)[0];
 
-    $set_workers[$username] = $worker_data;
+    // Calculate total hashrate for all workers
+    $default = !empty($set_workers[$username]['total_hashrate']) ? $set_workers[$username]['total_hashrate'] : 0;
+    print $default;
+    $set_workers[$username]['total_hashrate'] = $default + $worker_data['hashrate'] * 2;
+    $set_workers[$username]['workers'][] = $worker_data;
 
     // If the account doesn't exist we create it
     if (!isset($allAccounts[$username])) {
@@ -115,11 +119,18 @@ function updateWorkers($db, $coin_id, $workers) {
       workers = :workers
       WHERE username = :username");
 
+      // Set workers array
       $stmt->execute([
         ':workers' => serialize($set_workers[$account]),
         ':username' => $account
       ]);
 
+      // Insert pool historial hash stats
+      $t = time() - 2 * 60;
+
+      // Set total hashrate for a specific user
+      $stmt = $db->prepare("INSERT INTO hashuser(userid, time, hashrate, hashrate_bad, algo) VALUES(:userid, :time, :hashrate, :hashrate_bad, :algo)");
+      $stmt->execute([':userid' => $allAccounts[$account][0]['id'], ':time' => $t, ':hashrate' => $set_workers[$account]['total_hashrate'], ':hashrate_bad' => 0, ':algo' => $coin_id]);
     }
     // Otherwise make workers empty
     else {
