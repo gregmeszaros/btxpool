@@ -278,13 +278,42 @@ class minerHelper {
    * @param $miner_address
    * @return array
    */
-  public static function getWorkers($db, $miner_address = "") {
+  public static function getWorkers($db, $miner_address = "", $coin_id = FALSE, $redis = FALSE) {
     if (!empty($miner_address)) {
-      $stmt = $db->prepare("SELECT w.*, MAX(s.time) as last_share FROM workers w LEFT JOIN shares s ON s.workerid = w.id WHERE w.name = :miner_address GROUP BY w.id");
-      $stmt->execute([
-        ':miner_address' => $miner_address
-      ]);
-      return $stmt->fetchAll(PDO::FETCH_ASSOC);
+      if (self::poolType($coin_id) == 'yiimp') {
+        $stmt = $db->prepare("SELECT w.*, MAX(s.time) as last_share FROM workers w LEFT JOIN shares s ON s.workerid = w.id WHERE w.name = :miner_address GROUP BY w.id");
+        $stmt->execute([
+          ':miner_address' => $miner_address
+        ]);
+
+        $workers = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        foreach ($workers as $key => $worker) {
+          $worker_hashrate = self::getHashrateStats($db, $coin_id, $worker['version'], $worker['id'], $worker['name'],300, $redis);
+          $worker_hashrate_15_mins = self::getHashrateStats($db, $coin_id, $worker['version'], $worker['id'], $worker['name'], 900, $redis);
+          $workers[$key]['worker'] = $worker['worker'];
+          $workers[$key]['hashrate'] = self::Itoa2($worker_hashrate['hashrate']) . 'h/s';
+          $workers[$key]['hashrate_15_mins'] = self::Itoa2($worker_hashrate_15_mins['hashrate']) . 'h/s';
+          $workers[$key]['last_share'] = self::lastFoundBlockTime($worker['last_share']);
+        }
+
+        return $workers;
+      }
+      else {
+        // Load all accounts which has active workers
+        $user_account = self::getAccount($db, '', $miner_address);
+        $workers_decoded = unserialize($user_account['workers']);
+        if (!empty($workers_decoded['workers'])) {
+          foreach ($workers_decoded['workers'] as $key => $worker) {
+            print_r($worker); die();
+            $workers[$key]['worker'] = substr($worker['name'], strpos($worker['name'], ".") + 1, strlen($worker['name']));
+            $workers[$key]['hashrate'] = $worker['hashrateString'];
+          }
+
+          return $workers;
+        }
+
+      }
     }
     return [];
   }
@@ -1007,36 +1036,32 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
           $block_rewards[1432] = 5;
 
           // Get workers for miner address
-          $workers = self::getWorkers($db, $data['miner_address']);
-          foreach ($workers as $key => $worker) {
-            $worker_hashrate = self::getHashrateStats($db, $data['coin_id'], $worker['version'], $worker['id'], $worker['name'],300, $redis);
-            $worker_hashrate_15_mins = self::getHashrateStats($db, $data['coin_id'], $worker['version'], $worker['id'], $worker['name'], 900, $redis);
-            $workers[$key]['worker'] = $worker['worker'];
-            $workers[$key]['hashrate'] = self::Itoa2($worker_hashrate['hashrate']) . 'h/s';
-            $workers[$key]['hashrate_15_mins'] = self::Itoa2($worker_hashrate_15_mins['hashrate']) . 'h/s';
-            $workers[$key]['last_share'] = self::lastFoundBlockTime($worker['last_share']);
+          $workers = self::getWorkers($db, $data['miner_address'], $data['coin_id'], $redis);
+
+          if (self::poolType($data['coin_id']) == 'yiimp') {
+            // Estimated earnings
+            $total_shares = self::sumTotalShares($db, self::miner_getAlgos()[$data['coin_id']]);
+            $total_user_shares = self::sumTotalShares($db, self::miner_getAlgos()[$data['coin_id']], $user['id']);
+            $user_round_share = $total_user_shares['total_user_hash'] / $total_shares['total_user_hash'] * 100;
+            $user_estimated_earning = $block_rewards[$data['coin_id']] / 100 * $user_round_share;
+
+
+            // Immature balance
+            $immature_balance = self::getImmatureBalance($db, $data['coin_id'], $user['id']);
+            $pending_balance = self::getPendingBalance($db, $data['coin_id'], $user['id']);
+
+            // Earnings
+            $earnings_last_hour = self::getUserEarnings($db, $data['coin_id'], $user['id'], 60 * 60 * 1);
+            $earnings_last_3_hours = self::getUserEarnings($db, $data['coin_id'], $user['id'], 60 * 60 * 3);
+            $earnings_last_24_hours = self::getUserEarnings($db, $data['coin_id'], $user['id'], 60 * 60 * 24);
+            $earnings_last_7_days = self::getUserEarnings($db, $data['coin_id'], $user['id'], 60 * 60 * 24 * 7);
+            $earnings_last_30_days = self::getUserEarnings($db, $data['coin_id'], $user['id'], 60 * 60 * 24 * 30);
+
+
+            // Payouts
+            $payouts = self::getPayouts($db, $data['coin_id'], $user['id']);
+            $total_paid = self::getTotalPayout($db, $data['coin_id'], $user['id']);
           }
-
-          // Estimated earnings
-          $total_shares = self::sumTotalShares($db, self::miner_getAlgos()[$data['coin_id']]);
-          $total_user_shares = self::sumTotalShares($db, self::miner_getAlgos()[$data['coin_id']], $user['id']);
-          $user_round_share = $total_user_shares['total_user_hash'] / $total_shares['total_user_hash'] * 100;
-          $user_estimated_earning = $block_rewards[$data['coin_id']] / 100 * $user_round_share;
-
-          // Immature balance
-          $immature_balance = self::getImmatureBalance($db, $data['coin_id'], $user['id']);
-          $pending_balance = self::getPendingBalance($db, $data['coin_id'], $user['id']);
-
-          // Earnings
-          $earnings_last_hour = self::getUserEarnings($db, $data['coin_id'], $user['id'], 60 * 60 * 1);
-          $earnings_last_3_hours = self::getUserEarnings($db, $data['coin_id'], $user['id'], 60 * 60 * 3);
-          $earnings_last_24_hours = self::getUserEarnings($db, $data['coin_id'], $user['id'], 60 * 60 * 24);
-          $earnings_last_7_days = self::getUserEarnings($db, $data['coin_id'], $user['id'], 60 * 60 * 24 * 7);
-          $earnings_last_30_days = self::getUserEarnings($db, $data['coin_id'], $user['id'], 60 * 60 * 24 * 30);
-
-          // Payouts
-          $payouts = self::getPayouts($db, $data['coin_id'], $user['id']);
-          $total_paid = self::getTotalPayout($db, $data['coin_id'], $user['id']);
 
         }
 
