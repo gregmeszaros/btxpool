@@ -97,10 +97,7 @@ if (!empty($callback)) {
 // Json API requests
 else {
 
-  $data = [];
-
-  // Standard API JSON responses
-  if(!empty($wallet) && !empty($coin)) {
+  if ($type == 'coininfo') {
 
     /**
      * Helper class
@@ -108,30 +105,106 @@ else {
      * Include only when we need it
      */
     include_once('minerHelper.php');
-    $user = minerHelper::getAccount($conn, null, $wallet);
-    $immature_balance = minerHelper::getImmatureBalance($conn, $user['coinid'], $user['id']);
-    $total_paid = minerHelper::getTotalPayout($conn, $user['coinid'], $user['id']);
-    $active_workers = count(minerHelper::getWorkers($conn, $wallet));
+    $redis = include_once(__DIR__ . '/../config-redis.php');
 
-    $earnings_last_hour = minerHelper::getUserEarnings($conn, $user['coinid'], $user['id'], 60 * 60 * 1);
-    $earnings_last_3_hours = minerHelper::getUserEarnings($conn, $user['coinid'], $user['id'], 60 * 60 * 3);
-    $earnings_last_24_hours = minerHelper::getUserEarnings($conn, $user['coinid'], $user['id'], 60 * 60 * 24);
+    $data = [];
 
-    $data['coin'] = $coin;
-    $data['miner_address'] = $user['username'];
-    $data['immature_balance'] = minerHelper::roundSimple($immature_balance['immature_balance']);
-    $data['earnings_last_hour'] = minerHelper::roundSimple($earnings_last_hour['total_earnings']);
-    $data['earnings_last_3_hours'] = minerHelper::roundSimple($earnings_last_3_hours['total_earnings']);
-    $data['earnings_last_24_hours'] = minerHelper::roundSimple($earnings_last_24_hours['total_earnings']);
-    $data['pending_payout'] = minerHelper::roundSimple($user['balance']);
-    $data['total_paid'] = minerHelper::roundSimple($total_paid['total_payout']);
-    $data['active_workers'] = $active_workers;
-    $data['request_time'] = time();
+    $conn_btx = include(__DIR__ . '/../config-bitcore.php');
+    $conn_lux = include(__DIR__ . '/../config-lux.php');
+    $conn_bitsend = include(__DIR__ . '/../config-bitsend.php');
+    $conn_raven = include(__DIR__ . '/../config-raven.php');
+
+    $pool_hashrate_bitcore = minerHelper::getPoolHashrateStats($conn_btx, minerHelper::miner_getAlgos()[1425], 1800, $redis);
+    $pool_hashrate_lux = minerHelper::getPoolHashrateStats($conn_lux, minerHelper::miner_getAlgos()[1427], 1800, $redis);
+    $pool_hashrate_bitsend = minerHelper::getPoolHashrateStats($conn_bitsend, minerHelper::miner_getAlgos()[1429], 1800, $redis);
+    $pool_hashrate_raven = minerHelper::getPoolHashrateStats($conn_raven, minerHelper::miner_getAlgos()[1430], 1800, $redis);
+
+    $total_miners_bitcore = minerHelper::countMiners($conn_btx,1425)['total_count'] ?? 0;
+    $total_miners_lux = minerHelper::countMiners($conn_lux,1427)['total_count'] ?? 0;
+    $total_miners_bitsend = minerHelper::countMiners($conn_bitsend,1429)['total_count'] ?? 0;
+    $total_miners_raven = minerHelper::countMiners($conn_raven,1430)['total_count'] ?? 0;
+
+    $data['btx'] = [
+      'symbol' => 'BTX',
+      'name' => 'Bitcore',
+      'algo' => 'TimeTravel10',
+      'port' => ['8001', '1111'],
+      'pool_hashrate' => $pool_hashrate_bitcore['hashrate'],
+      'active_miners' => $total_miners_bitcore,
+      'fee' => minerHelper::getPoolFee()['bitcore']
+    ];
+
+    $data['lux'] = [
+      'symbol' => 'LUX',
+      'name' => 'Luxcoin',
+      'algo' => 'phi2',
+      'port' => ['8003'],
+      'pool_hashrate' => $pool_hashrate_lux['hashrate'],
+      'active_miners' => $total_miners_lux,
+      'fee' => minerHelper::getPoolFee()['phi2']
+    ];
+
+    $data['bsd'] = [
+      'symbol' => 'BSD',
+      'name' => 'Bitsend',
+      'algo' => 'xevan',
+      'port' => ['8005'],
+      'pool_hashrate' => $pool_hashrate_bitsend['hashrate'],
+      'active_miners' => $total_miners_bitsend,
+      'fee' => minerHelper::getPoolFee()['xevan']
+    ];
+
+    $data['rvn'] = [
+      'symbol' => 'RVN',
+      'name' => 'Raven',
+      'algo' => 'x16r',
+      'port' => ['8006'],
+      'pool_hashrate' => $pool_hashrate_raven['hashrate'],
+      'active_miners' => $total_miners_raven,
+      'fee' => minerHelper::getPoolFee()['x16r']
+    ];
+
+    header('Content-type: application/json');
+    print json_encode($data);
+    exit();
 
   }
+  else {
+    $data = [];
 
-  header('Content-type: application/json');
-  print json_encode($data);
-  exit();
+    // Standard API JSON responses
+    if (!empty($wallet) && !empty($coin)) {
 
+      /**
+       * Helper class
+       * @var minerHelper.php
+       * Include only when we need it
+       */
+      include_once('minerHelper.php');
+      $user = minerHelper::getAccount($conn, null, $wallet);
+      $immature_balance = minerHelper::getImmatureBalance($conn, $user['coinid'], $user['id']);
+      $total_paid = minerHelper::getTotalPayout($conn, $user['coinid'], $user['id']);
+      $active_workers = count(minerHelper::getWorkers($conn, $wallet));
+
+      $earnings_last_hour = minerHelper::getUserEarnings($conn, $user['coinid'], $user['id'], 60 * 60 * 1);
+      $earnings_last_3_hours = minerHelper::getUserEarnings($conn, $user['coinid'], $user['id'], 60 * 60 * 3);
+      $earnings_last_24_hours = minerHelper::getUserEarnings($conn, $user['coinid'], $user['id'], 60 * 60 * 24);
+
+      $data['coin'] = $coin;
+      $data['miner_address'] = $user['username'];
+      $data['immature_balance'] = minerHelper::roundSimple($immature_balance['immature_balance']);
+      $data['earnings_last_hour'] = minerHelper::roundSimple($earnings_last_hour['total_earnings']);
+      $data['earnings_last_3_hours'] = minerHelper::roundSimple($earnings_last_3_hours['total_earnings']);
+      $data['earnings_last_24_hours'] = minerHelper::roundSimple($earnings_last_24_hours['total_earnings']);
+      $data['pending_payout'] = minerHelper::roundSimple($user['balance']);
+      $data['total_paid'] = minerHelper::roundSimple($total_paid['total_payout']);
+      $data['active_workers'] = $active_workers;
+      $data['request_time'] = time();
+
+    }
+
+    header('Content-type: application/json');
+    print json_encode($data);
+    exit();
+  }
 }

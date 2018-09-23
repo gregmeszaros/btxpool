@@ -15,13 +15,9 @@ class minerHelper {
       $base_route = 'index.php?coin=' . $coin . '&page=';
       $main_blockchain_url = [
         'bitcore' => 'https://chainz.cryptoid.info/btx/',
-        'bulwark' => 'https://altmix.org/coins/10-Bulwark/explorer/',
         'lux' => 'https://chainz.cryptoid.info/lux/',
-        'gobyte' => 'https://explorer.gobyte.network/',
         'bitsend' => 'https://chainz.cryptoid.info/bsd/',
-        'raven' => 'http://explorer.threeeyed.info/',
-        'megacoin' => 'https://chainz.cryptoid.info/mec/',
-        'phantomx' => 'https://altmix.org/coins/21-PhaNtomX/explorer/'
+        'raven' => 'https://ravencoin.network/',
       ];
 
       $explorer = $main_blockchain_url[$coin];
@@ -142,12 +138,12 @@ class minerHelper {
     return [
       '1425' => 'bitcore',
       '1426' => 'nist5',
-      '1427' => 'phi',
+      '1427' => 'phi2',
       '1428' => 'neoscrypt',
       '1429' => 'xevan',
       '1430' => 'x16r',
       '1431' => 'scrypt',
-      '1432' => 'x11'
+      '1432' => 'lyra2z'
     ];
   }
 
@@ -160,12 +156,12 @@ class minerHelper {
     return [
       'bitcore' => 0.25,
       'nist5' => 0.1,
-      'phi' => 0.1,
+      'phi2' => 0.1,
       'neoscrypt' => 0.1,
       'xevan' => 0.1,
       'x16r' => 0.1,
       'scrypt' => 1,
-      'x11' => 1
+      'lyra2z' => 0.1
     ];
   }
 
@@ -258,7 +254,7 @@ class minerHelper {
    */
   public static function getWorkers($db, $miner_address = "") {
     if (!empty($miner_address)) {
-      $stmt = $db->prepare("SELECT * FROM workers where name = :miner_address");
+      $stmt = $db->prepare("SELECT w.*, MAX(s.time) as last_share FROM workers w LEFT JOIN shares s ON s.workerid = w.id WHERE w.name = :miner_address GROUP BY w.id");
       $stmt->execute([
         ':miner_address' => $miner_address
       ]);
@@ -341,7 +337,7 @@ class minerHelper {
   public static function getBlocks($db, $coin_id, $miner_address = "") {
     // @TODO -> if we have miner address join with earnings!
     // @TODO -> cache the call for 2 mins
-    $stmt = $db->prepare("SELECT b.id, b.coin_id, b.height, b.confirmations, b.time, b.userid, b.amount, b.category, ac.username FROM blocks b INNER JOIN accounts ac ON b.userid = ac.id WHERE b.coin_id = :coin_id ORDER BY b.height DESC LIMIT 0, 50");
+    $stmt = $db->prepare("SELECT b.id, b.coin_id, b.height, b.confirmations, b.time, b.userid, b.amount, b.category, ac.username FROM blocks b INNER JOIN accounts ac ON b.userid = ac.id WHERE b.coin_id = :coin_id ORDER BY b.time DESC LIMIT 0, 50");
     $stmt->execute([
       ':coin_id' => $coin_id
     ]);
@@ -482,7 +478,6 @@ AND workerid IN (SELECT id FROM workers WHERE algo=:algo AND id = :worker_id AND
       // We have the data cached
       if (!empty($total_hashrate)) {
         $data['hashrate'] = $total_hashrate;
-        print '<!–- total_pool_hashrate - return from redis –>';
         return $data;
       }
     }
@@ -502,7 +497,6 @@ AND workerid IN (SELECT id FROM workers WHERE algo=:algo AND id = :worker_id AND
       $redis->set($algo . '__total_pool_hashrate_' . $step, $data['hashrate'], 300);
     }
 
-    print '<!–- total_pool_hashrate - return from mysql –>';
     // No cache just pure sql
     return $data ?? $stmt->fetch(PDO::FETCH_ASSOC);
   }
@@ -617,12 +611,12 @@ AND workerid IN (SELECT id FROM workers WHERE algo=:algo AND id = :worker_id AND
     return [
       'bitcore' => 1.25,
       'nist5' => 0.5,
-      'phi' => 0.5,
+      'phi2' => 0.5,
       'neoscrypt' => 1,
       'xevan' => 1,
       'x16r' => 0.5,
       'scrypt' => 1.25,
-      'x11' => 1
+      'lyra2z' => 0.5
     ];
   }
 
@@ -705,6 +699,7 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
     $interval = self::miner_hashrate_step($step);
     $delay = time()-$interval;
 
+    // hint -> ALTER TABLE earnings ADD INDEX earnings_list (userid, coinid, create_time);
     $stmt = $db->prepare("SELECT userid, SUM(amount) AS total_earnings FROM earnings WHERE userid = :userid AND coinid = :coinid AND create_time > :delay");
     $stmt->execute([
       ':userid' => $user_id,
@@ -840,74 +835,42 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
 
         // General coin info
         $network_info_bitcore = self::getNetworkInfo(1425, $redis);
-        $network_info_bulwark = self::getNetworkInfo(1426, $redis);
         $network_info_lux = self::getNetworkInfo(1427, $redis);
-        $network_info_gobyte = self::getNetworkInfo(1428, $redis);
         $network_info_bitsend = self::getNetworkInfo(1429, $redis);
         $network_info_raven = self::getNetworkInfo(1430, $redis);
-        $network_info_megacoin = self::getNetworkInfo(1431, $redis);
-        $network_info_phantomx = self::getNetworkInfo(1432, $redis);
 
         $conn_btx = include(__DIR__ . '/../config-bitcore.php');
-        $conn_bulwark = include(__DIR__ . '/../config-bulwark.php');
         $conn_lux = include(__DIR__ . '/../config-lux.php');
-        $conn_gobyte = include(__DIR__ . '/../config-gobyte.php');
         $conn_bitsend = include(__DIR__ . '/../config-bitsend.php');
         $conn_raven = include(__DIR__ . '/../config-raven.php');
-        $conn_megacoin = include(__DIR__ . '/../config-megacoin.php');
-        $conn_phantomx = include(__DIR__ . '/../config-phantomx.php');
 
         $pool_hashrate_bitcore = minerHelper::getPoolHashrateStats($conn_btx, minerHelper::miner_getAlgos()[1425], 1800, $redis);
-        $pool_hashrate_bulwark = minerHelper::getPoolHashrateStats($conn_bulwark, minerHelper::miner_getAlgos()[1426], 1800, $redis);
         $pool_hashrate_lux = minerHelper::getPoolHashrateStats($conn_lux, minerHelper::miner_getAlgos()[1427], 1800, $redis);
-        $pool_hashrate_gobyte = minerHelper::getPoolHashrateStats($conn_gobyte, minerHelper::miner_getAlgos()[1428], 1800, $redis);
         $pool_hashrate_bitsend = minerHelper::getPoolHashrateStats($conn_bitsend, minerHelper::miner_getAlgos()[1429], 1800, $redis);
         $pool_hashrate_raven = minerHelper::getPoolHashrateStats($conn_raven, minerHelper::miner_getAlgos()[1430], 1800, $redis);
-        $pool_hashrate_megacoin = minerHelper::getPoolHashrateStats($conn_megacoin, minerHelper::miner_getAlgos()[1431], 1800, $redis);
-        $pool_hashrate_phantomx = minerHelper::getPoolHashrateStats($conn_phantomx, minerHelper::miner_getAlgos()[1432], 1800, $redis);
 
         $total_miners_bitcore = self::countMiners($conn_btx,1425)['total_count'] ?? 0;
-        $total_miners_bulwark = self::countMiners($conn_bulwark,1426)['total_count'] ?? 0;
         $total_miners_lux = self::countMiners($conn_lux,1427)['total_count'] ?? 0;
-        $total_miners_gobyte = self::countMiners($conn_gobyte,1428)['total_count'] ?? 0;
         $total_miners_bitsend = self::countMiners($conn_bitsend,1429)['total_count'] ?? 0;
         $total_miners_raven = self::countMiners($conn_raven,1430)['total_count'] ?? 0;
-        $total_miners_megacoin = self::countMiners($conn_megacoin,1431)['total_count'] ?? 0;
-        $total_miners_phantomx = self::countMiners($conn_phantomx,1432)['total_count'] ?? 0;
 
         return [
           'total_hashrate_bitcore_gh' => $network_info_bitcore ? $network_info_bitcore['hashrate_gh'] : 0,
-          'total_hashrate_bulwark_gh' => $network_info_bulwark ? $network_info_bulwark['hashrate_gh'] : 0,
           'total_hashrate_lux_gh' => $network_info_lux ? $network_info_lux['hashrate_gh'] : 0,
-          'total_hashrate_gobyte_gh' => $network_info_gobyte ? $network_info_gobyte['hashrate_gh'] : 0,
           'total_hashrate_bitsend_gh' => $network_info_bitsend ? $network_info_bitsend['hashrate_gh'] : 0,
           'total_hashrate_raven_gh' => $network_info_raven ? $network_info_raven['hashrate_gh'] : 0,
-          'total_hashrate_megacoin_gh' => $network_info_megacoin ? $network_info_megacoin['hashrate_gh'] : 0,
-          'total_hashrate_phantomx_gh' => $network_info_phantomx ? $network_info_phantomx['hashrate_gh'] : 0,
           'difficulty_bitcore' => $network_info_bitcore ? $network_info_bitcore['difficulty'] : 0,
-          'difficulty_bulwark' => $network_info_bulwark ? $network_info_bulwark['difficulty'] : 0,
           'difficulty_lux' => $network_info_lux ? $network_info_lux['difficulty'] : 0,
-          'difficulty_gobyte' => $network_info_gobyte ? $network_info_gobyte['difficulty'] : 0,
           'difficulty_bitsend' => $network_info_bitsend ? $network_info_bitsend['difficulty'] : 0,
           'difficulty_raven' => $network_info_raven ? $network_info_raven['difficulty'] : 0,
-          'difficulty_megacoin' => $network_info_megacoin ? $network_info_megacoin['difficulty'] : 0,
-          'difficulty_phantomx' => $network_info_phantomx ? $network_info_phantomx['difficulty'] : 0,
           'pool_hashrate_bitcore' => $pool_hashrate_bitcore ? $pool_hashrate_bitcore['hashrate'] : 0,
-          'pool_hashrate_bulwark' => $pool_hashrate_bulwark ? $pool_hashrate_bulwark['hashrate'] : 0,
           'pool_hashrate_lux' => $pool_hashrate_lux ? $pool_hashrate_lux['hashrate'] : 0,
-          'pool_hashrate_gobyte' => $pool_hashrate_gobyte ? $pool_hashrate_gobyte['hashrate'] : 0,
           'pool_hashrate_bitsend' => $pool_hashrate_bitsend ? $pool_hashrate_bitsend['hashrate'] : 0,
           'pool_hashrate_raven' => $pool_hashrate_raven ? $pool_hashrate_raven['hashrate'] : 0,
-          'pool_hashrate_megacoin' => $pool_hashrate_megacoin ? $pool_hashrate_megacoin['hashrate'] : 0,
-          'pool_hashrate_phantomx' => $pool_hashrate_phantomx ? $pool_hashrate_phantomx['hashrate'] : 0,
           'total_miners_bitcore' => $total_miners_bitcore,
-          'total_miners_bulwark' => $total_miners_bulwark,
           'total_miners_lux' => $total_miners_lux,
-          'total_miners_gobyte' => $total_miners_gobyte,
           'total_miners_bitsend' => $total_miners_bitsend,
           'total_miners_raven' => $total_miners_raven,
-          'total_miners_megacoin' => $total_miners_megacoin,
-          'total_miners_phantomx' => $total_miners_phantomx,
           'seo_site_name' => $data['seo_site_name'],
           'gpus' => json_encode(
             [
@@ -929,12 +892,12 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
           $block_rewards = [];
           $block_rewards[1425] = 3.125;
           $block_rewards[1426] = 21.875;
-          $block_rewards[1427] = 10;
+          $block_rewards[1427] = 8;
           $block_rewards[1428] = 7.5;
           $block_rewards[1429] = 5;
           $block_rewards[1430] = 5000;
           $block_rewards[1431] = 6.25;
-          $block_rewards[1432] = 23;
+          $block_rewards[1432] = 5;
 
           // Get workers for miner address
           $workers = self::getWorkers($db, $data['miner_address']);
@@ -944,6 +907,7 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
             $workers[$key]['worker'] = $worker['worker'];
             $workers[$key]['hashrate'] = self::Itoa2($worker_hashrate['hashrate']) . 'h/s';
             $workers[$key]['hashrate_15_mins'] = self::Itoa2($worker_hashrate_15_mins['hashrate']) . 'h/s';
+            $workers[$key]['last_share'] = self::lastFoundBlockTime($worker['last_share']);
           }
 
           // Estimated earnings

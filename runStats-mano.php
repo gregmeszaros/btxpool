@@ -1,7 +1,7 @@
 <?php
 
 // Connect mysql
-$conn = include_once('config-phantomx.php');
+$conn = include_once('config-mano.php');
 
 // RPC wallet
 include_once('wallet-rpc.php');
@@ -420,7 +420,7 @@ function sendExtraPayouts($db, $coin_id = 1425, $extra_payout = FALSE) {
   }
 
   // Get the accounts which due payout
-  $stmt = $db->prepare("SELECT * FROM accounts WHERE balance > :min_payout AND coinid = :coin_id ORDER BY balance DESC");
+  $stmt = $db->prepare("SELECT * FROM accounts WHERE balance > :min_payout AND coinid = :coin_id ORDER BY balance DESC LIMIT 0, 300");
   $stmt->execute([
     ':min_payout' => $min_payout,
     ':coin_id' => $coin_id
@@ -428,36 +428,47 @@ function sendExtraPayouts($db, $coin_id = 1425, $extra_payout = FALSE) {
 
   $balances = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+  $accounts = [];
   foreach ($balances as $user_account) {
-    print 'Send payouts: ' . $user_account['id'] . ' -- ' . $user_account['balance'] . "\n";
-    // Try to clear the balance
-    $tx = $remote->sendtoaddress($user_account['username'], round($user_account['balance'], 8));
+    $accounts[$user_account['username']] = round($user_account['balance'], 8);
+  }
 
-    if(!$tx) {
-      $error = $remote->error;
-      print "Send payouts ERROR: " . $error . ' -- ' . $user_account['username'] . ' -- ' . $user_account['balance'];
-    }
-    else {
-      // Add entry about the transaction
-      $stmt = $db->prepare("INSERT INTO payouts(account_id, time, amount, fee, tx, idcoin) VALUES(:account_id, :time, :amount, :fee, :tx, :idcoin)");
-      $stmt->execute([
-        ':account_id' => $user_account['id'],
-        ':time' => time(),
-        ':amount' => $user_account['balance'],
-        ':fee' => 0,
-        ':tx' => $tx,
-        ':idcoin' => $coin_id
-      ]);
+  // Sendmany transaction if we have tx id continue or throw error
+  $tx = $remote->sendmany('', $accounts, 1, '');
+  if(!$tx) {
+    $error = $remote->error;
+    print "Send payouts ERROR: " . $error . ' -- ' . json_encode($accounts);
+  }
+  else {
+    foreach ($balances as $user_account) {
+      print 'Sent payout for: ' . $user_account['id'] . '-- ' . $user_account['username'] . ' -- ' . $user_account['balance'] . "\n";
 
-      // Deduct user balance
-      $stmt = $db->prepare("UPDATE accounts SET balance = balance - :payout WHERE id = :userid");
-      $stmt->execute([
-        ':payout' => $user_account['balance'],
-        ':userid' => $user_account['id']
-      ]);
+      if(!$tx) {
+        $error = $remote->error;
+        print "Send payouts ERROR: " . $error . ' -- ' . json_encode($accounts);
+      }
+      else {
+        // Add entry about the transaction
+        $stmt = $db->prepare("INSERT INTO payouts(account_id, time, amount, fee, tx, idcoin) VALUES(:account_id, :time, :amount, :fee, :tx, :idcoin)");
+        $stmt->execute([
+          ':account_id' => $user_account['id'],
+          ':time' => time(),
+          ':amount' => $user_account['balance'],
+          ':fee' => 0,
+          ':tx' => $tx,
+          ':idcoin' => $coin_id
+        ]);
 
+        // Deduct user balance
+        $stmt = $db->prepare("UPDATE accounts SET balance = 0 WHERE id = :userid");
+        $stmt->execute([
+          ':userid' => $user_account['id']
+        ]);
+      }
     }
   }
+
+
 }
 
 /**
@@ -480,8 +491,8 @@ function updateNetworkHashrate($db, $coin_id = 1425) {
     $redis = include_once(__DIR__ . '/config-redis.php');
 
     $data = [];
-    $data['hashrate_gh'] = $network_info['netmhashps'] / 1000 / 1000;
-    $data['difficulty'] = $network_info['difficulty']['proof-of-work'];
+    $data['hashrate_gh'] = $network_info['networkhashps'] / 1000 / 1000 / 1000;
+    $data['difficulty'] = $network_info['difficulty'];
 
     $redis->set('network_info_' . $coin_id, json_encode($data));
   }
