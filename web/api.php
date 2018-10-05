@@ -71,6 +71,24 @@ if (!empty($callback)) {
       $data = str_putcsv($array_data);
       break;
 
+    case 'user-payouts':
+      // Sum of user payouts for 1 week period
+      $stmt = $conn->prepare("SELECT
+        CONCAT(MONTH(FROM_UNIXTIME(time)), '/', DAY(FROM_UNIXTIME(time)), '/', YEAR(FROM_UNIXTIME(time))) AS DayChart,
+        SUM(amount) AS TotalPayout
+        FROM payouts
+        WHERE time > (UNIX_TIMESTAMP(NOW()) - (7 * 24 * 60 * 60))
+        AND account_id = :uid
+        GROUP BY DayChart
+        ORDER BY AVG(id) ASC");
+      $stmt->execute([
+        ':uid' => $uid
+      ]);
+
+      $array_data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+      $data = str_putcsv($array_data);
+      break;
+
     case 'worker-distribution':
       // Total miners distribution graph
       $stmt = $conn->prepare("SELECT version, COUNT(*) as worker_count FROM workers GROUP BY version");
