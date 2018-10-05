@@ -30,7 +30,7 @@
   function setTimeOffset() {
     // Create all the dates necessary
     var now = later = d1 = d2 = new Date(),
-      set = { 'offset': now.getTimezoneOffset(), 'dst': 0 }
+      set = { 'offset': now.getTimezoneOffset() * -1, 'dst': 0 }
     // Set time for how long the cookie should be saved - 1 year
     later.setTime(now.getTime() + 365 * 24 * 60 * 60 * 1000);
     // Date one is set to January 1st of this year
