@@ -587,6 +587,15 @@ AND workerid IN (SELECT id FROM workers WHERE algo=:algo AND id = :worker_id AND
    */
   public static function checkWallet($coin_seo_name = FALSE) {
 
+    // Check for the time_zone cookie, if set then reset the default timezone
+    if (!empty($_COOKIE['userLocalTimeZone'])) {
+      $time_zone = json_decode($_COOKIE['userLocalTimeZone'], true);
+      // Make sure there's an available abbreviation before setting the timezone
+      if (timezone_name_from_abbr( '', $time_zone['offset'] +60, $time_zone['dst'])) {
+        date_default_timezone_set( timezone_name_from_abbr('', $time_zone['offset'] +60, $time_zone['dst']));
+      }
+    }
+
     // First check if we have something in get
     if (!empty($_GET['wallet'])) {
       // Update cookie
