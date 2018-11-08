@@ -265,11 +265,16 @@ class minerHelper {
    * @return mixed
    */
   public static function getMiners($db, $coin_id) {
-    $stmt = $db->prepare("SELECT DISTINCT userid, username, COUNT(w.id) AS workers_count FROM accounts ac INNER JOIN workers w ON ac.id = w.userid WHERE ac.coinid = :coin_id GROUP BY userid ORDER BY workers_count DESC");
-    $stmt->execute([
-      ':coin_id' => $coin_id,
-    ]);
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    if (self::poolType($coin_id) == 'yiimp') {
+      $stmt = $db->prepare("SELECT DISTINCT userid, username, COUNT(w.id) AS workers_count FROM accounts ac INNER JOIN workers w ON ac.id = w.userid WHERE ac.coinid = :coin_id GROUP BY userid ORDER BY workers_count DESC");
+      $stmt->execute([
+        ':coin_id' => $coin_id,
+      ]);
+      return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    else {
+      return [];
+    }
   }
 
   /**
@@ -305,7 +310,7 @@ class minerHelper {
         $workers_decoded = unserialize($user_account['workers']);
         if (!empty($workers_decoded['workers'])) {
           foreach ($workers_decoded['workers'] as $key => $worker) {
-            print_r($worker); die();
+            //print_r($workers_decoded); die();
             $workers[$key]['worker'] = substr($worker['name'], strpos($worker['name'], ".") + 1, strlen($worker['name']));
             $workers[$key]['hashrate'] = $worker['hashrateString'];
           }
@@ -350,7 +355,8 @@ class minerHelper {
       return $stmt->fetch(PDO::FETCH_ASSOC);
     }
     else {
-      return ['total_count' => 22];
+      $read_data = minerHelper::getPoolStatsEquihash($db, $coin_id);
+      return ['total_count' => $read_data[0]['workerCount']];
     }
   }
 
@@ -379,7 +385,13 @@ class minerHelper {
     // Default pool implementation
     $pool_type = 'yiimp';
 
-    if ($algo == 'votecoin') {
+    $equi_algos = [
+      'votecoin',
+      'anon',
+      'zel'
+    ];
+
+    if (in_array($algo, $equi_algos)) {
       $pool_type = 's-nomp';
     }
     else {
@@ -422,13 +434,18 @@ class minerHelper {
    * @param string $miner_address
    */
   public static function getBlocks($db, $coin_id, $miner_address = "") {
-    // @TODO -> if we have miner address join with earnings!
-    // @TODO -> cache the call for 2 mins
-    $stmt = $db->prepare("SELECT b.id, b.coin_id, b.height, b.confirmations, b.time, b.userid, b.amount, b.category, ac.username FROM blocks b INNER JOIN accounts ac ON b.userid = ac.id WHERE b.coin_id = :coin_id ORDER BY b.time DESC LIMIT 0, 50");
-    $stmt->execute([
-      ':coin_id' => $coin_id
-    ]);
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    if (self::poolType($coin_id) == 'yiimp') {
+      // @TODO -> if we have miner address join with earnings!
+      // @TODO -> cache the call for 2 mins
+      $stmt = $db->prepare("SELECT b.id, b.coin_id, b.height, b.confirmations, b.time, b.userid, b.amount, b.category, ac.username FROM blocks b INNER JOIN accounts ac ON b.userid = ac.id WHERE b.coin_id = :coin_id ORDER BY b.time DESC LIMIT 0, 50");
+      $stmt->execute([
+        ':coin_id' => $coin_id
+      ]);
+      return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    else {
+      return [];
+    }
   }
 
   /**
@@ -457,7 +474,8 @@ class minerHelper {
       poolHashRate = :poolHashRate,
       poolSolsString = :poolSolsString,
       networkDiff = :networkDiff,
-      minerCount = :minerCount
+      minerCount = :minerCount,
+      workerCount = :workerCount
       WHERE coin = :coin_id AND id = :id");
 
     return $stmt->execute([
@@ -466,6 +484,7 @@ class minerHelper {
       ':poolSolsString' => $data['poolSolsString'],
       ':networkDiff' => $data['networkDiff'],
       ':minerCount' => $data['minerCount'],
+      ':workerCount' => $data['workerCount'],
       ':coin_id' => $data['coin_id'],
       ':id' => $data['id']
     ]);
@@ -990,10 +1009,10 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
         $pool_hashrate_bitsend = minerHelper::getPoolHashrateStats($conn_bitsend, minerHelper::miner_getAlgos()[1429], 1800, $redis);
         $pool_hashrate_raven = minerHelper::getPoolHashrateStats($conn_raven, minerHelper::miner_getAlgos()[1430], 1800, $redis);
 
-        $total_miners_bitcore = self::countMiners($conn_btx,1425)['total_count'] ?? 0;
-        $total_miners_lux = self::countMiners($conn_lux,1427)['total_count'] ?? 0;
-        $total_miners_bitsend = self::countMiners($conn_bitsend,1429)['total_count'] ?? 0;
-        $total_miners_raven = self::countMiners($conn_raven,1430)['total_count'] ?? 0;
+        $total_miners_bitcore = self::countMiners($conn_btx, 1425)['total_count'] ?? 0;
+        $total_miners_lux = self::countMiners($conn_lux, 1427)['total_count'] ?? 0;
+        $total_miners_bitsend = self::countMiners($conn_bitsend, 1429)['total_count'] ?? 0;
+        $total_miners_raven = self::countMiners($conn_raven, 1430)['total_count'] ?? 0;
 
         return [
           'total_hashrate_bitcore_gh' => $network_info_bitcore ? $network_info_bitcore['hashrate_gh'] : 0,
@@ -1075,7 +1094,15 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
         }
 
         // Network info
-        $network_info = self::getNetworkInfo($data['coin_id'], $redis);
+        if (self::poolType($data['coin_id']) == 'yiimp') {
+          $network_info = self::getNetworkInfo($data['coin_id'], $redis);
+        }
+        else {
+          $network_info = [];
+          $poolStatsEqui = self::getPoolStatsEquihash($db, $data['coin_id']);
+          $network_info['difficulty'] = $poolStatsEqui ? $poolStatsEqui[0]['networkDiff'] : 0;
+        }
+
         return [
           'workers' => $workers ?? [],
           'workers_count' => !empty($workers) ? count($workers) : 0,

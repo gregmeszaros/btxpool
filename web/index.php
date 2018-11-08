@@ -80,9 +80,17 @@ $data['coin_seo_name'] = $coin_seo_name;
 $data['seo_site_name'] = $seo_site_name;
 
 if (!empty($conn)) {
-  // Get the total pool hashrate
-  $total_pool_hashrate = minerHelper::getPoolHashrateStats($conn, minerHelper::miner_getAlgos()[$data['coin_id']], 1800, $redis);
-  // @TODO -> get total hashrates and miners for all coins? Get it from redis!!
+  if (minerHelper::poolType($coin_id) == 'yiimp') {
+    // Get the total pool hashrate
+    $total_pool_hashrate = minerHelper::getPoolHashrateStats($conn, minerHelper::miner_getAlgos()[$data['coin_id']], 1800, $redis);
+    // @TODO -> get total hashrates and miners for all coins? Get it from redis!!
+  }
+  else {
+    // General coin info - (Equihash pools)
+    $poolStatsVotecoin = minerHelper::getPoolStatsEquihash($conn, $data['coin_id']);
+    $total_pool_hashrate = [];
+    $total_pool_hashrate['hashrate'] = $poolStatsVotecoin ? $poolStatsVotecoin[0]['poolHashRate'] : 0;
+  }
 }
 
 // Prepare twig

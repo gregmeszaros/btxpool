@@ -64,6 +64,7 @@ foreach ($coins as $coin_id => $coin) {
       'poolSolsString' => $total_pool_hash,
       'networkDiff' => $network_difficulty,
       'minerCount' => $active_miners,
+      'workerCount' => $active_workers,
       'id' => $read_data[0]['id']
     ]);
 
