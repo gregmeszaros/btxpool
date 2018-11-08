@@ -96,21 +96,31 @@ class minerHelper {
   /**
    * Conversion for hash rates
    */
-  public static function Itoa2($i, $precision = 1) {
+  public static function Itoa2($i, $algo = FALSE, $precision = 1) {
     $s = '';
-    if($i >= 1000*1000*1000*1000*1000)
-      $s = round(floatval($i)/1000/1000/1000/1000/1000, $precision) ." P";
-    else if($i >= 1000*1000*1000*1000)
-      $s = round(floatval($i)/1000/1000/1000/1000, $precision) ." T";
-    else if($i >= 1000*1000*1000)
-      $s = round(floatval($i)/1000/1000/1000, $precision) ." G";
-    else if($i >= 1000*1000)
-      $s = round(floatval($i)/1000/1000, $precision) ." M";
-    else if($i >= 1000)
-      $s = round(floatval($i)/1000, $precision) ." k";
-    else
+    if($i >= 1000*1000*1000*1000*1000) {
+      $s = round(floatval($i)/1000/1000/1000/1000/1000, $precision) ." Ph/s";
+    }
+    else if($i >= 1000*1000*1000*1000) {
+      $s = round(floatval($i)/1000/1000/1000/1000, $precision) ." Th/s";
+    }
+    else if($i >= 1000*1000*1000) {
+      if (self::poolType($algo) == 'yiimp') {
+        $s = round(floatval($i)/1000/1000/1000, $precision) ." Gh/s";
+      }
+      else {
+        $s = round(floatval($i)/1000/1000/1000, $precision) ." KSol/s";
+      }
+    }
+    else if($i >= 1000*1000) {
+      $s = round(floatval($i)/1000/1000, $precision) ." Mh/s";
+    }
+    else if($i >= 1000) {
+      $s = round(floatval($i)/1000, $precision) ." kh/s";
+    }
+    else {
       $s = round(floatval($i), $precision) . " ";
-
+    }
     return $s;
   }
 
@@ -297,8 +307,8 @@ class minerHelper {
           $worker_hashrate = self::getHashrateStats($db, $coin_id, $worker['version'], $worker['id'], $worker['name'],300, $redis);
           $worker_hashrate_15_mins = self::getHashrateStats($db, $coin_id, $worker['version'], $worker['id'], $worker['name'], 900, $redis);
           $workers[$key]['worker'] = $worker['worker'];
-          $workers[$key]['hashrate'] = self::Itoa2($worker_hashrate['hashrate']) . 'h/s';
-          $workers[$key]['hashrate_15_mins'] = self::Itoa2($worker_hashrate_15_mins['hashrate']) . 'h/s';
+          $workers[$key]['hashrate'] = self::Itoa2($worker_hashrate['hashrate'], $coin_id);
+          $workers[$key]['hashrate_15_mins'] = self::Itoa2($worker_hashrate_15_mins['hashrate'], $coin_id);
           $workers[$key]['last_share'] = self::lastFoundBlockTime($worker['last_share']);
         }
 
@@ -1029,7 +1039,7 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
           'pool_hashrate_lux' => $pool_hashrate_lux ? $pool_hashrate_lux['hashrate'] : 0,
           'pool_hashrate_bitsend' => $pool_hashrate_bitsend ? $pool_hashrate_bitsend['hashrate'] : 0,
           'pool_hashrate_raven' => $pool_hashrate_raven ? $pool_hashrate_raven['hashrate'] : 0,
-          'pool_hashrate_votecoin' => $poolStatsVotecoin ? $poolStatsVotecoin[0]['poolSolsString'] : 0,
+          'pool_hashrate_votecoin' => $poolStatsVotecoin ? $poolStatsVotecoin[0]['poolHashRate'] : 0,
           'total_miners_bitcore' => $total_miners_bitcore,
           'total_miners_lux' => $total_miners_lux,
           'total_miners_bitsend' => $total_miners_bitsend,
@@ -1189,6 +1199,3 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
   }
 
 }
-
-
-

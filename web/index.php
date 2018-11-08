@@ -101,8 +101,16 @@ $twig = new Twig_Environment($loader, [
 ]);
 
 // Create some custom functions to twig
-$addFriendlyHash = new Twig_SimpleFunction('showFriendlyHash', function ($hashrate) {
-  return minerHelper::Itoa2($hashrate) . 'h/s';
+$addFriendlyHash = new Twig_SimpleFunction('showFriendlyHash', function ($hashrate, $forceAlgo = FALSE) use ($data, $page) {
+  if ($page == 'index') {
+    $data = [];
+  }
+  
+  if (!empty($forceAlgo) && $forceAlgo !== FALSE) {
+    $data = [];
+    $data['coin_id'] = $forceAlgo;
+  }
+  return minerHelper::Itoa2($hashrate, $data['coin_id']);
 });
 
 $addDateTime = new Twig_SimpleFunction('showDateTime', function ($timestamp) {

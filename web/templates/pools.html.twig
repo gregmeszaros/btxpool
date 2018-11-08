@@ -26,7 +26,7 @@
                         <a href="?page=dashboard&coin=bitcore">Bitcore (BTX)</a> <strong>Port: 8001 or 1111</strong>
                     </td>
                     <td>TimeTravel10</td>
-                    <td>{{ showFriendlyHash(pool_hashrate_bitcore) }}</span> / {{ total_hashrate_bitcore_gh|default('n/a')|round(1) }} Gh/s</td>
+                    <td>{{ showFriendlyHash(pool_hashrate_bitcore) }}</span> | {{ total_hashrate_bitcore_gh|default('n/a')|round(1) }} Gh/s</td>
                     <td>{{ difficulty_bitcore|default('n/a')|round(1)  }}</td>
                     <td class="total-miners">{{ total_miners_bitcore }}</td>
                     <td>1.25%</td>
@@ -37,7 +37,7 @@
                         <a href="?page=dashboard&coin=lux">Luxcoin (LUX)</a> <strong>Port: 8003</strong>
                     </td>
                     <td>phi2</td>
-                    <td>{{ showFriendlyHash(pool_hashrate_lux) }}</span> / {{ total_hashrate_lux_gh|default('n/a')|round(1) }} Gh/s</td>
+                    <td>{{ showFriendlyHash(pool_hashrate_lux) }}</span> | {{ total_hashrate_lux_gh|default('n/a')|round(1) }} Gh/s</td>
                     <td>{{ difficulty_lux|default('n/a')|round(1)  }}</td>
                     <td class="total-miners">{{ total_miners_lux }}</td>
                     <td>0.5%</td>
@@ -48,7 +48,7 @@
                         <a href="?page=dashboard&coin=bitsend">Bitsend (BSD)</a> <strong>Port: 8005</strong>
                     </td>
                     <td>xevan</td>
-                    <td>{{ showFriendlyHash(pool_hashrate_bitsend) }}</span> / {{ total_hashrate_bitsend_gh|default('n/a')|round(1) }} Gh/s</td>
+                    <td>{{ showFriendlyHash(pool_hashrate_bitsend) }}</span> | {{ total_hashrate_bitsend_gh|default('n/a')|round(1) }} Gh/s</td>
                     <td>{{ difficulty_bitsend|default('n/a')|round(1)  }}</td>
                     <td class="total-miners">{{ total_miners_bitsend }}</td>
                     <td>1%</td>
@@ -59,7 +59,7 @@
                         <a href="?page=dashboard&coin=raven">Raven (RVN)</a> <strong>Port: 8006</strong>
                     </td>
                     <td>x16r</td>
-                    <td>{{ showFriendlyHash(pool_hashrate_raven) }}</span> / {{ total_hashrate_raven_gh|default('n/a')|round(1) }} Gh/s</td>
+                    <td>{{ showFriendlyHash(pool_hashrate_raven) }}</span> | {{ total_hashrate_raven_gh|default('n/a')|round(1) }} Gh/s</td>
                     <td>{{ difficulty_raven|default('n/a')|round(1)  }}</td>
                     <td class="total-miners">{{ total_miners_raven }}</td>
                     <td>0.5%</td>
@@ -70,7 +70,7 @@
                         <a href="?page=dashboard&coin=votecoin">Votecoin (VOT)</a> <strong>Port: 3333</strong>
                     </td>
                     <td>equihash (Z9 friendly)</td>
-                    <td>{{ pool_hashrate_votecoin }} </span> / {{ total_hashrate_votecoin_gh }}</td>
+                    <td>{{ showFriendlyHash(pool_hashrate_votecoin, "votecoin") }} </span> | {{ total_hashrate_votecoin_gh }}</td>
                     <td>{{ difficulty_votecoin|default('n/a')|round(1)  }}</td>
                     <td class="total-miners">{{ total_miners_votecoin }}</td>
                     <td>1%</td>
@@ -81,7 +81,7 @@
                         <a href="?page=dashboard&coin=votecoin">ANON (ANON)</a> <strong>Port: 3334</strong>
                     </td>
                     <td>equihash (144_5)</td>
-                    <td>{{ pool_hashrate_anon }} </span> / {{ total_hashrate_anon_gh }}</td>
+                    <td>{{ pool_hashrate_anon }} </span> | {{ total_hashrate_anon_gh }}</td>
                     <td>{{ difficulty_anon|default('n/a')|round(1)  }}</td>
                     <td class="total-miners">{{ total_miners_anon }}</td>
                     <td>1%</td>
@@ -92,7 +92,7 @@
                         <a href="?page=dashboard&coin=zel">ZELCASH (ZEL)</a> <strong>Port: 3335</strong>
                     </td>
                     <td>equihash (144_5)</td>
-                    <td>{{ pool_hashrate_zel }} </span> / {{ total_hashrate_zel_gh }}</td>
+                    <td>{{ pool_hashrate_zel }} </span> | {{ total_hashrate_zel_gh }}</td>
                     <td>{{ difficulty_zel|default('n/a')|round(1)  }}</td>
                     <td class="total-miners">{{ total_miners_zel }}</td>
                     <td>1%</td>
@@ -102,7 +102,7 @@
                         <strong>Summary all coins</strong>
                     </td>
                     <td></td>
-                    {% set total_hash = pool_hashrate_bitcore + pool_hashrate_lux + pool_hashrate_bitsend + pool_hashrate_raven ?? 0 %}
+                    {% set total_hash = pool_hashrate_bitcore + pool_hashrate_lux + pool_hashrate_bitsend + pool_hashrate_raven + pool_hashrate_votecoin ?? 0 %}
                     <td id="total-hash-sum">{{ showFriendlyHash(total_hash) }}</td>
                     <td></td>
                     <td id="all-miners-count"></td>
