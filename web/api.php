@@ -77,10 +77,10 @@ if (!empty($callback)) {
         CONCAT(MONTH(FROM_UNIXTIME(time)), '/', DAY(FROM_UNIXTIME(time)), '/', YEAR(FROM_UNIXTIME(time))) AS DayChart,
         SUM(amount) AS TotalPayout
         FROM payouts
-        WHERE time > (UNIX_TIMESTAMP(NOW()) - (7 * 24 * 60 * 60))
-        AND account_id = :uid
+        WHERE account_id = :uid
         GROUP BY DayChart
-        ORDER BY AVG(id) ASC");
+        ORDER BY AVG(id) DESC
+        LIMIT 14");
       $stmt->execute([
         ':uid' => $uid
       ]);
