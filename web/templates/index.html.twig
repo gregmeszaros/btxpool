@@ -173,14 +173,34 @@
         <div class="minercontent">
             <h2>Instructions - getting started</h2>
 
-            <div><strong>Stratum port</strong></div>
-            <div class="get-started">stratum+tcp://{{ seo_site_name }}:{{ getCoinSettings(coin_seo_name).port }}</div>
+            <div class="tab">
+                <button class="howTotablinks" onclick="openHowToTab(event, 'amd', '{{ coin_seo_name }}')" id="howTodefaultOpen">AMD</button>
+                <button class="howTotablinks" onclick="openHowToTab(event, 'nvidia', '{{ coin_seo_name }}')">NVIDIA</button>
+                <button class="howTotablinks" onclick="openHowToTab(event, 'hiveos', '{{ coin_seo_name }}')">hiveos</button>
+            </div>
 
-            <div><strong>Nvidia cards using <a href="{{  getCoinSettings(coin_seo_name).mine_nvidia_download }}" target="_blank" rel="nofollow">CCMINER</a></strong></div>
-            <div class="get-started">{{ getCoinSettings(coin_seo_name).mine_nvidia }}</div>
+            <div id="amd" class="howTotabcontent">
+                <div><strong>AMD Stratum port</strong></div>
+                <div class="get-started">stratum+tcp://{{ seo_site_name }}:{{ getCoinSettings(coin_seo_name).port }}</div>
 
-            <div><strong>AMD cards using <a href="{{  getCoinSettings(coin_seo_name).mine_amd_download }}" target="_blank" rel="nofollow">SGMINER</a></strong></div>
-            <div class="get-started">{{ getCoinSettings(coin_seo_name).mine_amd }}</div>
+                <div><strong>Nvidia cards using <a href="{{  getCoinSettings(coin_seo_name).mine_nvidia_download }}" target="_blank" rel="nofollow">CCMINER</a></strong></div>
+                <div class="get-started">{{ getCoinSettings(coin_seo_name).mine_nvidia }}</div>
+
+                <div><strong>AMD cards using <a href="{{  getCoinSettings(coin_seo_name).mine_amd_download }}" target="_blank" rel="nofollow">SGMINER</a></strong></div>
+                <div class="get-started">{{ getCoinSettings(coin_seo_name).mine_amd }}</div>
+            </div>
+
+            <div id="nvidia" class="howTotabcontent">
+                <div><strong>NVIDIA Stratum port</strong></div>
+                <div class="get-started">stratum+tcp://{{ seo_site_name }}:{{ getCoinSettings(coin_seo_name).port }}</div>
+
+                <div><strong>Nvidia cards using <a href="{{  getCoinSettings(coin_seo_name).mine_nvidia_download }}" target="_blank" rel="nofollow">CCMINER</a></strong></div>
+                <div class="get-started">{{ getCoinSettings(coin_seo_name).mine_nvidia }}</div>
+
+                <div><strong>AMD cards using <a href="{{  getCoinSettings(coin_seo_name).mine_amd_download }}" target="_blank" rel="nofollow">SGMINER</a></strong></div>
+                <div class="get-started">{{ getCoinSettings(coin_seo_name).mine_amd }}</div>
+            </div>
+
         </div>
     </div>
 

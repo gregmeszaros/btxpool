@@ -524,7 +524,7 @@ div.tab button:hover {
 }
 
 /* Style the tab content */
-.tabcontent {
+.tabcontent, .howTotabcontent {
     display: none;
     padding: 6px 12px;
     border: solid 2px #c9c9c9;

@@ -21,6 +21,28 @@ function openTab(evt, tabName, coin) {
   evt.currentTarget.className += " active " + coin;
 }
 
+function openHowToTab(evt, tabName, coin) {
+  // Declare all variables
+  var i, tabcontent, tablinks;
+
+  // Get all elements with class="tabcontent" and hide them (always show first)
+  tabcontent = document.getElementsByClassName("howTotabcontent");
+  for (i = 0; i < tabcontent.length; i++) {
+    tabcontent[i].style.display = "none";
+  }
+
+  // Get all elements with class="tablinks" and remove the class "active"
+  tablinks = document.getElementsByClassName("howTotablinks");
+  for (i = 0; i < tablinks.length; i++) {
+    tablinks[i].className = tablinks[i].className.replace(" active", "");
+    tablinks[i].className = tablinks[i].className.replace(coin, "");
+  }
+
+  // Show the current tab, and add an "active" class to the button that opened the tab
+  document.getElementById(tabName).style.display = "block";
+  evt.currentTarget.className += " active " + coin;
+}
+
 /**
  * Plots line graph
  */
@@ -220,5 +242,7 @@ function plotLineGraph(json, element_id, label) {
 if (document.getElementById('defaultOpen') !== null) {
   // Open workers tab by default
   document.getElementById("defaultOpen").click();
+
+  document.getElementById("howTodefaultOpen").click();
 }
 

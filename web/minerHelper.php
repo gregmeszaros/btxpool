@@ -826,6 +826,30 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
   }
 
   /**
+   * Call our EQUI API backend and get some miner info
+   */
+  public static function getEquiMinerdata($db, $miner_address) {
+
+    // Get cURL resource
+    $curl = curl_init();
+    // Set some options - we are passing in a useragent too here
+    curl_setopt_array($curl, array(
+      CURLOPT_RETURNTRANSFER => 1,
+      CURLOPT_URL => $db->apiUrl . '/api/worker_stats?' . $miner_address,
+    ));
+
+    // Send the request & save response to $resp
+    $resp = curl_exec($curl);
+
+    $miner_data = json_decode($resp, TRUE);
+
+    // Close request to clear up some resources
+    curl_close($curl);
+
+    return $miner_data;
+  }
+
+  /**
    * Get the immature balance for specific user ID
    * @param $db
    * @param $user_id
@@ -1099,6 +1123,13 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
             // Payouts
             $payouts = self::getPayouts($db, $data['coin_id'], $user['id']);
             $total_paid = self::getTotalPayout($db, $data['coin_id'], $user['id']);
+          }
+          else {
+            $loadMinerWallet = self::getEquiMinerdata($db, $data['miner_address']);
+            //print_r($loadMinerWallet); die();
+            
+            $immature_balance = [];
+            $immature_balance['immature_balance'] = $loadMinerWallet['immature'];
           }
 
         }

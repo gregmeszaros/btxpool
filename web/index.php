@@ -97,7 +97,7 @@ if (!empty($conn)) {
 $loader = new Twig_Loader_Filesystem(__DIR__ . '/templates');
 $twig = new Twig_Environment($loader, [
   'cache' => __DIR__ . '/../twig_cache',
-  'auto_reload' => false // Should be turned off on production
+  'auto_reload' => true // Should be turned off on production
 ]);
 
 // Create some custom functions to twig
@@ -210,6 +210,10 @@ $getCoinSettings = new Twig_SimpleFunction('getCoinSettings', function ($coin_se
       $settings['mine_nvidia'] = 'ccminer-x64 -a x16r -o stratum+tcp://' . $seo_site_name . ':8006 -u your_raven_address.rig_name -p x -i 21';
       $settings['mine_amd_download'] = 'https://github.com/aceneun/sgminer-gm-x16r';
       $settings['mine_amd'] = 'sgminer --kernel x16r -o stratum+tcp://' . $seo_site_name . ':8006 -u your_raven_address.rig_name -p x';
+      return $settings;
+      break;
+    case 'votecoin':
+      $settings['symbol'] = 'VOT';
       return $settings;
       break;
   }
