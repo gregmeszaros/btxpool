@@ -283,7 +283,11 @@ class minerHelper {
       return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
     else {
-      return [];
+      $stmt = $db->prepare("SELECT username, id AS userid, workers FROM accounts WHERE workers != :empty_worker");
+      $stmt->execute([
+        ':empty_worker' => 'a:0:{}',
+      ]);
+      return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
   }
 
@@ -1022,8 +1026,8 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
     }
     else {
       if (!empty($data['miner_address'])) {
-        $user_account = self::getAccount($db, null, $data['miner_address']);
-        $user_data = unserialize($user_account['workers']);
+        $user = self::getAccount($db, null, $data['miner_address']);
+        $user_data = unserialize($user['workers']);
 
         $hashrate_user_30_min = [];
         $hashrate_user_30_min['hashrate'] = $user_data['total_hashrate'];
@@ -1195,6 +1199,7 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
         break;
       case 'miners':
         // Load all miners
+        //print_r(minerHelper::getMiners($db, $data['coin_id'])); die();
         return [
           'miners' => minerHelper::getMiners($db, $data['coin_id']),
           'total_count_miners' => self::countMiners($db, $data['coin_id']) ?? FALSE,
