@@ -97,7 +97,7 @@ if (!empty($conn)) {
 $loader = new Twig_Loader_Filesystem(__DIR__ . '/templates');
 $twig = new Twig_Environment($loader, [
   'cache' => __DIR__ . '/../twig_cache',
-  'auto_reload' => true // Should be turned off on production
+  'auto_reload' => false // Should be turned off on production
 ]);
 
 // Create some custom functions to twig

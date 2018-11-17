@@ -485,7 +485,8 @@ class minerHelper {
       poolSolsString = :poolSolsString,
       networkDiff = :networkDiff,
       minerCount = :minerCount,
-      workerCount = :workerCount
+      workerCount = :workerCount,
+      shareCount = :shareCount
       WHERE coin = :coin_id AND id = :id");
 
     return $stmt->execute([
@@ -495,6 +496,7 @@ class minerHelper {
       ':networkDiff' => $data['networkDiff'],
       ':minerCount' => $data['minerCount'],
       ':workerCount' => $data['workerCount'],
+      ':shareCount' => $data['shareCount'],
       ':coin_id' => $data['coin_id'],
       ':id' => $data['id']
     ]);
@@ -997,7 +999,7 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
    */
   public static function _templateVariables($db = FALSE, $route = null, $data = FALSE, $redis = FALSE) {
 
-    if (!empty($db)) {
+    if (!empty($db) && self::poolType($data['coin_id']) == 'yiimp') {
       $hashrates_30_min = minerHelper::getUserPoolHashrateStats($db, minerHelper::miner_getAlgos()[$data['coin_id']], 1800, $redis);
       $hashrates_3_hours = minerHelper::getUserPoolHashrateStats($db, minerHelper::miner_getAlgos()[$data['coin_id']], 60 * 60 * 3, $redis);
       $hashrates_24_hours = minerHelper::getUserPoolHashrateStats($db, minerHelper::miner_getAlgos()[$data['coin_id']], 60 * 60 * 24, $redis);
@@ -1006,7 +1008,6 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
 
         // Load the user (@TODO avoid loading on all pages?)
         $user = self::getAccount($db, null, $data['miner_address']);
-
         // User specific hashrate
         if (!empty($hashrates_30_min[$user['id']])) {
           $hashrate_user_30_min = $hashrates_30_min[$user['id']];
@@ -1017,6 +1018,15 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
           $hashrate_user_24_hours = $hashrates_24_hours[$user['id']];
         }
 
+      }
+    }
+    else {
+      if (!empty($data['miner_address'])) {
+        $user_account = self::getAccount($db, null, $data['miner_address']);
+        $user_data = unserialize($user_account['workers']);
+
+        $hashrate_user_30_min = [];
+        $hashrate_user_30_min['hashrate'] = $user_data['total_hashrate'];
       }
     }
 
@@ -1096,6 +1106,7 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
           $block_rewards[1430] = 5000;
           $block_rewards[1431] = 6.25;
           $block_rewards[1432] = 5;
+          $block_rewards['votecoin'] = 125;
 
           // Get workers for miner address
           $workers = self::getWorkers($db, $data['miner_address'], $data['coin_id'], $redis);
@@ -1106,7 +1117,6 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
             $total_user_shares = self::sumTotalShares($db, self::miner_getAlgos()[$data['coin_id']], $user['id']);
             $user_round_share = $total_user_shares['total_user_hash'] / $total_shares['total_user_hash'] * 100;
             $user_estimated_earning = $block_rewards[$data['coin_id']] / 100 * $user_round_share;
-
 
             // Immature balance
             $immature_balance = self::getImmatureBalance($db, $data['coin_id'], $user['id']);
@@ -1119,7 +1129,6 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
             $earnings_last_7_days = self::getUserEarnings($db, $data['coin_id'], $user['id'], 60 * 60 * 24 * 7);
             $earnings_last_30_days = self::getUserEarnings($db, $data['coin_id'], $user['id'], 60 * 60 * 24 * 30);
 
-
             // Payouts
             $payouts = self::getPayouts($db, $data['coin_id'], $user['id']);
             $total_paid = self::getTotalPayout($db, $data['coin_id'], $user['id']);
@@ -1127,9 +1136,15 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
           else {
             $loadMinerWallet = self::getEquiMinerdata($db, $data['miner_address']);
             //print_r($loadMinerWallet); die();
-            
+
             $immature_balance = [];
             $immature_balance['immature_balance'] = $loadMinerWallet['immature'];
+
+            $pending_balance = [];
+            $pending_balance['pending_balance'] = $loadMinerWallet['balance'];
+
+            $total_paid = [];
+            $total_paid['total_payout'] = $loadMinerWallet['paid'];
           }
 
         }
@@ -1142,6 +1157,12 @@ VALUES(:userid, :coinid, :blockid, :create_time, :amount, :price, :status)");
           $network_info = [];
           $poolStatsEqui = self::getPoolStatsEquihash($db, $data['coin_id']);
           $network_info['difficulty'] = $poolStatsEqui ? $poolStatsEqui[0]['networkDiff'] : 0;
+
+          // Estimated earnings
+          $total_shares = $poolStatsEqui ? $poolStatsEqui[0]['shareCount'] : 0;
+          $total_user_shares = $user_data['total_round_share'];
+          $user_round_share = $total_user_shares / $total_shares * 100;
+          $user_estimated_earning = $block_rewards[$data['coin_id']] / 100 * $user_round_share;
         }
 
         return [

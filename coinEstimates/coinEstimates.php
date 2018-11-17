@@ -45,6 +45,7 @@ foreach ($coins as $coin_id => $coin) {
     $ttf = $coin_custom['pools'][$coin_id]['luckHours'];
     $active_miners = $coin_custom['pools'][$coin_id]['minerCount'];
     $active_workers = $coin_custom['pools'][$coin_id]['workerCount'];
+    $pool_shares = $coin_custom['pools'][$coin_id]['shareCount'];
 
     $workers = $coin_custom['pools'][$coin_id]['workers'];
 
@@ -56,6 +57,7 @@ foreach ($coins as $coin_id => $coin) {
     print 'Time to find: ' . $ttf . " hours \n";
     print 'Active miners: ' . $active_miners . "\n";
     print 'Active workers: ' . $active_workers . "\n";
+    print 'Total pool shares: ' . $pool_shares . "\n";
 
     $set_data = minerHelper::setPoolStatsEquihash($conn, [
       'coin_id' => $coin_id,
@@ -65,6 +67,7 @@ foreach ($coins as $coin_id => $coin) {
       'networkDiff' => $network_difficulty,
       'minerCount' => $active_miners,
       'workerCount' => $active_workers,
+      'shareCount' => $pool_shares,
       'id' => $read_data[0]['id']
     ]);
 
@@ -96,8 +99,11 @@ function updateWorkers($db, $coin_id, $workers) {
 
     // Calculate total hashrate for all workers
     $default = !empty($set_workers[$username]['total_hashrate']) ? $set_workers[$username]['total_hashrate'] : 0;
-    print $default;
     $set_workers[$username]['total_hashrate'] = $default + $worker_data['hashrate'] * 2;
+
+    $round_share = !empty($set_workers[$username]['total_round_share']) ? $set_workers[$username]['total_round_share'] : 0;
+    $set_workers[$username]['total_round_share'] = $round_share + $worker_data['currRoundShares'];
+
     $set_workers[$username]['workers'][] = $worker_data;
 
     // If the account doesn't exist we create it
